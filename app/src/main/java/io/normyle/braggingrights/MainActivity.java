@@ -102,7 +102,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     //TODO: get better performance with background threads and shit
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        drawerLayout.closeDrawers();
         //present
         if(position==0) {
             setTitle("Present");
@@ -124,6 +123,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             setTitle("Personhood");
             actionBar.setIcon(R.drawable.ic_launcher);
         }
+
+        drawerLayout.closeDrawers();
     }
 
 }

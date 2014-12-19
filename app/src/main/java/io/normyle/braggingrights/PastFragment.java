@@ -98,7 +98,7 @@ public class PastFragment extends Fragment implements View.OnClickListener,ListV
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String title = ((TextView) view.findViewById(R.id.txtview_goal_row_title)).getText().toString();
         Intent intent = new Intent(activity, GoalViewActivity.class);
-        intent.putExtra("EXTRA_SESSION_ID", goalsMap.get(title));
+        intent.putExtra("GOAL_ID", goalsMap.get(title));
         startActivity(intent);
     }
 

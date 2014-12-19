@@ -77,7 +77,7 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
             holder.imgIcon.setImageResource(R.drawable.spirit_icon);
         }
         List<String> taskList = goal.getTaskList();
-        holder.txtDescription.setText(Goal.createTasksSpannableString(taskList,true));
+        holder.txtDescription.setText(Goal.createTasksSpannableString(taskList,true,true));
 
         return row;
     }

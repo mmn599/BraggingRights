@@ -51,12 +51,12 @@ public class TaskAdapter extends ArrayAdapter<String> {
         }
 
         String task = data[position];
-        holder.taskTitle.setText(task);
+        holder.taskTitle.setText(Goal.createTasksSpannableString(task));
 
         return row;
     }
 
-    static class Holder
+    public static class Holder
     {
         TextView taskTitle;
     }

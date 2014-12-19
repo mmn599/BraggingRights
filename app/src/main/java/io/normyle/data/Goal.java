@@ -28,6 +28,9 @@ public class Goal {
     private int complete;
     private String notes;
 
+    public static final int INCOMPLETE = 0;
+    public static final int COMPLETE = 1;
+
     public Goal() {
 
     }
@@ -167,6 +170,11 @@ public class Goal {
         startDate = new Date(input);
     }
 
+    public String updateTask(String task, int complete) {
+        goalDescription = goalDescription.replace(task,complete+task);
+        return goalDescription;
+    }
+
     public void setCompletedDate(long input) {
         completeDate = new Date(input);
     }
@@ -181,16 +189,18 @@ public class Goal {
      * @param list
      * Boolean that indicates the presence of bullets
      * @param bullets
+     * Newline indicates whether or not to put newline characters
+     * @param newline
      * Returns a good 'ol SpannableStringBuilder properly formatted
      * @return
      */
-    public static SpannableStringBuilder createTasksSpannableString(List<String> list, boolean bullets) {
+    public static SpannableStringBuilder createTasksSpannableString(List<String> list, boolean bullets, boolean newline) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         int current = 0;
         int end = 0;
         for(String string : list) {
             boolean incomplete = (string.charAt(0)=='0');
-            string = string.replace("0","");
+            string = string.replaceFirst("[0-1]+","");
             builder = builder.append(string);
             if(bullets) {
                 builder.setSpan(new BulletSpan(15), current, current + string.length(), 0);
@@ -199,12 +209,20 @@ public class Goal {
 
             }
             else {
-                builder.setSpan(new StrikethroughSpan(), current, current+string.length()-1, 0);
+                builder.setSpan(new StrikethroughSpan(), current, current+string.length(), 0);
             }
-            builder.append("\n");
-            current += string.length() + 1;
+            if(newline) {
+                builder.append("\n");
+            }
+            current += newline ? string.length() + 1 : string.length();
         }
         return builder;
+    }
+
+    public static SpannableStringBuilder createTasksSpannableString(String task) {
+        List<String> singleTask = new ArrayList<String>();
+        singleTask.add(task);
+        return createTasksSpannableString(singleTask, true, false);
     }
 
 }

@@ -186,4 +186,11 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void deleteGoal(int goal_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_GOALS, KEY_ID + " = ?",
+                new String[] { String.valueOf(goal_id) });
+        db.close();
+    }
+
 }

@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.melnykov.fab.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -54,7 +55,14 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
         List<Goal> goals = db.getAllGoals();
         db.close();
 
-        Goal[] goalsArray = goals.toArray(new Goal[goals.size()]);
+        List<Goal> presentGoals = new ArrayList<Goal>();
+        for(Goal goal : goals) {
+            if(goal.getComplete()==Goal.INCOMPLETE) {
+                presentGoals.add(goal);
+            }
+        }
+
+        Goal[] goalsArray = presentGoals.toArray(new Goal[presentGoals.size()]);
         GoalAdapter goalsAdapter = new GoalAdapter(activity,
                 R.layout.goal_listview_row, goalsArray);
 
