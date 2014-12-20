@@ -8,6 +8,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
 import android.util.Log;
 
 public class MySQLiteHelper extends SQLiteOpenHelper {
@@ -75,7 +76,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_TIME, goal.getTime());
         values.put(KEY_IMPORTANCE, goal.getImportance());
         values.put(KEY_COMPLETE, goal.getComplete());
-        values.put(KEY_NOTES, goal.getNotes());
+        values.put(KEY_NOTES, goal.getGoalNotes());
         values.put(KEY_DATE, goal.getStartDateLong());
         values.put(KEY_COMPLETE_DATE, goal.getCompletedDateLong());
         // 3. insert
@@ -115,7 +116,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         goal.setTime(cursor.getString(4));
         goal.setImportance(Integer.parseInt(cursor.getString(5)));
         goal.setComplete(Integer.parseInt(cursor.getString(6)));
-        goal.setNotes(cursor.getString(7));
+        goal.setGoalNotes(cursor.getString(7));
         goal.setStartDate(Long.parseLong(cursor.getString(8)));
         goal.setCompletedDate(Long.parseLong(cursor.getString(9)));
         //log
@@ -142,7 +143,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         cv.put(KEY_TIME, g.getTime());
         cv.put(KEY_IMPORTANCE, g.getImportance());
         cv.put(KEY_COMPLETE, g.getComplete());
-        cv.put(KEY_NOTES, g.getNotes());
+        cv.put(KEY_NOTES, g.getGoalNotes());
         cv.put(KEY_DATE, g.getStartDateLong());
         cv.put(KEY_COMPLETE_DATE, g.getCompletedDateLong());
         this.getWritableDatabase().update(TABLE_GOALS, cv, KEY_ID+" "+"="+String.valueOf(g.getId()), null);
@@ -168,7 +169,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 goal.setTime(cursor.getString(4));
                 goal.setImportance(Integer.parseInt(cursor.getString(5)));
                 goal.setComplete(Integer.parseInt(cursor.getString(6)));
-                goal.setNotes(cursor.getString(7));
+                goal.setGoalNotes(cursor.getString(7));
                 goal.setStartDate(Long.parseLong(cursor.getString(8)));
                 goal.setCompletedDate(Long.parseLong(cursor.getString(9)));
                 // Adding contact to list
@@ -191,6 +192,19 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         db.delete(TABLE_GOALS, KEY_ID + " = ?",
                 new String[] { String.valueOf(goal_id) });
         db.close();
+    }
+
+    public static void updateGoalInBackground(Context context,Goal g) {
+        new UpdateGoalTask().execute(new MySQLiteHelper(context),g);
+    }
+
+    private static class UpdateGoalTask extends AsyncTask<Object, Integer, Integer> {
+        protected Integer doInBackground(Object... objects) {
+            MySQLiteHelper db = (MySQLiteHelper) objects[0];
+            Goal goal = (Goal) objects[1];
+            db.updateGoal(goal);
+            return 0;
+        }
     }
 
 }

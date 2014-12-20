@@ -3,7 +3,9 @@
     android:layout_height="match_parent"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/listviewselector"
-    android:paddingTop="16dp">
+    android:paddingTop="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
@@ -28,73 +30,148 @@
         android:src="@null"
         android:layout_centerInParent="true"/>
 
-    <TextView
-        android:id="@+id/txtview_tasks_description"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="16dp"
-        android:textColor="@color/accent"
-        android:textSize="20sp"
-        android:text="Tasks"/>
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/btn_collapse_tasks"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:src="@drawable/decollapse"/>
+        <TextView
+            android:id="@+id/txtview_tasks_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/accent"
+            android:layout_gravity="center_vertical"
+            android:textSize="20sp"
+            android:text="Tasks"/>
+    </LinearLayout>
 
-    <ListView
-        android:id="@+id/listview_tasks"
+    <ScrollView
+        android:id="@+id/scrollview_tasks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:divider="@null"/>
+        android:divider="@null">
+        <LinearLayout
+            android:id="@+id/ll_tasks"
+            android:layout_width="match_parent"
+            android:animateLayoutChanges="true"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"/>
+    </ScrollView>
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:orientation="horizontal">
-        <TextView
-            android:id="@+id/txtview_notes_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/accent"
-            android:textSize="20sp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="Notes"/>
-
+        <ImageButton
+            android:id="@+id/btn_collapse_reminders"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:src="@drawable/decollapse"/>
         <TextView
             android:id="@+id/txtview_reminders_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
             android:textColor="@color/accent"
             android:textSize="20sp"
-            android:layout_weight="1"
-            android:gravity="center"
             android:text="Reminders"/>
     </LinearLayout>
+    
+    <ScrollView
+        android:id="@+id/scrollview_reminders"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/ll_reminders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:id="@+id/txtview_reminders"
+                android:textSize="12sp"/>
+            <Button
+                android:layout_width="70dp" android:layout_height="30dp"
+                android:background="@drawable/add_button_selector"
+                android:textColor="@color/white"
+                android:text="New Reminder"
+                android:layout_gravity="center"
+                android:layout_marginRight="1dp"
+                android:layout_marginTop="-10dp"
+                android:textSize="12sp"
+                android:id="@+id/btn_add_reminder_id"/>
+        </LinearLayout>
+    </ScrollView>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/btn_collapse_notes"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:src="@drawable/decollapse"/>
+        <TextView
+            android:id="@+id/txtview_notes_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/accent"
+            android:layout_gravity="center_vertical"
+            android:textSize="20sp"
+            android:text="Notes"/>
+    </LinearLayout>
 
+    <ScrollView
+        android:id="@+id/scrollview_notes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/ll_notes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical"/>
+    </ScrollView>
+
+</LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="140dp"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="20dp"
         android:orientation="horizontal">
-    <TextView
-        android:id="@+id/txtview_start_time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_weight="1"
-        android:textSize="18sp"/>
-    <TextView
-        android:id="@+id/txtview_end_time"
-        android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textSize="18sp"/>
+        <TextView
+            android:id="@+id/txtview_start_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textSize="18sp"/>
+        <TextView
+            android:id="@+id/txtview_end_time"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="18sp"/>
     </LinearLayout>
-
-</LinearLayout>
 
     <com.melnykov.fab.FloatingActionButton
         android:id="@+id/btn_complete_action_button"

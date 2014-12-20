@@ -2,6 +2,7 @@ package io.normyle.braggingrights;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -14,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import io.matthew.braggingrights.R;
+import io.normyle.data.Constants;
 import io.normyle.ui.DrawerAdapter;
 
 
@@ -65,6 +67,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container,presentFragment).commit();
 
+        //sets up a few constants
+        Point size = new Point();
+        getWindowManager().getDefaultDisplay().getSize(size);
+        Constants.SCREEN_WIDTH = size.x;
+        Constants.SCREEN_HEIGHT = size.y;
     }
 
 

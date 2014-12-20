@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.List;
-
 import io.matthew.braggingrights.R;
 import io.normyle.data.Goal;
 
@@ -51,7 +49,7 @@ public class TaskAdapter extends ArrayAdapter<String> {
         }
 
         String task = data[position];
-        holder.taskTitle.setText(Goal.createTasksSpannableString(task));
+        holder.taskTitle.setText(Goal.createSpannableString(task));
 
         return row;
     }

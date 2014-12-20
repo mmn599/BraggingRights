@@ -1,6 +1,8 @@
 package io.normyle.braggingrights;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,10 +12,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -30,6 +35,7 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
     MySQLiteHelper db;
     HashMap<String,Integer> goalsMap;
     Activity activity;
+    View view;
 
     public PresentFragment() {
     }
@@ -45,7 +51,13 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View view = inflater.inflate(R.layout.fragment_present, container, false);
+        view = inflater.inflate(R.layout.fragment_present, container, false);
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
         fab = (FloatingActionButton) view.findViewById(R.id.btn_action_button);
         fab.setOnClickListener(this);
@@ -74,10 +86,7 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
         for(Goal goal : goals) {
             goalsMap.put(goal.getTitle(),goal.getId());
         }
-
-        return view;
     }
-
 
     @Override
     public void onAttach(Activity activity) {

@@ -2,21 +2,6 @@ package io.normyle.ui;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.text.Html;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.BulletSpan;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
-import android.text.style.StrikethroughSpan;
-import android.text.style.StyleSpan;
-import android.text.style.SubscriptSpan;
-import android.text.style.SuperscriptSpan;
-import android.text.style.URLSpan;
-import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,7 +62,7 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
             holder.imgIcon.setImageResource(R.drawable.spirit_icon);
         }
         List<String> taskList = goal.getTaskList();
-        holder.txtDescription.setText(Goal.createTasksSpannableString(taskList,true,true));
+        holder.txtDescription.setText(Goal.createSpannableString(taskList, true, true, true));
 
         return row;
     }
