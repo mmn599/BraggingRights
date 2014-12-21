@@ -16,6 +16,8 @@ import android.widget.ListView;
 
 import io.matthew.braggingrights.R;
 import io.normyle.data.Constants;
+import io.normyle.data.Goal;
+import io.normyle.data.MySQLiteHelper;
 import io.normyle.ui.DrawerAdapter;
 
 

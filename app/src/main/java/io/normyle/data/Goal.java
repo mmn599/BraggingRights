@@ -4,6 +4,7 @@ import android.text.SpannableStringBuilder;
 import android.text.style.BulletSpan;
 import android.text.style.StrikethroughSpan;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.text.DateFormat;
 import java.util.Date;
@@ -27,7 +28,10 @@ public class Goal {
     private int _id;
     private int complete;
     private String goalNotes;
-    private String goalReminders;
+    private String goalReminderString;
+
+    public static final SimpleDateFormat dateFormatForReminders =
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static final int INCOMPLETE = 0;
     public static final int COMPLETE = 1;
@@ -36,7 +40,7 @@ public class Goal {
      * Default constructor, typically used by the database to build a new goal.
      */
     public Goal() {
-
+        goalReminderString = "";
     }
 
     /**
@@ -57,11 +61,12 @@ public class Goal {
         this.goalType = goaltype;
         this.goalTime = goaltime;
         this.goal_importance = goalimportance;
-        _id = 0;
-        complete = 0;
-        goalNotes = "";
-        startDate = new Date(); //sets startDate to current time
-        completeDate = new Date();
+        this._id = 0;
+        this.complete = 0;
+        this.goalNotes = "";
+        this.startDate = new Date(); //sets startDate to current time
+        this.completeDate = new Date();
+        this.goalReminderString = "";
     }
 
     /**
@@ -152,6 +157,22 @@ public class Goal {
         return taskList;
     }
 
+    public List<Date> getReminderDateList() {
+        if(goalReminderString.length()>0) {
+            String[] stringDates = goalReminderString.split("\n");
+            List<Date> dateList = new ArrayList<Date>();
+            for (int i = 0; i < stringDates.length; i++) {
+                try {
+                    dateList.add(dateFormatForReminders.parse(stringDates[i]));
+                } catch (Exception e) {
+
+                }
+            }
+            return dateList;
+        }
+        return new ArrayList<Date>();
+    }
+
     /**
      * Returns unformatted goalDescription.
      * @return
@@ -194,18 +215,23 @@ public class Goal {
         return goal_importance;
     }
 
-    public List<String> getReminders() {
+    public String getReminderString() {
+        return goalReminderString;
+    }
+
+    public List<String> getRemindersAsList() {
         List<String> list = new ArrayList<String>();
-        list.add("11:00am : September 21, 2014");
-        list.add("12:30pm : MWThF");
-        return list;
-/*
-        List<String> reminders = new ArrayList<String>();
-        String[] remindersArray = goalReminders.split("\n");
-        for(int i=0;i<remindersArray.length;i++) {
-            reminders.add(remindersArray[i]);
+        List<Date> dateList = getReminderDateList();
+        for(Date date : dateList) {
+            list.add(dateFormatForReminders.format(date));
         }
-        return reminders;*/
+        return list;
+    }
+
+    public void addReminderDate(Date date) {
+        String dateForInsert = dateFormatForReminders.format(date);
+        dateForInsert += "\n";
+        goalReminderString += dateForInsert;
     }
 
     public void setId(int id) {
@@ -266,6 +292,23 @@ public class Goal {
 
     public void setCompletedDate(long input) {
         completeDate = new Date(input);
+    }
+
+    public void setReminderString(String goalReminderString) {
+        this.goalReminderString = goalReminderString;
+    }
+
+    public void removeOldReminders(Date currentDate) {
+        String newReminderString = "";
+        List<Date> reminders = getReminderDateList();
+        for(Date date : reminders) {
+            if(date.after(currentDate)) {
+                String dateForInsert = dateFormatForReminders.format(date);
+                dateForInsert += "\n";
+                newReminderString += dateForInsert;
+            }
+        }
+        goalReminderString = newReminderString;
     }
 
     public String toString() {

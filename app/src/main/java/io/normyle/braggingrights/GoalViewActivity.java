@@ -1,8 +1,14 @@
 package io.normyle.braggingrights;
 
+import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,15 +16,19 @@ import android.view.ViewPropertyAnimator;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import io.matthew.braggingrights.R;
@@ -28,7 +38,8 @@ import io.normyle.data.MySQLiteHelper;
 import io.normyle.ui.Animations;
 import io.normyle.ui.TaskView;
 
-public class GoalViewActivity extends ActionBarActivity implements View.OnClickListener, TextView.OnEditorActionListener {
+public class GoalViewActivity extends ActionBarActivity implements View.OnClickListener,
+        TextView.OnEditorActionListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     TextView txtTitle;
     TextView txtStartTime;
@@ -80,11 +91,11 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
 
         llReminders = (LinearLayout) findViewById(R.id.ll_reminders);
         txtReminders = (TextView) findViewById(R.id.txtview_reminders);
-        txtReminders.setText(Goal.createSpannableString(goal.getReminders(), true, true, false));
+        goal.removeOldReminders(Calendar.getInstance().getTime());
+        MySQLiteHelper.updateGoalInBackground(this,goal);
+        txtReminders.setText(Goal.createSpannableString(goal.getRemindersAsList(), true, true, false));
         Button btnAddReminder = (Button) findViewById(R.id.btn_add_reminder_id);
         btnAddReminder.setOnClickListener(this);
-
-
 
         llNotes = (LinearLayout) findViewById(R.id.ll_notes);
         inflater = (LayoutInflater)getSystemService
@@ -163,6 +174,10 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
             animator.translationX(Constants.SCREEN_WIDTH);
             animator.start();
         }
+        else if(v.getId()==R.id.btn_add_reminder_id) {
+            DatePickerFragment newFragment = new DatePickerFragment();
+            newFragment.show(getSupportFragmentManager(), "datePicker");
+        }
         else if(v.getId()==R.id.btn_collapse_notes) {
             if(collapsed_notes) {
                 llNotes.setVisibility(View.VISIBLE);
@@ -212,8 +227,8 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         view.findViewById(R.id.btn_add_note_id).setOnClickListener(this);
         txtGoalNotes.setText(Goal.createSpannableString(goal.getNotesList(),
                 true, true, false));
-    }
 
+    }
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         boolean handled = false;
@@ -224,5 +239,73 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         return handled;
     }
 
+    public void addNewReminderDate(Calendar calendar) {
+        calendar.set(Calendar.SECOND,0);
+        calendar.set(Calendar.MILLISECOND,0);
+        Date newReminderDate = new Date();
+        newReminderDate.setTime(calendar.getTimeInMillis());
+        goal.addReminderDate(newReminderDate);
+        MySQLiteHelper.updateGoalInBackground(this,goal);
+        txtReminders.setText(Goal.createSpannableString(goal.getRemindersAsList(), true, true, false));
+        Notifications.setOneTimeAlarm(this,calendar);
+    }
+
+    private int year;
+    private int month_of_year;
+    private int day_of_month;
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        TimePickerFragment newFragment = new TimePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "timePicker");
+        this.year = year;
+        this.month_of_year = monthOfYear;
+        this.day_of_month = dayOfMonth;
+    }
+
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month_of_year);
+        calendar.set(Calendar.DAY_OF_MONTH, day_of_month);
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        calendar.set(Calendar.MINUTE, minute);
+        addNewReminderDate(calendar);
+    }
+
+    public static class TimePickerFragment extends DialogFragment {
+
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current time as the default values for the picker
+            final Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            int minute = c.get(Calendar.MINUTE);
+
+            // Create a new instance of TimePickerDialog and return it
+            return new TimePickerDialog(getActivity(),
+                    (TimePickerDialog.OnTimeSetListener) getActivity(), hour, minute,
+                    DateFormat.is24HourFormat(getActivity()));
+        }
+    }
+
+
+    public static class DatePickerFragment extends DialogFragment {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current date as the default date in the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(),
+                    (DatePickerDialog.OnDateSetListener) getActivity(), year, month, day);
+        }
+    }
 
 }

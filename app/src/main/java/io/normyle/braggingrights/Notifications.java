@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
+import android.widget.Toast;
 
 import java.util.Calendar;
 
@@ -13,6 +14,10 @@ import java.util.Calendar;
  * Created by MatthewNew on 12/20/2014.
  */
 public class Notifications {
+
+    public static int id = 0;
+
+    //TODO: IMPORTANT: implement repeating alarms
 
     public static class AlarmSpecs {
 
@@ -43,15 +48,14 @@ public class Notifications {
 
     }
 
-    public static void setOneTimeAlarm(Activity context, Calendar calendar) {
+    public static void setOneTimeAlarm(Context context, Calendar calendar) {
 
         AlarmManager alarmMgr;
         PendingIntent alarmIntent;
 
         alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
-        alarmIntent = PendingIntent.getActivity(context, 12345, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-
+        alarmIntent = PendingIntent.getBroadcast(context, id++, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmMgr.set(AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(), alarmIntent);
 

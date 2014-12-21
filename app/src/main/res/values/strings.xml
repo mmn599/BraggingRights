@@ -10,5 +10,6 @@
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Close</string>
     <string name="title_activity_alarm_receiver">AlarmReceiver</string>
+    <string name="title_activity_activity_alarm_receiver">ActivityAlarmReceiver</string>
 
 </resources>

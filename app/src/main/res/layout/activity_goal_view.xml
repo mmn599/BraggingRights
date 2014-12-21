@@ -101,7 +101,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
                 android:id="@+id/txtview_reminders"
-                android:textSize="12sp"/>
+                android:textSize="18sp"/>
             <Button
                 android:layout_width="70dp" android:layout_height="30dp"
                 android:background="@drawable/add_button_selector"
