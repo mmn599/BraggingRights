@@ -200,6 +200,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    //TODO: IMPORTANT: determine if this at all helps performance
     public static void updateGoalInBackground(Context context,Goal g) {
         new UpdateGoalTask().execute(new MySQLiteHelper(context),g);
     }

@@ -1,10 +1,10 @@
 package io.normyle.braggingrights;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -12,7 +12,6 @@ import android.text.format.DateFormat;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -25,17 +24,15 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.melnykov.fab.FloatingActionButton;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import io.matthew.braggingrights.R;
-import io.normyle.data.Constants;
 import io.normyle.data.Goal;
 import io.normyle.data.MySQLiteHelper;
-import io.normyle.ui.Animations;
+import io.normyle.ui.NoteView;
+import io.normyle.ui.ReminderView;
 import io.normyle.ui.TaskView;
 
 public class GoalViewActivity extends ActionBarActivity implements View.OnClickListener,
@@ -44,15 +41,15 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
     TextView txtTitle;
     TextView txtStartTime;
     TextView txtEndTime;
-    TextView txtGoalNotes;
-    TextView txtReminders;
     ImageView imgIcon;
     Goal goal;
     LinearLayout llTasks;
     LinearLayout llNotes;
     LinearLayout llReminders;
-    FloatingActionButton fab;
-    View oldTaskSelected;
+    Button btnComplete;
+    Button btnEdit;
+    Button btnDelete;
+    View oldViewSelected;
     LayoutInflater inflater;
     ImageButton collapseTasks;
     ImageButton collapseNotes;
@@ -60,6 +57,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
     boolean collapsed_tasks;
     boolean collapsed_notes;
     boolean collapsed_reminders;
+    MySQLiteHelper db;
 
 
 
@@ -70,12 +68,16 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         setContentView(R.layout.activity_goal_view);
 
         int goal_id = getIntent().getIntExtra("GOAL_ID",0);
-        MySQLiteHelper db = new MySQLiteHelper(this);
+        db = new MySQLiteHelper(this);
         goal = db.getGoal(goal_id);
-        db.close();
 
-        fab = (FloatingActionButton) findViewById(R.id.btn_complete_action_button);
-        fab.setOnClickListener(this);
+        btnComplete = (Button) findViewById(R.id.btn_complete_action_button);
+        btnComplete.setOnClickListener(this);
+
+        btnEdit = ((Button) findViewById(R.id.btn_edit_action_button));
+        btnEdit.setOnClickListener(this);
+        btnDelete = ((Button) findViewById(R.id.btn_delete_action_button));
+        btnDelete.setOnClickListener(this);
 
         txtTitle = (TextView) findViewById(R.id.txtview_goal_title);
         imgIcon = (ImageView) findViewById(R.id.imgview_goal_icon);
@@ -89,24 +91,26 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
             llTasks.addView(taskView);
         }
 
-        llReminders = (LinearLayout) findViewById(R.id.ll_reminders);
-        txtReminders = (TextView) findViewById(R.id.txtview_reminders);
-        goal.removeOldReminders(Calendar.getInstance().getTime());
-        MySQLiteHelper.updateGoalInBackground(this,goal);
-        txtReminders.setText(Goal.createSpannableString(goal.getRemindersAsList(), true, true, false));
-        Button btnAddReminder = (Button) findViewById(R.id.btn_add_reminder_id);
-        btnAddReminder.setOnClickListener(this);
-
-        llNotes = (LinearLayout) findViewById(R.id.ll_notes);
         inflater = (LayoutInflater)getSystemService
                 (Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(R.layout.note_reminder_text,llNotes,true);
-        txtGoalNotes = (TextView)v.findViewById(R.id.txtview_note_contents);
-        txtGoalNotes.setText(Goal.createSpannableString(goal.getNotesList(),
-                true, true, false));
+        goal.removeOldReminders(new Date());
+        db.updateGoal(goal);
+        llReminders = (LinearLayout) findViewById(R.id.ll_reminders);
+        List<String> reminderList = goal.getRemindersAsList();
+        for(String reminder : reminderList) {
+            ReminderView reminderView = new ReminderView(this,reminder,this);
+            llReminders.addView(reminderView);
+        }
+        ImageButton addReminderButton = (ImageButton) findViewById(R.id.btn_add_reminder_id);
+        addReminderButton.setOnClickListener(this);
 
-        View view =  inflater.inflate(R.layout.btn_add_note,llNotes,true);
-        Button addButton = (Button) view.findViewById(R.id.btn_add_note_id);
+        llNotes = (LinearLayout) findViewById(R.id.ll_notes);
+        List<String> noteList = goal.getNotesList();
+        for(String note : noteList) {
+            NoteView noteView = new NoteView(this,note,this);
+            llNotes.addView(noteView);
+        }
+        ImageButton addButton = (ImageButton) findViewById(R.id.btn_add_note_id);
         addButton.setOnClickListener(this);
 
         txtTitle.setText(goal.getTitle());
@@ -123,7 +127,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         txtStartTime.setText("Started on: \n" + goal.getStartDateString());
         if(goal.getComplete()==Goal.COMPLETE) {
             txtEndTime.setText("Completed on: \n"+goal.getCompletedDateString());
-            fab.setVisibility(View.GONE);
+            btnComplete.setVisibility(View.GONE);
         }
         else {
             txtEndTime.setVisibility(View.GONE);
@@ -142,37 +146,76 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        if(v instanceof TaskView) {
-            if(oldTaskSelected !=null) {
-                oldTaskSelected.setSelected(false);
+
+        //TODO: CHANGE TO REFLECT CHANGE IN OBJECT HIEARCHY OF THESE
+        if(v instanceof TaskView || v instanceof NoteView || v instanceof ReminderView) {
+            if(oldViewSelected!=null) {
+                oldViewSelected.setSelected(false);
             }
-            v.setSelected(true);
-            oldTaskSelected = v;
+            if(v==oldViewSelected) {
+                oldViewSelected = null;
+            }
+            else {
+                v.setSelected(true);
+                oldViewSelected = v;
+            }
+            if(v instanceof TaskView) {
+                //TODO: update drawable to complete
+            }
+            else {
+                //TODO: update drawable to delete
+            }
         }
-        else if(v instanceof FloatingActionButton) {
+        else if(v.getId()==R.id.btn_complete_action_button) {
             //user just finished a note TODO: make more specific
             View currentFocus = getCurrentFocus();
             if(currentFocus instanceof EditText) {
                 addNewNote(currentFocus);
             }
-            //user wants to complete a task
-            else if(oldTaskSelected !=null) {
-                TaskView taskView = (TaskView) oldTaskSelected;
-                oldTaskSelected.setSelected(false);
-                oldTaskSelected = null;
-                String newTaskString = goal.updateTaskReturnNewTask(taskView.getTaskString(), Goal.COMPLETE);
-                MySQLiteHelper.updateGoalInBackground(this,goal);
-                (taskView).completeTaskAnimation(Constants.SCREEN_WIDTH,
-                        new TaskView.TaskAnimatorListener(llTasks,taskView,newTaskString,this,this));
+            //user wants to complete a task, delete a note
+            else if(oldViewSelected!=null) {
+                //user wants to complete a task
+                if(oldViewSelected instanceof TaskView) {
+                    TaskView taskView = (TaskView) oldViewSelected;
+                    oldViewSelected.setSelected(false);
+                    oldViewSelected = null;
+                    String newTaskString = goal.updateTaskReturnNewTask(taskView.getTaskString(), Goal.COMPLETE);
+                    MySQLiteHelper.updateGoalInBackground(this, goal);
+                    (taskView).completeTaskAnimation(
+                            new TaskView.TaskAnimatorListener(llTasks, taskView, newTaskString, this, this));
+                }
+                //user wants to delete a note
+                else if(oldViewSelected instanceof NoteView) {
+                    NoteView noteView = (NoteView) oldViewSelected;
+                    oldViewSelected.setSelected(false);
+                    oldViewSelected = null;
+                    goal.deleteNote(noteView.getNoteString());
+                    MySQLiteHelper.updateGoalInBackground(this, goal);
+                    noteView.deleteNoteAnimation(new NoteView.NoteAnimatorListener(llNotes,noteView,this));
+                }
+                else if(oldViewSelected instanceof ReminderView) {
+                    ReminderView reminderView = (ReminderView) oldViewSelected;
+                    oldViewSelected.setSelected(false);
+                    oldViewSelected = null;
+                    goal.deleteReminder(reminderView.getReminderString());
+                    MySQLiteHelper.updateGoalInBackground(this, goal);
+                    reminderView.deleteNoteAnimation(new NoteView.NoteAnimatorListener(llReminders,reminderView,this));
+                }
+            }
+            //the user wants to complete the goal!
+            else {
+                goal.setComplete(Goal.COMPLETE);
+                db.updateGoal(goal);
+                Toast.makeText(this,"Goal Complete!",Toast.LENGTH_LONG).show();
+                Intent mainActivity = new Intent(this,MainActivity.class);
+                mainActivity.putExtra("WHICH_FRAGMENT",MainActivity.PASTFRAGMENT);
+                startActivity(mainActivity);
             }
         }
         else if(v.getId()==R.id.btn_add_note_id) {
-            ViewPropertyAnimator animator = v.animate();
-            animator.setListener(
-                    new Animations.NoteAddButtonAnimatorListener(llNotes,(Button)v,this,this,this));
-            animator.setDuration(400);
-            animator.translationX(Constants.SCREEN_WIDTH);
-            animator.start();
+            View btnview = inflater.inflate(R.layout.txt_edit_note,llNotes,true);
+            EditText editText = (EditText) btnview.findViewById(R.id.txt_edit_note_id);
+            editText.setOnEditorActionListener(this);
         }
         else if(v.getId()==R.id.btn_add_reminder_id) {
             DatePickerFragment newFragment = new DatePickerFragment();
@@ -214,21 +257,46 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 ((ImageButton)v).setImageResource(R.drawable.collapse);
             }
         }
+        else if(v.getId()==R.id.btn_edit_action_button) {
+
+        }
+        else if(v.getId()==R.id.btn_delete_action_button) {
+            db.deleteGoal(goal);
+            Toast.makeText(this,"Deleted goal",Toast.LENGTH_LONG).show();
+            startActivity(new Intent(this,MainActivity.class));
+        }
     }
 
     private void addNewNote(View currentFocus) {
         InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         String newNote = ((EditText)currentFocus).getText().toString();
-        goal.addNote(newNote);
-        MySQLiteHelper.updateGoalInBackground(this,goal);
-        llNotes.removeView(getCurrentFocus());
-        View view =  inflater.inflate(R.layout.btn_add_note,llNotes,true);
-        view.findViewById(R.id.btn_add_note_id).setOnClickListener(this);
-        txtGoalNotes.setText(Goal.createSpannableString(goal.getNotesList(),
-                true, true, false));
-
+        if(newNote.length()>0) {
+            goal.addNote(newNote);
+            MySQLiteHelper db = new MySQLiteHelper(this);
+            db.updateGoal(goal);
+            llNotes.removeView(getCurrentFocus());
+            llNotes.addView(new NoteView(this, newNote, this));
+        }
     }
+
+    public void addNewReminderDate(Calendar calendar) {
+        calendar.set(Calendar.SECOND,0);
+        calendar.set(Calendar.MILLISECOND,0);
+        Date newReminderDate = new Date();
+        newReminderDate.setTime(calendar.getTimeInMillis());
+        String newReminder = goal.addReminderDate(newReminderDate);
+        MySQLiteHelper.updateGoalInBackground(this, goal);
+        Notifications.setOneTimeAlarm(this,calendar);
+        llReminders.addView(new ReminderView(this,newReminder,this));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        db.close();
+    }
+
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         boolean handled = false;
@@ -237,17 +305,6 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
             handled = true;
         }
         return handled;
-    }
-
-    public void addNewReminderDate(Calendar calendar) {
-        calendar.set(Calendar.SECOND,0);
-        calendar.set(Calendar.MILLISECOND,0);
-        Date newReminderDate = new Date();
-        newReminderDate.setTime(calendar.getTimeInMillis());
-        goal.addReminderDate(newReminderDate);
-        MySQLiteHelper.updateGoalInBackground(this,goal);
-        txtReminders.setText(Goal.createSpannableString(goal.getRemindersAsList(), true, true, false));
-        Notifications.setOneTimeAlarm(this,calendar);
     }
 
     private int year;

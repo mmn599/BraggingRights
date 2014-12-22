@@ -228,10 +228,11 @@ public class Goal {
         return list;
     }
 
-    public void addReminderDate(Date date) {
+    public String addReminderDate(Date date) {
         String dateForInsert = dateFormatForReminders.format(date);
         dateForInsert += "\n";
         goalReminderString += dateForInsert;
+        return dateForInsert.replace("\n","");
     }
 
     public void setId(int id) {
@@ -290,6 +291,10 @@ public class Goal {
         return complete+task;
     }
 
+    public void deleteNote(String note) {
+        goalNotes = goalNotes.replace(note+"\r","");
+    }
+
     public void setCompletedDate(long input) {
         completeDate = new Date(input);
     }
@@ -309,6 +314,10 @@ public class Goal {
             }
         }
         goalReminderString = newReminderString;
+    }
+
+    public void deleteReminder(String string) {
+        goalReminderString = goalReminderString.replace(string,"");
     }
 
     public String toString() {
@@ -362,10 +371,10 @@ public class Goal {
      * @param task
      * @return
      */
-    public static SpannableStringBuilder createSpannableString(String task) {
+    public static SpannableStringBuilder createSpannableString(String task, boolean strikethrough) {
         List<String> singleTask = new ArrayList<String>();
         singleTask.add(task);
-        return createSpannableString(singleTask, true, false, true);
+        return createSpannableString(singleTask, true, false, strikethrough);
     }
 
 

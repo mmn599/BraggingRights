@@ -18,44 +18,44 @@ import io.normyle.data.Goal;
 /**
  * Created by MatthewNew on 12/18/2014.
  */
-public class TaskView extends FrameLayout {
-
+public class NoteView extends FrameLayout {
 
     //TODO: CHANGE TO BE PART OF A BETTER OBJECT HIEARCHY (GOALITEMVIEW)
     Context context;
     TextView title;
-    String taskString;
+    String noteString;
     LayoutInflater inflater;
 
 
-    public TaskView(Context context) {
+    public NoteView(Context context) {
         super(context);
     }
 
-    public TaskView(Context context,String taskString,OnClickListener listener) {
+    public NoteView(Context context, String noteString, OnClickListener listener) {
         super(context);
 
         this.context = context;
-        this.taskString = taskString;
+        this.noteString = noteString;
 
         inflater = (LayoutInflater)context.getSystemService
                 (Context.LAYOUT_INFLATER_SERVICE);
         setClickable(true);
         setOnClickListener(listener);
-        View view = inflater.inflate(R.layout.taskview_layout,this,true);
-        title = (TextView) view.findViewById(R.id.txtview_task_row_title);
-        title.setText(Goal.createSpannableString(taskString, true));
+        View view = inflater.inflate(R.layout.noteview_layout,this,true);
+        title = (TextView) view.findViewById(R.id.txtview_note_contents);
+        title.setText(Goal.createSpannableString(noteString,false));
     }
 
-    public TaskView(Context context, AttributeSet attrs) {
+    public NoteView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public TaskView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public NoteView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public void completeTaskAnimation(Animator.AnimatorListener listener) {
+    //slides note off screen
+    public void deleteNoteAnimation(Animator.AnimatorListener listener) {
         ViewPropertyAnimator animator = this.animate();
         animator.setListener(listener);
         animator.setDuration(500);
@@ -63,26 +63,21 @@ public class TaskView extends FrameLayout {
         animator.start();
     }
 
-    public String getTaskString() {
-        return taskString;
+    public String getNoteString() {
+        return noteString;
     }
 
-    public static class TaskAnimatorListener implements Animator.AnimatorListener {
+    //deletes the view after the animation is done
+    public static class NoteAnimatorListener implements Animator.AnimatorListener {
 
         LinearLayout ll;
-        TaskView oldView;
-        String newString;
-        Activity activity;
-        OnClickListener listener;
+        View oldView;
 
-        public TaskAnimatorListener(LinearLayout ll, TaskView oldView, String newString,
-                                    Activity activity, OnClickListener listener) {
+        public NoteAnimatorListener(LinearLayout ll, View oldView,
+                                    Activity activity) {
             super();
             this.ll = ll;
             this.oldView = oldView;
-            this.newString = newString;
-            this.activity = activity;
-            this.listener = listener;
         }
 
         @Override
@@ -93,7 +88,6 @@ public class TaskView extends FrameLayout {
         @Override
         public void onAnimationEnd(Animator animation) {
             ll.removeView(oldView);
-            ll.addView(new TaskView(activity,newString,listener));
         }
 
         @Override

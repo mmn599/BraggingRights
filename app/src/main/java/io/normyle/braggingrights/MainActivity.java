@@ -3,6 +3,7 @@ package io.normyle.braggingrights;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -30,13 +31,16 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     CharSequence title;
     ActionBar actionBar;
 
+    public static final String PASTFRAGMENT = "PAST";
+    public static final String PRESENTFRAGMENT = "PRESENT";
+    public static final String PERSONHOODFRAGMENT = "PERSONHOOD";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         actionBar = getSupportActionBar();
-        setTitle("Present");
         title = drawerTitle = getTitle();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList = (ListView) findViewById(R.id.left_drawer);
@@ -62,13 +66,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
 
-        // Create a new Fragment to be placed in the activity layout
-        PresentFragment presentFragment = new PresentFragment();
-
-        // Add the fragment to the 'fragment_container' FrameLayout
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container,presentFragment).commit();
-
         //sets up a few constants
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
@@ -76,6 +73,32 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         Constants.SCREEN_HEIGHT = size.y;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Create a new Fragment to be placed in the activity layout
+        Fragment initialFragment = new PresentFragment();
+        setTitle("Present");
+        Intent callingIntent = getIntent();
+        if(callingIntent!=null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras!=null) {
+                if (extras.containsKey("WHICH_FRAGMENT")) {
+                    String s = getIntent().getExtras().getString("WHICH_FRAGMENT");
+                    if (s.equals(PASTFRAGMENT)) {
+                        initialFragment = new PastFragment();
+                        setTitle("Past");
+                    } else if (s.equals(PERSONHOODFRAGMENT)) {
+                        //TODO: add in personhood fragment
+                    }
+                }
+            }
+        }
+
+        // Add the fragment to the 'fragment_container' FrameLayout
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_container,initialFragment).commit();
+    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -132,7 +155,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             setTitle("Personhood");
             actionBar.setIcon(R.drawable.ic_launcher);
         }
-
         drawerLayout.closeDrawers();
     }
 
