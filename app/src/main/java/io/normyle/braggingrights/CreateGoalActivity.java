@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
@@ -19,7 +21,7 @@ import io.matthew.braggingrights.R;
 import io.normyle.data.Goal;
 import io.normyle.data.MySQLiteHelper;
 
-public class CreateGoalActivity extends ActionBarActivity implements View.OnClickListener {
+public class CreateGoalActivity extends ActionBarActivity implements View.OnClickListener,TextView.OnEditorActionListener {
 
     ImageButton btnMind;
     ImageButton btnBody;
@@ -50,6 +52,7 @@ public class CreateGoalActivity extends ActionBarActivity implements View.OnClic
 
         txtTitle = (EditText) findViewById(R.id.txt_goal_title);
         txtDescription = (EditText) findViewById(R.id.txt_goal_description);
+        txtDescription.setOnEditorActionListener(this);
         txtTitle.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -69,33 +72,6 @@ public class CreateGoalActivity extends ActionBarActivity implements View.OnClic
 
             }
         });
-        txtDescription.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                description_in = true;
-                if(title_in) {
-                    btnComplete.setVisibility(View.VISIBLE);
-                }
-            }
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-        txtDescription.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(txtDescription.getText().toString().length()>0) {
-                    String string = '0' + txtDescription.getText().toString();
-                    tasks.add(string);
-                    txtDescription.setText("");
-                }
-            }
-        });
 
         btnMind = (ImageButton) findViewById(R.id.btn_mind);
         btnBody = (ImageButton) findViewById(R.id.btn_body);
@@ -106,9 +82,9 @@ public class CreateGoalActivity extends ActionBarActivity implements View.OnClic
         btnMind.setSelected(true);
         type = "Mind";
 
-        radioYears = (RadioButton) findViewById(R.id.radio_years);
+        radioYears = (RadioButton) findViewById(R.id.radio_days);
         radioYears.setChecked(true);
-        time = "Years";
+        time = "Days";
     }
 
 
@@ -164,4 +140,20 @@ public class CreateGoalActivity extends ActionBarActivity implements View.OnClic
         new MySQLiteHelper(this).addGoal(goal);
         startActivity(new Intent(this,MainActivity.class));
     }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if(v.getText().toString().length()>0) {
+            String string = '0' + v.getText().toString();
+            tasks.add(string);
+            v.setText("");
+            description_in = true;
+            if(title_in) {
+                btnComplete.setVisibility(View.VISIBLE);
+            }
+            v.setHint("Enter another task, if you wish");
+        }
+        return true;
+    }
 }
+

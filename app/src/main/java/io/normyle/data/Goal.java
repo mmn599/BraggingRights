@@ -149,12 +149,15 @@ public class Goal {
      * @return
      */
     public List<String> getTaskList() {
-        String[] list = goalDescription.split("\n");
-        List<String> taskList = new ArrayList<String>();
-        for(int i=0;i<list.length;i++) {
-            taskList.add(list[i]);
+        if(goalDescription.length()>0) {
+            String[] list = goalDescription.split("\n");
+            List<String> taskList = new ArrayList<String>();
+            for (int i = 0; i < list.length; i++) {
+                taskList.add(list[i]);
+            }
+            return taskList;
         }
-        return taskList;
+        return new ArrayList<String>();
     }
 
     public List<Date> getReminderDateList() {
@@ -266,6 +269,10 @@ public class Goal {
         goalNotes += note + "\r";
     }
 
+    public void addTask(String task) {
+        goalDescription += "0" + task + "\n";
+    }
+
     public void setImportance(int imp) {
         goal_importance = imp;
     }
@@ -293,6 +300,10 @@ public class Goal {
 
     public void deleteNote(String note) {
         goalNotes = goalNotes.replace(note+"\r","");
+    }
+
+    public void deleteTask(String task) {
+        goalDescription = goalDescription.replace(task+"\n","");
     }
 
     public void setCompletedDate(long input) {
@@ -347,21 +358,23 @@ public class Goal {
         int current = 0;
         int location = 0;
         for(String string : list) {
-            boolean incomplete = (string.charAt(0)=='0');
-            if(strikethrough) {
-                string = string.replaceFirst("[0-1]+", "");
+            if (string.length() > 0) {
+                boolean incomplete = (string.charAt(0) == '0');
+                if (strikethrough) {
+                    string = string.replaceFirst("[0-1]+", "");
+                }
+                builder = builder.append(string);
+                if (bullets) {
+                    builder.setSpan(new BulletSpan(15), current, current + string.length(), 0);
+                }
+                if (!incomplete && strikethrough) {
+                    builder.setSpan(new StrikethroughSpan(), current, current + string.length(), 0);
+                }
+                if (newline) {
+                    builder.append("\n");
+                }
+                current += newline ? string.length() + 1 : string.length();
             }
-            builder = builder.append(string);
-            if(bullets) {
-                builder.setSpan(new BulletSpan(15), current, current + string.length(), 0);
-            }
-            if(!incomplete && strikethrough) {
-                builder.setSpan(new StrikethroughSpan(), current, current+string.length(), 0);
-            }
-            if(newline) {
-                builder.append("\n");
-            }
-            current += newline ? string.length() + 1 : string.length();
         }
         return builder;
     }

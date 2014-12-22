@@ -98,20 +98,21 @@
         android:layout_width="match_parent"
         android:fontFamily="sans-serif-light"
         android:layout_height="wrap_content"
-        android:inputType="textCapSentences"
-        android:hint="Title"
+        android:inputType="textCapWords"
+        android:hint="Goal title"
         android:layout_marginTop="25dp"
         android:gravity="center"/>
 
     <EditText
         android:id="@+id/txt_goal_description"
+        android:imeOptions="actionNext"
+        android:inputType="textCapSentences"
         android:layout_below="@+id/txt_goal_title"
         android:fontFamily="sans-serif-light"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
-        android:clickable="true"
-        android:hint="Description"
+        android:hint="Goal objective(s)"
         android:gravity="center"/>
 
 </RelativeLayout>

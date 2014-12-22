@@ -1,16 +1,10 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/listviewselector"
     android:paddingTop="16dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:fab="http://schemas.android.com/apk/res-auto">
 
     <TextView
         android:id="@+id/txtview_goal_title"
@@ -43,13 +37,19 @@
             android:src="@drawable/decollapse"/>
         <TextView
             android:id="@+id/txtview_tasks_description"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:textColor="@color/accent"
             android:layout_gravity="center_vertical"
             android:textSize="20sp"
             android:text="Tasks"/>
+        <ImageButton
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:background="@drawable/add_button_selector"
+            android:layout_marginLeft="8dp"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/btn_add_task_id"/>
     </LinearLayout>
 
     <ScrollView
@@ -148,28 +148,23 @@
             android:orientation="vertical"/>
     </ScrollView>
 
-</LinearLayout>
-
     <LinearLayout
+        android:id="@+id/ll_for_the_times"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="140dp"
-        android:layout_above="@+id/rl_for_the_buttons"
-        android:paddingBottom="5dp"
+        android:layout_gravity="bottom"
         android:orientation="horizontal">
         <TextView
             android:id="@+id/txtview_start_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_weight="1"
             android:textSize="18sp"/>
         <TextView
             android:id="@+id/txtview_end_time"
             android:layout_width="match_parent"
             android:gravity="center"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:textSize="18sp"/>
     </LinearLayout>
 
@@ -177,7 +172,7 @@
         android:id="@+id/rl_for_the_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_gravity="center_horizontal|bottom"
         android:layout_margin="16dp"
         android:orientation="horizontal">
 
@@ -207,4 +202,4 @@
 
     </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>

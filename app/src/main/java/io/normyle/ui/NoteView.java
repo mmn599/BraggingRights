@@ -67,39 +67,4 @@ public class NoteView extends FrameLayout {
         return noteString;
     }
 
-    //deletes the view after the animation is done
-    public static class NoteAnimatorListener implements Animator.AnimatorListener {
-
-        LinearLayout ll;
-        View oldView;
-
-        public NoteAnimatorListener(LinearLayout ll, View oldView,
-                                    Activity activity) {
-            super();
-            this.ll = ll;
-            this.oldView = oldView;
-        }
-
-        @Override
-        public void onAnimationStart(Animator animation) {
-
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            ll.removeView(oldView);
-        }
-
-        @Override
-        public void onAnimationCancel(Animator animation) {
-
-        }
-
-        @Override
-        public void onAnimationRepeat(Animator animation) {
-
-        }
-    }
-
-
 }

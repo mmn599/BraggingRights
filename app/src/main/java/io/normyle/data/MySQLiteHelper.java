@@ -205,6 +205,18 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         new UpdateGoalTask().execute(new MySQLiteHelper(context),g);
     }
 
+    public static void updateGoal(Context context, Goal g) {
+        MySQLiteHelper db = new MySQLiteHelper(context);
+        db.updateGoal(g);
+        db.close();
+    }
+
+    public static void deleteGoal(Context context, Goal g) {
+        MySQLiteHelper db = new MySQLiteHelper(context);
+        db.deleteGoal(g);
+        db.close();
+    }
+
     private static class UpdateGoalTask extends AsyncTask<Object, Integer, Integer> {
         protected Integer doInBackground(Object... objects) {
             MySQLiteHelper db = (MySQLiteHelper) objects[0];

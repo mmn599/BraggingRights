@@ -94,10 +94,9 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 }
             }
         }
-
         // Add the fragment to the 'fragment_container' FrameLayout
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container,initialFragment).commit();
+                .replace(R.id.fragment_container,initialFragment).commit();
     }
 
     @Override
@@ -137,25 +136,25 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         //present
         if(position==0) {
             setTitle("Present");
-            PresentFragment newFragment = new PresentFragment();
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, newFragment);
-            transaction.commit();
+            updateFragment(new PresentFragment());
         }
         //past
         else if(position==1) {
             setTitle("Past");
-            PastFragment newFragment = new PastFragment();
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, newFragment);
-            transaction.commit();
+            updateFragment(new PastFragment());
         }
         //personhood
         else if(position==2) {
             setTitle("Personhood");
-            actionBar.setIcon(R.drawable.ic_launcher);
+            updateFragment(new PersonhoodFragment());
         }
         drawerLayout.closeDrawers();
+    }
+
+    private void updateFragment(Fragment newFragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, newFragment);
+        transaction.commit();
     }
 
 }

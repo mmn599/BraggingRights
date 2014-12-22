@@ -36,13 +36,10 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
         {
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
-
             holder = new WeatherHolder();
             holder.imgIcon = (ImageView)row.findViewById(R.id.imgview_goal_row_image);
             holder.txtTitle = (TextView)row.findViewById(R.id.txtview_goal_row_title);
             holder.txtDescription = (TextView) row.findViewById(R.id.txtview_goal_row_description);
-
-
             row.setTag(holder);
         }
         else
