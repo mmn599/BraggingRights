@@ -30,8 +30,11 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String KEY_DATE = "Date";
     private static final String KEY_COMPLETE_DATE = "EndDate";
     private static final String KEY_REMINDER_STRING = "ReminderDates";
+    private static final String KEY_REMINDER_NOTES = "ReminderNotes";
 
-    private static final String[] COLUMNS = {KEY_ID,KEY_TITLE,KEY_DESCRIPTION,KEY_TYPE,KEY_TIME,KEY_IMPORTANCE,KEY_COMPLETE,KEY_NOTES,KEY_DATE,KEY_COMPLETE_DATE, KEY_REMINDER_STRING};
+    private static final String[] COLUMNS = {KEY_ID,KEY_TITLE,KEY_DESCRIPTION,KEY_TYPE,
+            KEY_TIME,KEY_IMPORTANCE,KEY_COMPLETE,KEY_NOTES,
+            KEY_DATE,KEY_COMPLETE_DATE, KEY_REMINDER_STRING, KEY_REMINDER_NOTES};
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -51,7 +54,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 KEY_NOTES+" TEXT,"+
                 KEY_DATE+" INTEGER,"+
                 KEY_COMPLETE_DATE+" INTEGER,"+
-                KEY_REMINDER_STRING +" TEXT"+")";
+                KEY_REMINDER_STRING +" TEXT,"+
+                KEY_REMINDER_NOTES+" TEXT"+")";
         // create goals table
         db.execSQL(CREATE_GOALS_TABLE);
 
@@ -82,6 +86,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_DATE, goal.getStartDateLong());
         values.put(KEY_COMPLETE_DATE, goal.getCompletedDateLong());
         values.put(KEY_REMINDER_STRING, goal.getReminderString());
+        values.put(KEY_REMINDER_NOTES, goal.getReminderNotesString());
         // 3. insert
         db.insert(TABLE_GOALS, // table
                 null, //nullColumnHack
@@ -123,6 +128,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         goal.setStartDate(Long.parseLong(cursor.getString(8)));
         goal.setCompletedDate(Long.parseLong(cursor.getString(9)));
         goal.setReminderString(cursor.getString(10));
+        goal.setReminderNotesString(cursor.getString(11));
         //log
         Log.d("getBook("+id+")", goal.toString());
 
@@ -151,6 +157,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         cv.put(KEY_DATE, g.getStartDateLong());
         cv.put(KEY_COMPLETE_DATE, g.getCompletedDateLong());
         cv.put(KEY_REMINDER_STRING, g.getReminderString());
+        cv.put(KEY_REMINDER_NOTES, g.getReminderNotesString());
         this.getWritableDatabase().update(TABLE_GOALS, cv, KEY_ID+" "+"="+String.valueOf(g.getId()), null);
     }
 
@@ -178,6 +185,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 goal.setStartDate(Long.parseLong(cursor.getString(8)));
                 goal.setCompletedDate(Long.parseLong(cursor.getString(9)));
                 goal.setReminderString(cursor.getString(10));
+                goal.setReminderNotesString(cursor.getString(11));
                 // Adding contact to list
                 goalList.add(goal);
             } while (cursor.moveToNext());

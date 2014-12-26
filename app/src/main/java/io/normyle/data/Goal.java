@@ -14,8 +14,7 @@ public class Goal {
 
 	/*
 	 * TODO
-	 * implements goalNotes functionality
-	 * maybe MAKE SERIALIZABLE
+	 * the whole reminders+reminderNotes system is complete crap and needs to be reworked
 	 */
 
     private String goalTitle;
@@ -29,6 +28,7 @@ public class Goal {
     private int complete;
     private String goalNotes;
     private String goalReminderString;
+    private String goalReminderNotesString;
 
     public static final SimpleDateFormat dateFormatForReminders =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -67,6 +67,7 @@ public class Goal {
         this.startDate = new Date(); //sets startDate to current time
         this.completeDate = new Date();
         this.goalReminderString = "";
+        this.goalReminderNotesString = "";
     }
 
     /**
@@ -140,6 +141,21 @@ public class Goal {
      */
     public long getCompletedDateLong() {
         return completeDate.getTime();
+    }
+
+    public String getReminderNotesString() {
+        return goalReminderNotesString;
+    }
+
+    public List<String> getReminderNotes() {
+        List<String> reminderNotes = new ArrayList<String>();
+        if(goalReminderNotesString.length()>0) {
+            String[] reminderNotesArray = goalReminderNotesString.split("\r");
+            for(int i=0;i<reminderNotesArray.length;i++) {
+                reminderNotes.add(reminderNotesArray[i]);
+            }
+        }
+        return reminderNotes;
     }
 
     /**
@@ -231,10 +247,11 @@ public class Goal {
         return list;
     }
 
-    public String addReminderDate(Date date) {
+    public String addReminderDate(Date date, String note) {
         String dateForInsert = dateFormatForReminders.format(date);
         dateForInsert += "\n";
         goalReminderString += dateForInsert;
+        goalReminderNotesString += note + "\r";
         return dateForInsert.replace("\n","");
     }
 
@@ -281,6 +298,10 @@ public class Goal {
         goalNotes = input;
     }
 
+    public void setReminderNotesString(String input) {
+        goalReminderNotesString = input;
+    }
+
     public void setStartDate(long input) {
         startDate = new Date(input);
     }
@@ -315,19 +336,29 @@ public class Goal {
     }
 
     public void removeOldReminders(Date currentDate) {
-        String newReminderString = "";
         List<Date> reminders = getReminderDateList();
         for(Date date : reminders) {
-            if(date.after(currentDate)) {
-                String dateForInsert = dateFormatForReminders.format(date);
-                dateForInsert += "\n";
-                newReminderString += dateForInsert;
+            if(date.before(currentDate)) {
+                deleteReminder(dateFormatForReminders.format(date));
             }
         }
-        goalReminderString = newReminderString;
     }
 
     public void deleteReminder(String string) {
+        List<String> remindersList = getRemindersAsList();
+        int i=0;
+        int index = -1;
+        for(String rem : remindersList) {
+            if(string.replace("\n","").equals(rem)) {
+                index = i;
+            }
+            i++;
+        }
+        if(index!=-1) {
+            String[] notesArray = goalReminderNotesString.split("\r");
+            String toDelete = notesArray[index];
+            goalReminderNotesString.replace(toDelete+"\r","");
+        }
         goalReminderString = goalReminderString.replace(string,"");
     }
 
@@ -388,6 +419,23 @@ public class Goal {
         List<String> singleTask = new ArrayList<String>();
         singleTask.add(task);
         return createSpannableString(singleTask, true, false, strikethrough);
+    }
+
+    public static class OneTimeReminder {
+
+        public Date date;
+        public String dateString;
+        public String note;
+
+        public OneTimeReminder() {
+
+        }
+
+        public OneTimeReminder(Date date, String dateString, String note) {
+            this.date = date;
+            this.dateString = dateString;
+            this.note = note;
+        }
     }
 
 

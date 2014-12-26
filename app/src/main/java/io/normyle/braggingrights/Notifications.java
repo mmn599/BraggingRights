@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import java.util.Calendar;
 
+import io.normyle.data.Goal;
+
 /**
  * Created by MatthewNew on 12/20/2014.
  */
@@ -48,17 +50,18 @@ public class Notifications {
 
     }
 
-    public static void setOneTimeAlarm(Context context, Calendar calendar) {
+    public static void setOneTimeAlarm(Context context, Calendar calendar, String title, String note) {
 
         AlarmManager alarmMgr;
         PendingIntent alarmIntent;
 
         alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.putExtra(AlarmReceiver.EXTRA_TITLE, title);
+        intent.putExtra(AlarmReceiver.EXTRA_NOTE, note);
         alarmIntent = PendingIntent.getBroadcast(context, id++, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmMgr.set(AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(), alarmIntent);
-
     }
 
 }

@@ -1,13 +1,17 @@
 package io.normyle.braggingrights;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.format.DateFormat;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -297,15 +301,23 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         }
     }
 
-    private void addNewReminderDate(Calendar calendar) {
+    private void addNewReminderDate(String note) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month_of_year);
+        calendar.set(Calendar.DAY_OF_MONTH, day_of_month);
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND,0);
         calendar.set(Calendar.MILLISECOND,0);
         Date newReminderDate = new Date();
         newReminderDate.setTime(calendar.getTimeInMillis());
-        String newReminder = goal.addReminderDate(newReminderDate);
-        MySQLiteHelper.updateGoal(this, goal);
-        Notifications.setOneTimeAlarm(this,calendar);
-        llReminders.addView(new ReminderView(this,newReminder,this));
+        String newReminder = goal.addReminderDate(newReminderDate, note);
+        MySQLiteHelper db = new MySQLiteHelper(this);
+        db.updateGoal(goal);
+        db.close();
+        Notifications.setOneTimeAlarm(this, calendar, goal.getTitle(), note);
+        llReminders.addView(new ReminderView(this, newReminder, this));
     }
 
 
@@ -335,6 +347,8 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
     private int year;
     private int month_of_year;
     private int day_of_month;
+    private int hourOfDay;
+    private int minute;
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -347,17 +361,27 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month_of_year);
-        calendar.set(Calendar.DAY_OF_MONTH, day_of_month);
-        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-        calendar.set(Calendar.MINUTE, minute);
-        addNewReminderDate(calendar);
+        this.hourOfDay = hourOfDay;
+        this.minute = minute;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter a note for your reminder: ");
+        // Set up the input
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String note = input.getText().toString();
+                addNewReminderDate(note);
+            }
+        });
+        builder.show();
     }
 
     public static class TimePickerFragment extends DialogFragment {
-
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {

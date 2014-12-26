@@ -21,10 +21,17 @@ public class BootupReceiver extends BroadcastReceiver {
 
         List<Goal> goals = db.getAllGoals();
         for(Goal goal : goals) {
+            int i = 0;
             for(Date date : goal.getReminderDateList()) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(date);
-                Notifications.setOneTimeAlarm(context,calendar);
+                String note = "";
+                try {
+                    note = goal.getReminderNotes().get(i);
+                } catch (Exception e) {
+                    note = "Do it!";
+                }
+                Notifications.setOneTimeAlarm(context,calendar,goal.getTitle(),note);
                 Toast.makeText(context,calendar.toString(),Toast.LENGTH_LONG).show();
             }
         }
