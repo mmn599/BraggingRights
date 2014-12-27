@@ -32,7 +32,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setSmallIcon(R.drawable.tree)
                         .setContentTitle(title)
                         .setContentText(note);
         int mNotificationId = 001;

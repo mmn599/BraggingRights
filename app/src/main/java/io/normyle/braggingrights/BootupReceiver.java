@@ -33,6 +33,7 @@ public class BootupReceiver extends BroadcastReceiver {
                 }
                 Notifications.setOneTimeAlarm(context,calendar,goal.getTitle(),note);
                 Toast.makeText(context,calendar.toString(),Toast.LENGTH_LONG).show();
+                i++;
             }
         }
 

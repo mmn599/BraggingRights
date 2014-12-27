@@ -65,7 +65,6 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
 
         db = new MySQLiteHelper(activity);
         List<Goal> goals = db.getAllGoals();
-        db.close();
 
         List<Goal> presentGoals = new ArrayList<Goal>();
         for(Goal goal : goals) {

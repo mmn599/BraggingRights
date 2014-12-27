@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -46,6 +47,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
     TextView txtTitle;
     TextView txtStartTime;
     TextView txtEndTime;
+    TextView txtDaysInProgress;
     ImageView imgIcon;
     Goal goal;
     LinearLayout llTasks;
@@ -98,9 +100,9 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         goal.removeOldReminders(new Date());
         db.updateGoal(goal);
         llReminders = (LinearLayout) findViewById(R.id.ll_reminders);
-        List<String> reminderList = goal.getRemindersAsList();
-        for(String reminder : reminderList) {
-            ReminderView reminderView = new ReminderView(this,reminder,this);
+        List<Date> reminderList = goal.getReminderDateList();
+        for(Date date : reminderList) {
+            ReminderView reminderView = new ReminderView(this,date,this);
             llReminders.addView(reminderView);
         }
         findViewById(R.id.btn_add_reminder_id).setOnClickListener(this);
@@ -132,6 +134,18 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         else {
             txtEndTime.setVisibility(View.GONE);
         }
+
+        txtDaysInProgress = (TextView) findViewById(R.id.txt_days_in_progress);
+        Calendar today = Calendar.getInstance();
+        Calendar start = Calendar.getInstance();
+        start.setTime(goal.getStartDate());
+        int days = today.get(Calendar.DAY_OF_YEAR) - start.get(Calendar.DAY_OF_YEAR)
+        + (today.get(Calendar.YEAR) - start.get(Calendar.YEAR)) * 365;
+        String inProgress = days + "\nDays";
+        if(days<2) {
+            inProgress = inProgress.replace("Days","Day");
+        }
+        txtDaysInProgress.setText(inProgress);
 
         collapseNotes = (ImageButton) findViewById(R.id.btn_collapse_notes);
         collapseTasks = (ImageButton) findViewById(R.id.btn_collapse_tasks);
@@ -272,7 +286,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 goal.deleteTask(taskView.getTaskString());
                 //TODO: debugging to ensure ^^this^^ will always work even if task ahve been changed
                 MySQLiteHelper.updateGoal(this, goal);
-                taskView.completeTaskAnimation(new Animations.ViewTerminatorListener(llReminders,taskView,this));
+                taskView.completeTaskAnimation(new Animations.ViewTerminatorListener(llTasks,taskView,this));
             }
             //User wants to delete the goal
             else {
@@ -312,12 +326,11 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         calendar.set(Calendar.MILLISECOND,0);
         Date newReminderDate = new Date();
         newReminderDate.setTime(calendar.getTimeInMillis());
-        String newReminder = goal.addReminderDate(newReminderDate, note);
         MySQLiteHelper db = new MySQLiteHelper(this);
         db.updateGoal(goal);
         db.close();
         Notifications.setOneTimeAlarm(this, calendar, goal.getTitle(), note);
-        llReminders.addView(new ReminderView(this, newReminder, this));
+        llReminders.addView(new ReminderView(this, newReminderDate, this));
     }
 
 

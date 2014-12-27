@@ -127,6 +127,10 @@ public class Goal {
         return startDate.getTime();
     }
 
+    public Date getStartDate() {
+        return startDate;
+    }
+
     /**
      * Returns completed date as a pretty string.
      * @return
@@ -251,7 +255,9 @@ public class Goal {
         String dateForInsert = dateFormatForReminders.format(date);
         dateForInsert += "\n";
         goalReminderString += dateForInsert;
-        goalReminderNotesString += note + "\r";
+        if(note.length()>0) {
+            goalReminderNotesString += note + "\r";
+        }
         return dateForInsert.replace("\n","");
     }
 
@@ -357,9 +363,9 @@ public class Goal {
         if(index!=-1) {
             String[] notesArray = goalReminderNotesString.split("\r");
             String toDelete = notesArray[index];
-            goalReminderNotesString.replace(toDelete+"\r","");
+            goalReminderNotesString = goalReminderNotesString.replace(toDelete+"\r","");
         }
-        goalReminderString = goalReminderString.replace(string,"");
+        goalReminderString = goalReminderString.replace(string+"\n","");
     }
 
     public String toString() {
@@ -419,23 +425,6 @@ public class Goal {
         List<String> singleTask = new ArrayList<String>();
         singleTask.add(task);
         return createSpannableString(singleTask, true, false, strikethrough);
-    }
-
-    public static class OneTimeReminder {
-
-        public Date date;
-        public String dateString;
-        public String note;
-
-        public OneTimeReminder() {
-
-        }
-
-        public OneTimeReminder(Date date, String dateString, String note) {
-            this.date = date;
-            this.dateString = dateString;
-            this.note = note;
-        }
     }
 
 
