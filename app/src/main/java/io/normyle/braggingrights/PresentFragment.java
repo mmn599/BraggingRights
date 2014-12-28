@@ -52,6 +52,7 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
         // Inflate the layout for this fragment
 
         view = inflater.inflate(R.layout.fragment_present, container, false);
+
         return view;
     }
 

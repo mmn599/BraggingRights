@@ -1,5 +1,6 @@
 package io.normyle.braggingrights;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -9,12 +10,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.format.DateFormat;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -24,6 +28,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -69,6 +74,8 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_goal_view);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         int goal_id = getIntent().getIntExtra("GOAL_ID",0);
         MySQLiteHelper db = new MySQLiteHelper(this);
@@ -128,8 +135,16 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
 
         txtStartTime.setText("Started on: \n" + goal.getStartDateString());
         if(goal.getComplete()==Goal.COMPLETE) {
-            txtEndTime.setText("Completed on: \n"+goal.getCompletedDateString());
+            txtEndTime.setText("Completed on: \n" + goal.getCompletedDateString());
             btnComplete.setVisibility(View.GONE);
+            btnEdit.setVisibility(View.GONE);
+            btnDelete.setVisibility(View.VISIBLE);
+            RelativeLayout.LayoutParams layoutParams =
+                    (RelativeLayout.LayoutParams) btnDelete.getLayoutParams();
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+            btnDelete.setLayoutParams(layoutParams);
+            txtEndTime.setVisibility(View.VISIBLE);
         }
         else {
             txtEndTime.setVisibility(View.GONE);
@@ -139,7 +154,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         Calendar today = Calendar.getInstance();
         Calendar start = Calendar.getInstance();
         start.setTime(goal.getStartDate());
-        int days = today.get(Calendar.DAY_OF_YEAR) - start.get(Calendar.DAY_OF_YEAR)
+        int days = 1 + today.get(Calendar.DAY_OF_YEAR) - start.get(Calendar.DAY_OF_YEAR)
         + (today.get(Calendar.YEAR) - start.get(Calendar.YEAR)) * 365;
         String inProgress = days + "\nDays";
         if(days<2) {
@@ -158,6 +173,17 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         collapsed_reminders = false;
 
         db.close();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -195,7 +221,9 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
             //the user wants to complete the goal!
             else {
                 goal.setComplete(Goal.COMPLETE);
-                MySQLiteHelper.updateGoal(this,goal);
+                MySQLiteHelper db = new MySQLiteHelper(this);
+                db.updateGoal(goal);
+                db.close();
                 Toast.makeText(this,"Goal Complete!",Toast.LENGTH_LONG).show();
                 Intent mainActivity = new Intent(this,MainActivity.class);
                 mainActivity.putExtra("WHICH_FRAGMENT",MainActivity.PASTFRAGMENT);

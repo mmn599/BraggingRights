@@ -19,15 +19,13 @@
         <activity
             android:name="io.normyle.braggingrights.CreateGoalActivity"
             android:label="@string/title_activity_create_goal"
+            android:parentActivityName="io.normyle.braggingrights.MainActivity"
             android:windowSoftInputMode="adjustResize" >
         </activity>
         <activity
             android:name="io.normyle.braggingrights.GoalViewActivity"
+            android:parentActivityName="io.normyle.braggingrights.MainActivity"
             android:windowSoftInputMode="adjustPan" >
-        </activity>
-        <activity
-            android:name="io.normyle.braggingrights.AlarmReceiverScreen"
-            android:label="@string/title_activity_alarm_receiver" >
         </activity>
 
         <!-- TODO: programatically enable this when at least one alarm is set -->

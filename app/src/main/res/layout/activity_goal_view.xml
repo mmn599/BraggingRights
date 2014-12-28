@@ -1,7 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/listviewselector"
     android:paddingTop="16dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
@@ -15,6 +14,7 @@
 
     <TextView
         android:id="@+id/txtview_goal_title"
+        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/accent"
@@ -61,6 +61,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:textStyle="bold"
             android:textColor="@color/accent"
             android:layout_gravity="center_vertical"
             android:textSize="20sp"
@@ -106,6 +107,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:textStyle="bold"
             android:textColor="@color/accent"
             android:animateLayoutChanges="true"
             android:textSize="20sp"
@@ -150,6 +152,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:textColor="@color/accent"
+            android:textStyle="bold"
             android:layout_gravity="center_vertical"
             android:textSize="20sp"
             android:text="Notes"/>
@@ -192,12 +195,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_weight="1"
             android:textSize="18sp"/>
         <TextView
             android:id="@+id/txtview_end_time"
             android:layout_width="match_parent"
             android:gravity="center"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
             android:textSize="18sp"/>
     </LinearLayout>
 
