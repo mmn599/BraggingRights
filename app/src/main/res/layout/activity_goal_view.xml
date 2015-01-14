@@ -217,19 +217,11 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btn_edit_action_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:text="Edit!"
-            android:background="@drawable/add_button_selector_color"/>
-
-        <Button
             android:id="@+id/btn_complete_action_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="Complete!"
+            android:layout_alignParentLeft="true"
+            android:text="Complete Goal"
             android:background="@drawable/add_button_selector_color"/>
 
         <Button
@@ -237,7 +229,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:text="Delete!"
+            android:text="Delete Goal"
             android:background="@drawable/add_button_selector_color"/>
 
     </RelativeLayout>

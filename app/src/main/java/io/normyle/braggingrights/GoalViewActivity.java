@@ -1,6 +1,5 @@
 package io.normyle.braggingrights;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -15,7 +14,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.format.DateFormat;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -28,12 +26,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -59,16 +55,18 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
     LinearLayout llNotes;
     LinearLayout llReminders;
     Button btnComplete;
-    Button btnEdit;
     Button btnDelete;
     View oldViewSelected;
     LayoutInflater inflater;
     ImageButton collapseTasks;
     ImageButton collapseNotes;
     ImageButton collapseReminders;
+    Activity activity;
     boolean collapsed_tasks;
     boolean collapsed_notes;
     boolean collapsed_reminders;
+    boolean adding_note;
+    boolean adding_task;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +75,8 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        activity = this;
+
         int goal_id = getIntent().getIntExtra("GOAL_ID",0);
         MySQLiteHelper db = new MySQLiteHelper(this);
         goal = db.getGoal(goal_id);
@@ -84,8 +84,6 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         btnComplete = (Button) findViewById(R.id.btn_complete_action_button);
         btnComplete.setOnClickListener(this);
 
-        btnEdit = ((Button) findViewById(R.id.btn_edit_action_button));
-        btnEdit.setOnClickListener(this);
         btnDelete = ((Button) findViewById(R.id.btn_delete_action_button));
         btnDelete.setOnClickListener(this);
 
@@ -136,14 +134,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         txtStartTime.setText("Started on: \n" + goal.getStartDateString());
         if(goal.getComplete()==Goal.COMPLETE) {
             txtEndTime.setText("Completed on: \n" + goal.getCompletedDateString());
-            btnComplete.setVisibility(View.GONE);
-            btnEdit.setVisibility(View.GONE);
-            btnDelete.setVisibility(View.VISIBLE);
-            RelativeLayout.LayoutParams layoutParams =
-                    (RelativeLayout.LayoutParams) btnDelete.getLayoutParams();
-            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
-            btnDelete.setLayoutParams(layoutParams);
+            btnComplete.setText("Uncomplete Goal");
             txtEndTime.setVisibility(View.VISIBLE);
         }
         else {
@@ -198,8 +189,22 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
             }
             if(v==oldViewSelected) {
                 oldViewSelected = null;
+                btnComplete.setText("Complete Goal");
+                btnDelete.setText("Delete Goal");
             }
             else {
+                if(v instanceof TaskView) {
+                    btnComplete.setText("Complete Task");
+                    btnDelete.setText("Delete Task");
+                }
+                else if(v instanceof NoteView) {
+                    btnComplete.setText("Complete Note");
+                    btnDelete.setText("Delete Note");
+                }
+                else {
+                    btnComplete.setText("Complete Goal");
+                    btnDelete.setText("Delete Reminder");
+                }
                 v.setSelected(true);
                 oldViewSelected = v;
             }
@@ -217,32 +222,62 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                     (taskView).completeTaskAnimation(
                             new TaskView.TaskAnimatorListener(llTasks, taskView, newTaskString, this, this));
                 }
+                btnComplete.setText("Complete Goal");
+                btnDelete.setText("Delete Goal");
             }
             //the user wants to complete the goal!
             else {
-                goal.setComplete(Goal.COMPLETE);
-                MySQLiteHelper db = new MySQLiteHelper(this);
-                db.updateGoal(goal);
-                db.close();
-                Toast.makeText(this,"Goal Complete!",Toast.LENGTH_LONG).show();
-                Intent mainActivity = new Intent(this,MainActivity.class);
-                mainActivity.putExtra("WHICH_FRAGMENT",MainActivity.PASTFRAGMENT);
-                startActivity(mainActivity);
+                if(goal.getComplete()==Goal.INCOMPLETE) {
+                    goal.setComplete(Goal.COMPLETE);
+                    MySQLiteHelper db = new MySQLiteHelper(this);
+                    db.updateGoal(goal);
+                    db.close();
+                    Toast.makeText(this, "Goal Complete!", Toast.LENGTH_LONG).show();
+                    Intent mainActivity = new Intent(this, MainActivity.class);
+                    mainActivity.putExtra("WHICH_FRAGMENT", MainActivity.PASTGOALS);
+                    startActivity(mainActivity);
+                }
+                else {
+                    goal.setComplete(Goal.INCOMPLETE);
+                    MySQLiteHelper db = new MySQLiteHelper(this);
+                    db.updateGoal(goal);
+                    db.close();
+                    Toast.makeText(this, "Goal Uncompleted!", Toast.LENGTH_LONG).show();
+                    Intent mainActivity = new Intent(this, MainActivity.class);
+                    mainActivity.putExtra("WHICH_FRAGMENT", MainActivity.PRESENTGOALS);
+                    startActivity(mainActivity);
+                }
             }
         }
         else if(id==R.id.btn_add_task_id) {
-            View view = inflater.inflate(R.layout.txt_edit_goal_item,llTasks,true);
-            EditText editText = (EditText) view.findViewById(R.id.txt_edit_item_id);
-            editText.setTag("TASK");
-            editText.setOnEditorActionListener(this);
-            editText.setHint("New Task");
+            if(!adding_task) {
+                View view = inflater.inflate(R.layout.txt_edit_goal_item, llTasks, true);
+                EditText editText = (EditText) view.findViewById(R.id.txt_edit_item_id);
+                editText.setTag("TASK");
+                editText.setOnEditorActionListener(this);
+                editText.setHint("New Task");
+                editText.setFocusableInTouchMode(true);
+                editText.requestFocus();
+                final InputMethodManager inputMethodManager = (InputMethodManager) this
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+                adding_task = true;
+            }
         }
         else if(id==R.id.btn_add_note_id) {
-            View view = inflater.inflate(R.layout.txt_edit_goal_item,llNotes,true);
-            EditText editText = (EditText) view.findViewById(R.id.txt_edit_item_id);
-            editText.setTag("NOTE");
-            editText.setOnEditorActionListener(this);
-            editText.setHint("New Note");
+            if(!adding_note) {
+                View view = inflater.inflate(R.layout.txt_edit_goal_item, llNotes, true);
+                final EditText editText = (EditText) view.findViewById(R.id.txt_edit_item_id);
+                editText.setTag("NOTE");
+                editText.setOnEditorActionListener(this);
+                editText.setHint("New Note");
+                editText.setFocusableInTouchMode(true);
+                editText.requestFocus();
+                final InputMethodManager inputMethodManager = (InputMethodManager) this
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+                adding_note = true;
+            }
         }
         else if(id==R.id.btn_add_reminder_id) {
             DatePickerFragment newFragment = new DatePickerFragment();
@@ -284,9 +319,6 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 ((ImageButton)v).setImageResource(R.drawable.collapse);
             }
         }
-        else if(id==R.id.btn_edit_action_button) {
-
-        }
         else if(id==R.id.btn_delete_action_button) {
             //user wants to delete a note
             if(oldViewSelected instanceof NoteView) {
@@ -322,6 +354,9 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 Toast.makeText(this,"Deleted goal",Toast.LENGTH_LONG).show();
                 startActivity(new Intent(this,MainActivity.class));
             }
+
+            btnComplete.setText("Complete Goal");
+            btnDelete.setText("Delete Goal");
         }
     }
 
@@ -373,10 +408,12 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 if(tag instanceof String) {
                     if(tag.equals("TASK")) {
                         addNewTask(v.getText().toString(), v);
+                        adding_task = false;
                         return false;
                     }
                     else if(tag.equals("NOTE")) {
                         addNewNote(v.getText().toString(), v);
+                        adding_note = false;
                         return true;
                     }
                 }

@@ -17,8 +17,6 @@ import android.widget.ListView;
 
 import io.matthew.braggingrights.R;
 import io.normyle.data.Constants;
-import io.normyle.data.Goal;
-import io.normyle.data.MySQLiteHelper;
 import io.normyle.ui.DrawerAdapter;
 
 
@@ -31,8 +29,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     CharSequence title;
     ActionBar actionBar;
 
-    public static final String PASTFRAGMENT = "PAST";
-    public static final String PRESENTFRAGMENT = "PRESENT";
+    boolean viewing_goals;
+
+    public static final String PASTGOALS = "PAST";
+    public static final String PRESENTGOALS = "PRESENT";
     public static final String PERSONHOODFRAGMENT = "PERSONHOOD";
 
     @Override
@@ -77,7 +77,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         // Create a new Fragment to be placed in the activity layout
+        viewing_goals = true;
         Fragment initialFragment = new PresentFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(PresentFragment.WHICH_GOALS,PRESENTGOALS);
+        initialFragment.setArguments(bundle);
         setTitle("Present");
         Intent callingIntent = getIntent();
         if(callingIntent!=null) {
@@ -85,11 +89,16 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             if(extras!=null) {
                 if (extras.containsKey("WHICH_FRAGMENT")) {
                     String s = getIntent().getExtras().getString("WHICH_FRAGMENT");
-                    if (s.equals(PASTFRAGMENT)) {
-                        initialFragment = new PastFragment();
+                    if (s.equals(PASTGOALS)) {
+                        initialFragment = new PresentFragment();
+                        bundle = new Bundle();
+                        bundle.putString(PresentFragment.WHICH_GOALS,PASTGOALS);
+                        initialFragment.setArguments(bundle);
                         setTitle("Past");
                     } else if (s.equals(PERSONHOODFRAGMENT)) {
-                        //TODO: add in personhood fragment
+                        initialFragment = new PersonhoodFragment();
+                        setTitle("Personhood");
+                        viewing_goals = false;
                     }
                 }
             }
@@ -134,17 +143,32 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         //present
-        if(position==0) {
-            setTitle("Present");
-            updateFragment(new PresentFragment());
-        }
-        //past
-        else if(position==1) {
-            setTitle("Past");
-            updateFragment(new PastFragment());
+        if(position==0 || position==1) {
+            Bundle bundle = new Bundle();
+            boolean display_present = false;
+            if(position==0) {
+                setTitle("Present");
+                bundle.putString(PresentFragment.WHICH_GOALS, PRESENTGOALS);
+                display_present = true;
+            }
+            else if(position==1) {
+                setTitle("Past");
+                bundle.putString(PresentFragment.WHICH_GOALS, PASTGOALS);
+                display_present = false;
+            }
+            if(viewing_goals) {
+                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                ((PresentFragment) fragment).displayGoals(display_present);
+            }
+            else {
+                PresentFragment newFragment = new PresentFragment();
+                newFragment.setArguments(bundle);
+                updateFragment(newFragment);
+            }
         }
         //personhood
         else if(position==2) {
+            viewing_goals = false;
             setTitle("Personhood");
             updateFragment(new PersonhoodFragment());
         }

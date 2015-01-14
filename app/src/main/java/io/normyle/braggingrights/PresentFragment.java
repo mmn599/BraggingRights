@@ -32,10 +32,14 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
 
     ListView goalsListView;
     FloatingActionButton fab;
-    MySQLiteHelper db;
     HashMap<String,Integer> goalsMap;
+    List<Goal> goalsToDisplay;
     Activity activity;
+    GoalAdapter goalAdapter;
     View view;
+    boolean display_present;
+
+    public static final String WHICH_GOALS = "WHICH_GOALS";
 
     public PresentFragment() {
     }
@@ -43,7 +47,14 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        String whichGoals = (String) getArguments().get(WHICH_GOALS);
+        if(whichGoals.equals(MainActivity.PASTGOALS)) {
+            display_present = false;
+        }
+        else {
+            display_present = true;
+        }
+        goalsToDisplay = new ArrayList<Goal>();
     }
 
     @Override
@@ -53,45 +64,66 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
 
         view = inflater.inflate(R.layout.fragment_present, container, false);
 
+        fab = (FloatingActionButton) view.findViewById(R.id.btn_action_button);
+        fab.setOnClickListener(this);
+        goalsMap = new HashMap<String,Integer>();
+
+        MySQLiteHelper db = new MySQLiteHelper(activity);
+        List<Goal> goals = db.getAllGoals();
+        db.close();
+
+        displayGoals(display_present);
+
+        goalsListView = (ListView)view.findViewById(R.id.listview_goals);
+        goalsListView.setAdapter(goalAdapter);
+        goalsListView.setOnItemClickListener(this);
+
+        for(Goal goal : goals) {
+            goalsMap.put(goal.getTitle(),goal.getId());
+        }
+
+        fab.attachToListView(goalsListView);
+
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        fab = (FloatingActionButton) view.findViewById(R.id.btn_action_button);
-        fab.setOnClickListener(this);
-        goalsMap = new HashMap<String,Integer>();
-
-        db = new MySQLiteHelper(activity);
-        List<Goal> goals = db.getAllGoals();
-
-        List<Goal> presentGoals = new ArrayList<Goal>();
-        for(Goal goal : goals) {
-            if(goal.getComplete()==Goal.INCOMPLETE) {
-                presentGoals.add(goal);
-            }
-        }
-
-        Goal[] goalsArray = presentGoals.toArray(new Goal[presentGoals.size()]);
-        GoalAdapter goalsAdapter = new GoalAdapter(activity,
-                R.layout.goal_listview_row, goalsArray);
-
-        goalsListView = (ListView)view.findViewById(R.id.listview_goals);
-        goalsListView.setAdapter(goalsAdapter);
-        goalsListView.setOnItemClickListener(this);
-
-        //TODO: may cause performance issues
-        for(Goal goal : goals) {
-            goalsMap.put(goal.getTitle(),goal.getId());
-        }
+        //TODO: check if shit has changed
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         this.activity = activity;
+    }
+
+    public void displayGoals(boolean display_present) {
+        this.display_present = display_present;
+        MySQLiteHelper db = new MySQLiteHelper(activity);
+        List<Goal> goals = db.getAllGoals();
+        goalsToDisplay.clear();
+        for(Goal goal : goals) {
+            if(goal.getComplete()==Goal.INCOMPLETE && display_present) {
+                goalsToDisplay.add(goal);
+            }
+            else if(goal.getComplete()==Goal.COMPLETE && !display_present) {
+                goalsToDisplay.add(goal);
+            }
+        }
+        if(goalAdapter==null) {
+            goalAdapter = new GoalAdapter(activity,
+                    R.layout.goal_listview_row, goalsToDisplay);
+        }
+        else {
+            goalsListView.post(new Runnable() {
+                @Override
+                public void run() {
+                    goalAdapter.notifyDataSetChanged();
+                }
+            });
+        }
     }
 
     @Override

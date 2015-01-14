@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.matthew.braggingrights.R;
@@ -18,9 +19,9 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
 
     Context context;
     int layoutResourceId;
-    Goal data[] = null;
+    List<Goal> data = null;
 
-    public GoalAdapter(Context context, int layoutResourceId, Goal[] data) {
+    public GoalAdapter(Context context, int layoutResourceId, List<Goal> data) {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
@@ -47,7 +48,7 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
             holder = (WeatherHolder)row.getTag();
         }
 
-        Goal goal = data[position];
+        Goal goal = data.get(position);
         holder.txtTitle.setText(goal.getTitle());
         if(goal.getType().equals("Mind")) {
             holder.imgIcon.setImageResource(R.drawable.mind_icon);

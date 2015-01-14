@@ -19,27 +19,6 @@ public class Notifications {
 
     public static int id = 0;
 
-    //TODO: IMPORTANT: implement repeating alarms
-
-    public static class AlarmSpecs {
-
-        private boolean repeating;
-
-        //if repeating is true
-        private boolean[] days = new boolean[7];
-
-        private Calendar calendar;
-
-        public AlarmSpecs(Calendar calendar, boolean repeating) {
-            this.repeating = repeating;
-            this.calendar = calendar;
-        }
-
-        public Calendar getCalendar() {
-            return calendar;
-        }
-    }
-
     /**
      * Days is a boolean array of size 7 to indicate which days to repeat
      * @param days
@@ -62,6 +41,32 @@ public class Notifications {
         alarmIntent = PendingIntent.getBroadcast(context, id++, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmMgr.set(AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(), alarmIntent);
+    }
+
+    //days must be size 8
+    public static void setRepeatingAlarm(Context context, Calendar calendar, boolean[] days, String title, String note) {
+        AlarmManager alarmMgr;
+        PendingIntent alarmIntent;
+        alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.putExtra(AlarmReceiver.EXTRA_TITLE, title);
+        intent.putExtra(AlarmReceiver.EXTRA_NOTE, note);
+        alarmIntent = PendingIntent.getBroadcast(context, id++, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        for(int i=1;i<8;i++) {
+            if(days[i]) {
+                if(i>=Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
+                    calendar.set(Calendar.DAY_OF_WEEK,i);
+                    alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                            AlarmManager.INTERVAL_DAY * 7, alarmIntent);
+                }
+                else {
+                    calendar.add(Calendar.WEEK_OF_YEAR,1);
+                    calendar.set(Calendar.DAY_OF_WEEK,i);
+                    alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                            AlarmManager.INTERVAL_DAY * 7, alarmIntent);
+                }
+            }
+        }
     }
 
 }
