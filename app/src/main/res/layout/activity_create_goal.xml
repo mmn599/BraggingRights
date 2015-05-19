@@ -15,32 +15,9 @@
         android:orientation="horizontal"
         android:layout_height="wrap_content"
         android:focusable="true"
+        android:layout_marginBottom="20dp"
         android:focusableInTouchMode="true"
         android:gravity="center_horizontal">
-
-
-        <ImageButton
-            android:id="@+id/btn_mind"
-            android:layout_width="wrap_content"
-            android:layout_height="100dp"
-            android:src="@drawable/mind_selector"
-            android:background="@null"
-            android:layout_marginRight="60dp"/>
-
-        <ImageButton
-            android:id="@+id/btn_body"
-            android:layout_width="wrap_content"
-            android:layout_height="100dp"
-            android:src="@drawable/body_selector"
-            android:background="@null"
-            android:layout_marginRight="60dp"/>
-
-        <ImageButton
-            android:id="@+id/btn_spirit"
-            android:layout_width="wrap_content"
-            android:layout_height="100dp"
-            android:background="@null"
-            android:src="@drawable/spirit_selector"/>
 
         <requestFocus />
 

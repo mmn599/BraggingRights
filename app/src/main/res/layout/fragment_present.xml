@@ -4,11 +4,24 @@
     android:layout_height="match_parent"
      tools:context=".MainActivity">
 
+    <TextView
+        android:id="@+id/txtview_goals_intro"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="40dp"
+        android:gravity="center_horizontal"
+        android:textColor="@color/accent"/>
+
     <ListView
         android:id="@+id/listview_goals"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@null"/>
+
+    <com.nhaarman.supertooltips.ToolTipRelativeLayout
+        android:id="@+id/activity_main_tooltipRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <com.melnykov.fab.FloatingActionButton
         android:id="@+id/btn_action_button"

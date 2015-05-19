@@ -9,7 +9,6 @@
         android:icon="@drawable/tree"
         android:label="@string/app_name"
         android:theme="@style/MyAppTheme" >
-
         <activity android:name="io.normyle.braggingrights.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,7 +19,7 @@
             android:name="io.normyle.braggingrights.CreateGoalActivity"
             android:label="@string/title_activity_create_goal"
             android:parentActivityName="io.normyle.braggingrights.MainActivity"
-            android:windowSoftInputMode="adjustResize" >
+            android:windowSoftInputMode="adjustPan" >
         </activity>
         <activity
             android:name="io.normyle.braggingrights.GoalViewActivity"

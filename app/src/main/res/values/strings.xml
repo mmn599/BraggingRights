@@ -11,5 +11,7 @@
     <string name="drawer_close">Drawer Close</string>
     <string name="title_activity_alarm_receiver">AlarmReceiver</string>
     <string name="title_activity_activity_alarm_receiver">ActivityAlarmReceiver</string>
+    <string name="title_activity_startup">Bragging Rights</string>
+    <string name="personhood_coming_soon">The Personhood feature allows you to keep track of your progress in things that are important to you.\n\nComing soon!</string>
 
 </resources>

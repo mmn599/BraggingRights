@@ -4,17 +4,23 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
+import com.nhaarman.supertooltips.ToolTip;
+import com.nhaarman.supertooltips.ToolTipRelativeLayout;
+import com.nhaarman.supertooltips.ToolTipView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,11 +43,22 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
     Activity activity;
     GoalAdapter goalAdapter;
     View view;
+    TextView txtviewIntro;
+    ToolTipRelativeLayout toolTipRelativeLayout;
+    ToolTipView toolTipView;
+
     boolean display_present;
+
 
     public static final String WHICH_GOALS = "WHICH_GOALS";
 
     public PresentFragment() {
+    }
+
+    public void removeTooltip() {
+        if(toolTipView!=null) {
+            toolTipView.remove();
+        }
     }
 
     @Override
@@ -64,6 +81,9 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
 
         view = inflater.inflate(R.layout.fragment_present, container, false);
 
+        txtviewIntro = (TextView) view.findViewById(R.id.txtview_goals_intro);
+        txtviewIntro.setTextColor(Color.GRAY);
+
         fab = (FloatingActionButton) view.findViewById(R.id.btn_action_button);
         fab.setOnClickListener(this);
         goalsMap = new HashMap<String,Integer>();
@@ -71,6 +91,9 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
         MySQLiteHelper db = new MySQLiteHelper(activity);
         List<Goal> goals = db.getAllGoals();
         db.close();
+
+        toolTipRelativeLayout = (ToolTipRelativeLayout) view.findViewById(R.id.activity_main_tooltipRelativeLayout);
+        toolTipRelativeLayout.setX(toolTipRelativeLayout.getX() - 15);
 
         displayGoals(display_present);
 
@@ -83,6 +106,8 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
         }
 
         fab.attachToListView(goalsListView);
+
+
 
         return view;
     }
@@ -123,6 +148,25 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
                     goalAdapter.notifyDataSetChanged();
                 }
             });
+        }
+        if(goals.size()==0) {
+            ToolTip toolTip = new ToolTip()
+                    .withColor(getResources().getColor(R.color.primary))
+                    .withShadow()
+                    .withAnimationType(ToolTip.AnimationType.FROM_TOP);
+            if(display_present) {
+                txtviewIntro.setText("You don't have any goals.");
+                toolTip.withText("Click here to add one!");
+            }
+            else {
+                txtviewIntro.setText("When you complete a goal, it will be displayed here.");
+                toolTip.withText("Press here to add a goal.");
+            }
+            toolTipView = toolTipRelativeLayout.showToolTipForView(toolTip, fab);
+            txtviewIntro.setVisibility(View.VISIBLE);
+        }
+        else {
+            txtviewIntro.setVisibility(View.GONE);
         }
     }
 

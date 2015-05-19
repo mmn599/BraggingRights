@@ -142,6 +142,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     //TODO: get better performance with background threads and shit
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        Fragment current = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if(current instanceof PresentFragment) {
+            ((PresentFragment) current).removeTooltip();
+        }
+
         //present
         if(position==0 || position==1) {
             Bundle bundle = new Bundle();

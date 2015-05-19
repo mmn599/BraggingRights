@@ -1,5 +1,6 @@
 package io.normyle.data;
 
+import android.graphics.drawable.Drawable;
 import android.text.SpannableStringBuilder;
 import android.text.style.BulletSpan;
 import android.text.style.StrikethroughSpan;
@@ -426,7 +427,6 @@ public class Goal {
         singleTask.add(task);
         return createSpannableString(singleTask, true, false, strikethrough);
     }
-
 
 
 }
