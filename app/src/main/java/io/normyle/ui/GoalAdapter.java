@@ -6,13 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.matthew.braggingrights.R;
+import io.normyle.data.Constants;
 import io.normyle.data.Goal;
 
 public class GoalAdapter extends ArrayAdapter<Goal> {
@@ -38,8 +39,8 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
             holder = new WeatherHolder();
-            holder.imgIcon = (ImageView)row.findViewById(R.id.imgview_goal_row_image);
-            holder.txtTitle = (TextView)row.findViewById(R.id.txtview_goal_row_title);
+            holder.goalTypeView = (GoalTypeView) row.findViewById(R.id.typeview_goal_row_type);
+            holder.txtTitle = (TextView) row.findViewById(R.id.txtview_goal_row_title);
             holder.txtDescription = (TextView) row.findViewById(R.id.txtview_goal_row_description);
             row.setTag(holder);
         }
@@ -50,15 +51,13 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
 
         Goal goal = data.get(position);
         holder.txtTitle.setText(goal.getTitle());
-        if(goal.getType().equals("Mind")) {
-            holder.imgIcon.setImageResource(R.drawable.mind_icon);
-        }
-        else if(goal.getType().equals("Body")) {
-            holder.imgIcon.setImageResource(R.drawable.body_icon);
-        }
-        else {
-            holder.imgIcon.setImageResource(R.drawable.spirit_icon);
-        }
+
+        //TODO: this is crappy code. change to hash
+        HashMap<String, Constants.GoalType> goalTypes = Constants.getGoalTypes();
+        Constants.GoalType type = goalTypes.get(goal.getType());
+        holder.goalTypeView.setImageResource(type.getImageId());
+        holder.goalTypeView.setColor(type.getColor());
+
         List<String> taskList = goal.getTaskList();
         holder.txtDescription.setText(Goal.createSpannableString(taskList, true, true, true));
 
@@ -67,7 +66,7 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
 
     static class WeatherHolder
     {
-        ImageView imgIcon;
+        GoalTypeView goalTypeView;
         TextView txtTitle;
         TextView txtDescription;
     }

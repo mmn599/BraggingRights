@@ -49,10 +49,10 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
 
     boolean display_present;
 
-
     public static final String WHICH_GOALS = "WHICH_GOALS";
 
     public PresentFragment() {
+
     }
 
     public void removeTooltip() {
@@ -107,8 +107,6 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
 
         fab.attachToListView(goalsListView);
 
-
-
         return view;
     }
 
@@ -156,13 +154,11 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
                     .withAnimationType(ToolTip.AnimationType.FROM_TOP);
             if(display_present) {
                 txtviewIntro.setText("You don't have any goals.");
-                toolTip.withText("Click here to add one!");
-            }
-            else {
+                toolTip.withText("Click here to add one.");
+                toolTipView = toolTipRelativeLayout.showToolTipForView(toolTip, fab);
+            } else {
                 txtviewIntro.setText("When you complete a goal, it will be displayed here.");
-                toolTip.withText("Press here to add a goal.");
             }
-            toolTipView = toolTipRelativeLayout.showToolTipForView(toolTip, fab);
             txtviewIntro.setVisibility(View.VISIBLE);
         }
         else {

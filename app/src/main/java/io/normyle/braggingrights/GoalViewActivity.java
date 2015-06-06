@@ -14,6 +14,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.format.DateFormat;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -23,6 +24,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,14 +32,18 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import io.matthew.braggingrights.R;
+import io.normyle.data.Constants;
 import io.normyle.data.Goal;
 import io.normyle.data.MySQLiteHelper;
 import io.normyle.ui.Animations;
+import io.normyle.ui.GoalTypeView;
 import io.normyle.ui.NoteView;
 import io.normyle.ui.ReminderView;
 import io.normyle.ui.TaskView;
@@ -49,7 +55,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
     TextView txtStartTime;
     TextView txtEndTime;
     TextView txtDaysInProgress;
-    ImageView imgIcon;
+    GoalTypeView imgIcon;
     Goal goal;
     LinearLayout llTasks;
     LinearLayout llNotes;
@@ -58,13 +64,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
     Button btnDelete;
     View oldViewSelected;
     LayoutInflater inflater;
-    ImageButton collapseTasks;
-    ImageButton collapseNotes;
-    ImageButton collapseReminders;
     Activity activity;
-    boolean collapsed_tasks;
-    boolean collapsed_notes;
-    boolean collapsed_reminders;
     boolean adding_note;
     boolean adding_task;
 
@@ -77,9 +77,9 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
 
         activity = this;
 
-        int goal_id = getIntent().getIntExtra("GOAL_ID",0);
+        long goal_id = (long) getIntent().getExtras().getInt("GOAL_ID", 0);
         MySQLiteHelper db = new MySQLiteHelper(this);
-        goal = db.getGoal(goal_id);
+        goal = db.getGoal((int) goal_id);
 
         btnComplete = (Button) findViewById(R.id.btn_complete_action_button);
         btnComplete.setOnClickListener(this);
@@ -88,17 +88,16 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         btnDelete.setOnClickListener(this);
 
         txtTitle = (TextView) findViewById(R.id.txtview_goal_title);
-        imgIcon = (ImageView) findViewById(R.id.imgview_goal_icon);
+        imgIcon = (GoalTypeView) findViewById(R.id.goaltypeview_goal_icon);
         txtStartTime = (TextView) findViewById(R.id.txtview_start_time);
         txtEndTime = (TextView) findViewById(R.id.txtview_end_time);
 
         llTasks = (LinearLayout) findViewById(R.id.ll_tasks);
         List<String> taskList = goal.getTaskList();
         for(String task : taskList) {
-            TaskView taskView = new TaskView(this,task,this);
+            TaskView taskView = new TaskView(this, task, this);
             llTasks.addView(taskView);
         }
-        findViewById(R.id.btn_add_task_id).setOnClickListener(this);
 
         inflater = (LayoutInflater)getSystemService
                 (Context.LAYOUT_INFLATER_SERVICE);
@@ -110,7 +109,6 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
             ReminderView reminderView = new ReminderView(this,date,this);
             llReminders.addView(reminderView);
         }
-        findViewById(R.id.btn_add_reminder_id).setOnClickListener(this);
 
         llNotes = (LinearLayout) findViewById(R.id.ll_notes);
         List<String> noteList = goal.getNotesList();
@@ -118,18 +116,13 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
             NoteView noteView = new NoteView(this,note,this);
             llNotes.addView(noteView);
         }
-        findViewById(R.id.btn_add_note_id).setOnClickListener(this);
 
         txtTitle.setText(goal.getTitle());
-        if(goal.getType().equals("Mind")) {
-            imgIcon.setImageResource(R.drawable.mind_icon);
-        }
-        else if(goal.getType().equals("Body")) {
-            imgIcon.setImageResource(R.drawable.body_icon);
-        }
-        else {
-            imgIcon.setImageResource(R.drawable.spirit_icon);
-        }
+
+        HashMap<String, Constants.GoalType> goalTypes = Constants.getGoalTypes();
+        Constants.GoalType gt = goalTypes.get(goal.getType());
+        imgIcon.setImageResource(gt.getImageId());
+        imgIcon.setColor(gt.getColor());
 
         txtStartTime.setText("Started on: \n" + goal.getStartDateString());
         if(goal.getComplete()==Goal.COMPLETE) {
@@ -152,16 +145,6 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
             inProgress = inProgress.replace("Days","Day");
         }
         txtDaysInProgress.setText(inProgress);
-
-        collapseNotes = (ImageButton) findViewById(R.id.btn_collapse_notes);
-        collapseTasks = (ImageButton) findViewById(R.id.btn_collapse_tasks);
-        collapseReminders = (ImageButton) findViewById(R.id.btn_collapse_reminders);
-        collapseNotes.setOnClickListener(this);
-        collapseTasks.setOnClickListener(this);
-        collapseReminders.setOnClickListener(this);
-        collapsed_notes = false;
-        collapsed_tasks = false;
-        collapsed_reminders = false;
 
         db.close();
     }
@@ -249,7 +232,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 }
             }
         }
-        else if(id==R.id.btn_add_task_id) {
+        else if(id==0) {
             if(!adding_task) {
                 View view = inflater.inflate(R.layout.txt_edit_goal_item, llTasks, true);
                 EditText editText = (EditText) view.findViewById(R.id.txt_edit_item_id);
@@ -264,7 +247,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 adding_task = true;
             }
         }
-        else if(id==R.id.btn_add_note_id) {
+        else if(id==0) {
             if(!adding_note) {
                 View view = inflater.inflate(R.layout.txt_edit_goal_item, llNotes, true);
                 final EditText editText = (EditText) view.findViewById(R.id.txt_edit_item_id);
@@ -279,45 +262,9 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 adding_note = true;
             }
         }
-        else if(id==R.id.btn_add_reminder_id) {
+        else if(id==0) {
             DatePickerFragment newFragment = new DatePickerFragment();
             newFragment.show(getSupportFragmentManager(), "datePicker");
-        }
-        else if(id==R.id.btn_collapse_notes) {
-            if(collapsed_notes) {
-                llNotes.setVisibility(View.VISIBLE);
-                collapsed_notes = false;
-                ((ImageButton)v).setImageResource(R.drawable.decollapse);
-            }
-            else {
-                llNotes.setVisibility(View.GONE);
-                collapsed_notes = true;
-                ((ImageButton)v).setImageResource(R.drawable.collapse);
-            }
-        }
-        else if(id==R.id.btn_collapse_tasks) {
-            if(collapsed_tasks) {
-                llTasks.setVisibility(View.VISIBLE);
-                collapsed_tasks = false;
-                ((ImageButton)v).setImageResource(R.drawable.decollapse);
-            }
-            else {
-                llTasks.setVisibility(View.GONE);
-                collapsed_tasks = true;
-                ((ImageButton)v).setImageResource(R.drawable.collapse);
-            }
-        }
-        else if(id==R.id.btn_collapse_reminders) {
-            if(collapsed_reminders) {
-                llReminders.setVisibility(View.VISIBLE);
-                collapsed_reminders = false;
-                ((ImageButton)v).setImageResource(R.drawable.decollapse);
-            }
-            else {
-                llReminders.setVisibility(View.GONE);
-                collapsed_reminders = true;
-                ((ImageButton)v).setImageResource(R.drawable.collapse);
-            }
         }
         else if(id==R.id.btn_delete_action_button) {
             //user wants to delete a note
@@ -350,9 +297,9 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
             }
             //User wants to delete the goal
             else {
-                MySQLiteHelper.deleteGoal(this,goal);
+                MySQLiteHelper.deleteGoal(this, goal);
                 Toast.makeText(this,"Deleted goal",Toast.LENGTH_LONG).show();
-                startActivity(new Intent(this,MainActivity.class));
+                startActivity(new Intent(this, MainActivity.class));
             }
 
             btnComplete.setText("Complete Goal");

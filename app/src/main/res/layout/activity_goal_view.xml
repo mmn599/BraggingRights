@@ -1,6 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:paddingTop="16dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
@@ -9,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:animateLayoutChanges="true"
         android:layout_weight="2">
 
     <TextView
@@ -27,14 +27,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/imgview_goal_icon"
+        <io.normyle.ui.GoalTypeView
+            android:id="@+id/goaltypeview_goal_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:src="@null"/>
-
+            custom:cc="@color/accent"
+            android:layout_centerInParent="true"/>
         <TextView
             android:id="@+id/txt_days_in_progress"
             android:layout_width="wrap_content"
@@ -42,84 +40,23 @@
             android:gravity="center"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"/>
-
     </RelativeLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal">
-        <ImageButton
-            android:id="@+id/btn_collapse_tasks"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:src="@drawable/decollapse"/>
-        <TextView
-            android:id="@+id/txtview_tasks_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:textStyle="bold"
-            android:textColor="@color/accent"
-            android:layout_gravity="center_vertical"
-            android:textSize="20sp"
-            android:text="Tasks"/>
-        <ImageButton
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:background="@drawable/add_button_selector"
-            android:layout_marginLeft="8dp"
-            android:layout_gravity="center_vertical"
-            android:id="@+id/btn_add_task_id"/>
-    </LinearLayout>
 
     <ScrollView
         android:id="@+id/scrollview_tasks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:animateLayoutChanges="true"
+        android:layout_marginTop="10dp"
         android:divider="@null">
         <LinearLayout
             android:id="@+id/ll_tasks"
             android:layout_width="match_parent"
-            android:animateLayoutChanges="true"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:orientation="vertical"/>
     </ScrollView>
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:animateLayoutChanges="true"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal">
-        <ImageButton
-            android:id="@+id/btn_collapse_reminders"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:animateLayoutChanges="true"
-            android:background="@null"
-            android:src="@drawable/decollapse"/>
-        <TextView
-            android:id="@+id/txtview_reminders_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:textStyle="bold"
-            android:textColor="@color/accent"
-            android:animateLayoutChanges="true"
-            android:textSize="20sp"
-            android:text="Reminders"/>
-        <ImageButton
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:background="@drawable/add_button_selector"
-            android:layout_marginLeft="8dp"
-            android:layout_gravity="center_vertical"
-            android:animateLayoutChanges="true"
-            android:id="@+id/btn_add_reminder_id"/>
-    </LinearLayout>
     
     <ScrollView
         android:id="@+id/scrollview_reminders"
@@ -129,40 +66,10 @@
             android:id="@+id/ll_reminders"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
+            android:gravity="center_horizontal"
             android:orientation="vertical">
         </LinearLayout>
     </ScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:animateLayoutChanges="true"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal">
-        <ImageButton
-            android:id="@+id/btn_collapse_notes"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:src="@drawable/decollapse"/>
-        <TextView
-            android:id="@+id/txtview_notes_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:textColor="@color/accent"
-            android:textStyle="bold"
-            android:layout_gravity="center_vertical"
-            android:textSize="20sp"
-            android:text="Notes"/>
-        <ImageButton
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:background="@drawable/add_button_selector"
-            android:layout_marginLeft="8dp"
-            android:layout_gravity="center_vertical"
-            android:id="@+id/btn_add_note_id"/>
-    </LinearLayout>
 
     <ScrollView
         android:id="@+id/scrollview_notes"
@@ -172,7 +79,6 @@
             android:id="@+id/ll_notes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
             android:orientation="vertical"/>
     </ScrollView>
 

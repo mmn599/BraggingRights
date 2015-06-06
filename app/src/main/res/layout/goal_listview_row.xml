@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/listviewselector"
     android:paddingTop="16dp">
@@ -9,12 +11,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="8">
-        <ImageView
+        <!--ImageView
             android:id="@+id/imgview_goal_row_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@null"
+            android:layout_centerInParent="true"/-->
+        <io.normyle.ui.GoalTypeView
+            android:id="@+id/typeview_goal_row_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@null"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true"
+            custom:cc="@color/accent"/>
     </RelativeLayout>
 
         <LinearLayout

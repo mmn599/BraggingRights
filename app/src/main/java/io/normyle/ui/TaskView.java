@@ -1,11 +1,16 @@
 package io.normyle.ui;
 
 import android.animation.Animator;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -18,14 +23,15 @@ import io.normyle.data.Goal;
 /**
  * Created by MatthewNew on 12/18/2014.
  */
-public class TaskView extends FrameLayout {
+public class TaskView extends TextView {
 
 
     //TODO: CHANGE TO BE PART OF A BETTER OBJECT HIEARCHY (GOALITEMVIEW)
     Context context;
-    TextView title;
     String taskString;
     LayoutInflater inflater;
+    int selected_color;
+    int unselected_color;
 
 
     public TaskView(Context context) {
@@ -42,9 +48,14 @@ public class TaskView extends FrameLayout {
                 (Context.LAYOUT_INFLATER_SERVICE);
         setClickable(true);
         setOnClickListener(listener);
-        View view = inflater.inflate(R.layout.taskview_layout,this,true);
-        title = (TextView) view.findViewById(R.id.txtview_task_row_title);
-        title.setText(Goal.createSpannableString(taskString, true));
+        this.setText(Goal.createSpannableString(taskString, true));
+        this.setGravity(Gravity.CENTER);
+        this.setLayoutParams(
+                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        selected_color = context.getResources().getColor(R.color.accent);
+        unselected_color = Color.BLACK;
+
     }
 
     public TaskView(Context context, AttributeSet attrs) {
@@ -61,6 +72,17 @@ public class TaskView extends FrameLayout {
         animator.setDuration(500);
         animator.translationX(Constants.SCREEN_WIDTH);
         animator.start();
+    }
+
+    @Override
+    public void setSelected(boolean selected) {
+        super.setSelected(selected);
+        if(selected) {
+            this.setTextColor(selected_color);
+        }
+        else {
+            this.setTextColor(unselected_color);
+        }
     }
 
     public String getTaskString() {

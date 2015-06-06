@@ -1,0 +1,6 @@
+<resources>
+    <declare-styleable name="GoalTypeView">
+        <attr name="imageResource" format="reference" />
+        <attr name="cc" format="color" />
+    </declare-styleable>
+</resources>

@@ -69,7 +69,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         this.onCreate(db);
     }
 
-    public void addGoal(Goal goal) {
+    public long addGoal(Goal goal) {
         //for logging
         Log.d("addGoals", goal.toString());
         // 1. get reference to writable DB
@@ -88,11 +88,12 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_REMINDER_STRING, goal.getReminderString());
         values.put(KEY_REMINDER_NOTES, goal.getReminderNotesString());
         // 3. insert
-        db.insert(TABLE_GOALS, // table
+        long id = db.insert(TABLE_GOALS, // table
                 null, //nullColumnHack
                 values); // key/value -> keys = column names/ values = column values
         // 4. close
         db.close();
+        return id;
     }
 
     public Goal getGoal(int id){

@@ -1,8 +1,11 @@
 package io.normyle.data;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import io.matthew.braggingrights.R;
 
@@ -14,16 +17,29 @@ public class Constants {
     public static int SCREEN_WIDTH;
     public static int SCREEN_HEIGHT;
 
-    public static ArrayList<GoalType> getGoalTypes() {
+    public static HashMap<String,GoalType> goalTypes;
 
-        ArrayList<GoalType> goalTypes = new ArrayList<GoalType>();
 
-        /* just for practice */
-        goalTypes.add(new GoalType("Mind", R.drawable.mind_icon));
-        goalTypes.add(new GoalType("Body", R.drawable.body_icon));
-        goalTypes.add(new GoalType("Spirit", R.drawable.spirit_icon));
+
+    public static HashMap<String,GoalType> getGoalTypes() {
 
         return goalTypes;
+
+    }
+
+    public static void setup(Context context) {
+
+        Resources res = context.getResources();
+
+        goalTypes = new HashMap<String,GoalType>();
+
+        goalTypes.put("Mind",
+                new GoalType("Mind", R.drawable.books8, res.getColor(R.color.teal_300)));
+        goalTypes.put("Body",
+                new GoalType("Body", R.drawable.sprint, res.getColor(R.color.red_400)));
+        goalTypes.put("Spirit",
+                new GoalType("Spirit", R.drawable.sunny35, res.getColor(R.color.yellow_500)));
+
     }
 
 
@@ -31,9 +47,11 @@ public class Constants {
 
         String type;
         int image_drawable_id;
+        int color;
 
-        public GoalType(String type, int image_drawable_id) {
+        public GoalType(String type, int image_drawable_id, int color) {
             this.type = type;
+            this.color = color;
             this.image_drawable_id = image_drawable_id;
         }
 
@@ -45,6 +63,9 @@ public class Constants {
             return image_drawable_id;
         }
 
+        public int getColor() {
+            return color;
+        }
     }
 
 }

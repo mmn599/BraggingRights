@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 import io.matthew.braggingrights.R;
 import io.normyle.data.Constants;
+import io.normyle.data.MySQLiteHelper;
 import io.normyle.ui.DrawerAdapter;
 
 
@@ -39,6 +40,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Constants.setup(this);
 
         actionBar = getSupportActionBar();
         title = drawerTitle = getTitle();
@@ -80,9 +83,9 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         viewing_goals = true;
         Fragment initialFragment = new PresentFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(PresentFragment.WHICH_GOALS,PRESENTGOALS);
+        bundle.putString(PresentFragment.WHICH_GOALS, PRESENTGOALS);
         initialFragment.setArguments(bundle);
-        setTitle("Present");
+        setTitle("In Progress");
         Intent callingIntent = getIntent();
         if(callingIntent!=null) {
             Bundle extras = getIntent().getExtras();
@@ -94,7 +97,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         bundle = new Bundle();
                         bundle.putString(PresentFragment.WHICH_GOALS,PASTGOALS);
                         initialFragment.setArguments(bundle);
-                        setTitle("Past");
+                        setTitle("Completed");
                     } else if (s.equals(PERSONHOODFRAGMENT)) {
                         initialFragment = new PersonhoodFragment();
                         setTitle("Personhood");
