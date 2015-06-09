@@ -11,12 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="8">
-        <!--ImageView
-            android:id="@+id/imgview_goal_row_image"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@null"
-            android:layout_centerInParent="true"/-->
         <io.normyle.ui.GoalTypeView
             android:id="@+id/typeview_goal_row_type"
             android:layout_width="wrap_content"

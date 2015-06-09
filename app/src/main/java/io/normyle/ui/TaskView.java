@@ -54,7 +54,7 @@ public class TaskView extends TextView {
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         selected_color = context.getResources().getColor(R.color.accent);
-        unselected_color = Color.BLACK;
+        unselected_color = this.getCurrentTextColor();
 
     }
 
