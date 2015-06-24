@@ -3,11 +3,16 @@ package io.normyle.data;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import io.matthew.braggingrights.R;
+import io.normyle.braggingrights.Notifications;
 
 /**
  * Created by MatthewNew on 12/18/2014.
@@ -18,7 +23,6 @@ public class Constants {
     public static int SCREEN_HEIGHT;
 
     public static HashMap<String,GoalType> goalTypes;
-
 
 
     public static HashMap<String,GoalType> getGoalTypes() {
@@ -67,6 +71,9 @@ public class Constants {
             return color;
         }
     }
+
+
+
 
 }
 

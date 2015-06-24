@@ -29,6 +29,7 @@ public class TaskView extends TextView {
     //TODO: CHANGE TO BE PART OF A BETTER OBJECT HIEARCHY (GOALITEMVIEW)
     Context context;
     String taskString;
+    Goal.Task mTask;
     LayoutInflater inflater;
     int selected_color;
     int unselected_color;
@@ -38,20 +39,21 @@ public class TaskView extends TextView {
         super(context);
     }
 
-    public TaskView(Context context,String taskString,OnClickListener listener) {
+    public TaskView(Context context,Goal.Task task,OnClickListener listener) {
         super(context);
 
         this.context = context;
-        this.taskString = taskString;
+        this.taskString = task.task;
+        this.mTask = task;
 
         inflater = (LayoutInflater)context.getSystemService
                 (Context.LAYOUT_INFLATER_SERVICE);
         setClickable(true);
         setOnClickListener(listener);
-        this.setText(Goal.createSpannableString(taskString, true));
-        this.setGravity(Gravity.CENTER);
+        this.setText(Goal.createSpannableString(mTask, true));
+//        this.setGravity(Gravity.CENTER);
         this.setLayoutParams(
-                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         selected_color = context.getResources().getColor(R.color.accent);
         unselected_color = this.getCurrentTextColor();
@@ -74,6 +76,10 @@ public class TaskView extends TextView {
         animator.start();
     }
 
+    public Goal.Task getTask() {
+        return mTask;
+    }
+
     @Override
     public void setSelected(boolean selected) {
         super.setSelected(selected);
@@ -93,16 +99,16 @@ public class TaskView extends TextView {
 
         LinearLayout ll;
         TaskView oldView;
-        String newString;
+        Goal.Task newTask;
         Activity activity;
         OnClickListener listener;
 
-        public TaskAnimatorListener(LinearLayout ll, TaskView oldView, String newString,
+        public TaskAnimatorListener(LinearLayout ll, TaskView oldView, Goal.Task newTask,
                                     Activity activity, OnClickListener listener) {
             super();
             this.ll = ll;
             this.oldView = oldView;
-            this.newString = newString;
+            this.newTask = newTask;
             this.activity = activity;
             this.listener = listener;
         }
@@ -115,7 +121,7 @@ public class TaskView extends TextView {
         @Override
         public void onAnimationEnd(Animator animation) {
             ll.removeView(oldView);
-            ll.addView(new TaskView(activity,newString,listener));
+            ll.addView(new TaskView(activity,newTask,listener));
         }
 
         @Override

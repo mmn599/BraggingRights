@@ -46,10 +46,10 @@ public class DrawerAdapter extends ArrayAdapter<String> {
         }
 
         String location = data[position];
-        if(location.equals("Present")) {
+        if(location.equals("In Progress")) {
             holder.image.setImageResource(R.drawable.present_icon);
         }
-        else if(location.equals("Past")) {
+        else if(location.equals("Completed")) {
             holder.image.setImageResource(R.drawable.past_icon);
         }
         else {

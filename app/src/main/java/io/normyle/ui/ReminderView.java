@@ -32,33 +32,40 @@ public class ReminderView extends TextView {
     LayoutInflater inflater;
     int selected_color;
     int unselected_color;
+    Goal.Reminder reminder;
 
     private static final SimpleDateFormat DATE_FORMAT_FOR_DISPLAY =
-            new SimpleDateFormat("HH:mm MM-dd-yyyy");
+            new SimpleDateFormat("MM/dd HH:mm");
 
     public ReminderView(Context context) {
         super(context);
     }
 
-    public ReminderView(Context context, Date reminderDate, OnClickListener listener) {
+    public ReminderView(Context context, Goal.Reminder reminder, OnClickListener listener) {
         super(context);
 
         this.context = context;
-        this.reminderDate = reminderDate;
 
         inflater = (LayoutInflater)context.getSystemService
                 (Context.LAYOUT_INFLATER_SERVICE);
         setClickable(true);
         setOnClickListener(listener);
 
+        String dayString = "";
+        String[] d = {"S","M","T","W","Th","F","S"};
+        for(int i=0;i<7;i++) {
+            if(reminder.days[i]) {
+                dayString += d[i] + " ";
+            }
+        }
+
         this.setGravity(Gravity.CENTER);
         this.setLayoutParams(
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+        this.reminder = reminder;
 
-       // this.setText(Goal.createSpannableString(DATE_FORMAT_FOR_DISPLAY.format(reminderDate), false));
-
-        this.setText("M T W Th F     3pm");
+        this.setText(Goal.createSpannableString(reminder.note+" "+reminder.hour+":"+reminder.minute+" "+dayString, false));
 
         selected_color = context.getResources().getColor(R.color.accent);
         unselected_color = this.getCurrentTextColor();
@@ -76,14 +83,6 @@ public class ReminderView extends TextView {
         }
     }
 
-    public ReminderView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public ReminderView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
     //slides note off screen
     public void deleteNoteAnimation(Animator.AnimatorListener listener) {
         ViewPropertyAnimator animator = this.animate();
@@ -91,6 +90,10 @@ public class ReminderView extends TextView {
         animator.setDuration(500);
         animator.translationX(Constants.SCREEN_WIDTH);
         animator.start();
+    }
+
+    public Goal.Reminder getReminder() {
+        return reminder;
     }
 
     public String getReminderString() {
@@ -102,12 +105,14 @@ public class ReminderView extends TextView {
 
         LinearLayout ll;
         ReminderView oldView;
+        Activity activity;
 
         public ReminderAnimatorListener(LinearLayout ll, ReminderView oldView,
                                     Activity activity) {
             super();
             this.ll = ll;
             this.oldView = oldView;
+            this.activity = activity;
         }
 
         @Override
@@ -118,6 +123,13 @@ public class ReminderView extends TextView {
         @Override
         public void onAnimationEnd(Animator animation) {
             ll.removeView(oldView);
+            if(ll.getChildCount()==0) {
+                TextView view = new TextView(activity);
+                view.setTag("INFO");
+                view.setText("Click the clipboard to add a goal reminder.");
+                view.setGravity(Gravity.CENTER_VERTICAL);
+                ll.addView(view);
+            }
         }
 
         @Override

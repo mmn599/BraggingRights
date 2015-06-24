@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.os.SystemClock;
 import android.widget.Toast;
 
+import java.security.acl.NotOwnerException;
 import java.util.Calendar;
+import java.util.List;
 
 import io.normyle.data.Goal;
 
@@ -18,16 +20,6 @@ import io.normyle.data.Goal;
 public class Notifications {
 
     public static int id = 0;
-
-    /**
-     * Days is a boolean array of size 7 to indicate which days to repeat
-     * @param days
-     * @param hour
-     * @param minute
-     */
-    public static void setRepeatingAlarm(boolean[] days, int hour, int minute) {
-
-    }
 
     public static void setOneTimeAlarm(Context context, Calendar calendar, String title, String note) {
 
@@ -43,6 +35,7 @@ public class Notifications {
                 calendar.getTimeInMillis(), alarmIntent);
     }
 
+    //TODO: make sure this shit works
     //days must be size 8
     public static void setRepeatingAlarm(Context context, Calendar calendar, boolean[] days, String title, String note) {
         AlarmManager alarmMgr;
@@ -53,7 +46,7 @@ public class Notifications {
         intent.putExtra(AlarmReceiver.EXTRA_NOTE, note);
         alarmIntent = PendingIntent.getBroadcast(context, id++, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         for(int i=1;i<8;i++) {
-            if(days[i]) {
+            if(days[(i-1)]) {
                 if(i>=Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
                     calendar.set(Calendar.DAY_OF_WEEK,i);
                     alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
@@ -64,6 +57,29 @@ public class Notifications {
                     calendar.set(Calendar.DAY_OF_WEEK,i);
                     alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                             AlarmManager.INTERVAL_DAY * 7, alarmIntent);
+                }
+            }
+        }
+    }
+
+
+    public static void setupAlarms(Context context, List<Goal> goalList) {
+        for(Goal goal : goalList) {
+            for(Goal.Reminder reminder : goal.getReminder()) {
+                if(reminder.repeating) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.HOUR, reminder.hour);
+                    calendar.set(Calendar.MINUTE, reminder.minute);
+                    Notifications.setRepeatingAlarm(context,
+                            calendar, reminder.days, goal.getTitle(), reminder.note);
+                }
+                else {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.DAY_OF_YEAR, reminder.day_of_year);
+                    calendar.set(Calendar.HOUR, reminder.hour);
+                    calendar.set(Calendar.MINUTE, reminder.minute);
+                    calendar.set(Calendar.YEAR, reminder.year);
+                    Notifications.setOneTimeAlarm(context, calendar, goal.getTitle(), reminder.note);
                 }
             }
         }

@@ -36,6 +36,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     public static final String PRESENTGOALS = "PRESENT";
     public static final String PERSONHOODFRAGMENT = "PERSONHOOD";
 
+    public static final String PRESENT_TITLE = "In Progress";
+    public static final String PAST_TITLE = "Completed";
+    public static final String PERSONHOOD_TITLE = "Personhood";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +51,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         title = drawerTitle = getTitle();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList = (ListView) findViewById(R.id.left_drawer);
-        String areas[] = {"Present","Past","Personhood"};
+        String areas[] = {"In Progress","Completed","Personhood"};
         drawerList.setAdapter(new DrawerAdapter(this,R.layout.drawer_listview_row,areas));
         drawerList.setOnItemClickListener(this);
         drawerToggle = new ActionBarDrawerToggle(
@@ -85,7 +89,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         Bundle bundle = new Bundle();
         bundle.putString(PresentFragment.WHICH_GOALS, PRESENTGOALS);
         initialFragment.setArguments(bundle);
-        setTitle("In Progress");
+        setTitle(PRESENT_TITLE);
         Intent callingIntent = getIntent();
         if(callingIntent!=null) {
             Bundle extras = getIntent().getExtras();
@@ -97,10 +101,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         bundle = new Bundle();
                         bundle.putString(PresentFragment.WHICH_GOALS,PASTGOALS);
                         initialFragment.setArguments(bundle);
-                        setTitle("Completed");
+                        setTitle(PAST_TITLE);
                     } else if (s.equals(PERSONHOODFRAGMENT)) {
                         initialFragment = new PersonhoodFragment();
-                        setTitle("Personhood");
+                        setTitle(PERSONHOOD_TITLE);
                         viewing_goals = false;
                     }
                 }
@@ -156,12 +160,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             Bundle bundle = new Bundle();
             boolean display_present = false;
             if(position==0) {
-                setTitle("Present");
+                setTitle(PRESENT_TITLE);
                 bundle.putString(PresentFragment.WHICH_GOALS, PRESENTGOALS);
                 display_present = true;
             }
             else if(position==1) {
-                setTitle("Past");
+                setTitle(PAST_TITLE);
                 bundle.putString(PresentFragment.WHICH_GOALS, PASTGOALS);
                 display_present = false;
             }
@@ -178,7 +182,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         //personhood
         else if(position==2) {
             viewing_goals = false;
-            setTitle("Personhood");
+            setTitle(PERSONHOOD_TITLE);
             updateFragment(new PersonhoodFragment());
         }
         drawerLayout.closeDrawers();

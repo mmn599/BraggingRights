@@ -1,10 +1,10 @@
 package io.normyle.data;
 
-import android.graphics.drawable.Drawable;
 import android.text.SpannableStringBuilder;
 import android.text.style.BulletSpan;
 import android.text.style.StrikethroughSpan;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.text.DateFormat;
@@ -14,12 +14,10 @@ import java.util.List;
 public class Goal {
 
 	/*
-	 * TODO
-	 * the whole reminders+reminderNotes system is complete crap and needs to be reworked
+	TODO: better equality checking for task/reminders
 	 */
 
     private String goalTitle;
-    private String goalDescription;
     private String goalType;
     private String goalTime; //days weeks months years
     private Date startDate;
@@ -28,8 +26,64 @@ public class Goal {
     private int _id;
     private int complete;
     private String goalNotes;
-    private String goalReminderString;
-    private String goalReminderNotesString;
+
+    public static class Reminder implements Serializable {
+        public boolean repeating;
+        public String note;
+        public boolean[] days;
+        public int hour;
+        public int minute;
+        public int day_of_year;
+        public int year;
+        public Reminder() {
+            days = new boolean[7];
+        }
+
+        @Override
+        public boolean equals(Object o) {
+
+            if(!(o instanceof Reminder)) {
+                return false;
+            }
+
+            //TODO: MAKE MORE ROBUST TO ENSURE SIMILAR GOALS AREN'T CONSIDERED EQUAL
+            Reminder other = (Reminder) o;
+            if(this.note.equals(other.note) && this.repeating==other.repeating
+                && this.hour==other.hour && this.minute==other.minute) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    public static class Task implements Serializable {
+        public int complete;
+        public String task;
+        public Date completeDate;
+
+        @Override
+        public boolean equals(Object o) {
+            if(!(o instanceof Task)) {
+                return false;
+            }
+            Task othertask = (Task) o;
+            if(task.equals(othertask.task)) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    public static class Venture implements Serializable {
+        public Date date;
+        public Venture() {
+            date = new Date();
+        }
+    }
+
+    private ArrayList<Reminder> goalReminders;
+    private ArrayList<Task> goalTasks;
+    private ArrayList<Venture> goalVentures;
 
     public static final SimpleDateFormat dateFormatForReminders =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -41,24 +95,11 @@ public class Goal {
      * Default constructor, typically used by the database to build a new goal.
      */
     public Goal() {
-        goalReminderString = "";
+        this("","","","",0);
     }
 
-    /**
-     * String title for the goal.
-     * @param goaltitle
-     * String description for the goal.
-     * @param goaldescription
-     * String type of the goal.
-     * @param goaltype
-     * String time frame for the goal.
-     * @param goaltime
-     * int importance of the goal, currently not in use.
-     * @param goalimportance
-     */
     public Goal(String goaltitle, String goaldescription, String goaltype, String goaltime, int goalimportance) {
         this.goalTitle = goaltitle;
-        this.goalDescription = goaldescription;
         this.goalType = goaltype;
         this.goalTime = goaltime;
         this.goal_importance = goalimportance;
@@ -67,8 +108,10 @@ public class Goal {
         this.goalNotes = "";
         this.startDate = new Date(); //sets startDate to current time
         this.completeDate = new Date();
-        this.goalReminderString = "";
-        this.goalReminderNotesString = "";
+        this.goalReminders = new ArrayList<Reminder>();
+        this.goalTasks = new ArrayList<Task>();
+        this.goalVentures = new ArrayList<Venture>();
+       // this.goalReminders = new ArrayList<Reminder>();
     }
 
     /**
@@ -148,62 +191,6 @@ public class Goal {
         return completeDate.getTime();
     }
 
-    public String getReminderNotesString() {
-        return goalReminderNotesString;
-    }
-
-    public List<String> getReminderNotes() {
-        List<String> reminderNotes = new ArrayList<String>();
-        if(goalReminderNotesString.length()>0) {
-            String[] reminderNotesArray = goalReminderNotesString.split("\r");
-            for(int i=0;i<reminderNotesArray.length;i++) {
-                reminderNotes.add(reminderNotesArray[i]);
-            }
-        }
-        return reminderNotes;
-    }
-
-    /**
-     * Returns the formatted task list from goalDescription
-     * Newline character indicates a new task.
-     * Preceding 1 or 0 indicates task completeness.
-     * @return
-     */
-    public List<String> getTaskList() {
-        if(goalDescription.length()>0) {
-            String[] list = goalDescription.split("\n");
-            List<String> taskList = new ArrayList<String>();
-            for (int i = 0; i < list.length; i++) {
-                taskList.add(list[i]);
-            }
-            return taskList;
-        }
-        return new ArrayList<String>();
-    }
-
-    public List<Date> getReminderDateList() {
-        if(goalReminderString.length()>0) {
-            String[] stringDates = goalReminderString.split("\n");
-            List<Date> dateList = new ArrayList<Date>();
-            for (int i = 0; i < stringDates.length; i++) {
-                try {
-                    dateList.add(dateFormatForReminders.parse(stringDates[i]));
-                } catch (Exception e) {
-
-                }
-            }
-            return dateList;
-        }
-        return new ArrayList<Date>();
-    }
-
-    /**
-     * Returns unformatted goalDescription.
-     * @return
-     */
-    public String getDescription() {
-        return goalDescription;
-    }
 
     /**
      * Returns unformatted goalNotes.
@@ -239,39 +226,12 @@ public class Goal {
         return goal_importance;
     }
 
-    public String getReminderString() {
-        return goalReminderString;
-    }
-
-    public List<String> getRemindersAsList() {
-        List<String> list = new ArrayList<String>();
-        List<Date> dateList = getReminderDateList();
-        for(Date date : dateList) {
-            list.add(dateFormatForReminders.format(date));
-        }
-        return list;
-    }
-
-    public String addReminderDate(Date date, String note) {
-        String dateForInsert = dateFormatForReminders.format(date);
-        dateForInsert += "\n";
-        goalReminderString += dateForInsert;
-        if(note.length()>0) {
-            goalReminderNotesString += note + "\r";
-        }
-        return dateForInsert.replace("\n","");
-    }
-
     public void setId(int id) {
         _id=id;
     }
 
     public void setTitle(String title) {
         goalTitle = title;
-    }
-
-    public void setDescription(String des) {
-        goalDescription = des;
     }
 
     public void setType(String type) {
@@ -293,8 +253,8 @@ public class Goal {
         goalNotes += note + "\r";
     }
 
-    public void addTask(String task) {
-        goalDescription += "0" + task + "\n";
+    public void addTask(Task task) {
+        goalTasks.add(task);
     }
 
     public void setImportance(int imp) {
@@ -305,72 +265,37 @@ public class Goal {
         goalNotes = input;
     }
 
-    public void setReminderNotesString(String input) {
-        goalReminderNotesString = input;
-    }
-
     public void setStartDate(long input) {
         startDate = new Date(input);
     }
 
-    /**
-     * Task to update, as a string
-     * @param task
-     * Update to the task, 1 for complete 0 for incomplete
-     * @param complete
-     * Returns the new task string
-     * @return
-     */
-    public String updateTaskReturnNewTask(String task, int complete) {
-        goalDescription = goalDescription.replace(task,complete+task);
-        return complete+task;
+    public ArrayList<Task> getTasks() {
+        return goalTasks;
+    }
+
+    public Task updateTask(Task task, int complete) {
+        task = goalTasks.get(goalTasks.indexOf(task));
+        task.complete = complete;
+        if(task.complete==Goal.COMPLETE) {
+            task.completeDate = new Date();
+        }
+        return task;
     }
 
     public void deleteNote(String note) {
         goalNotes = goalNotes.replace(note+"\r","");
     }
 
-    public void deleteTask(String task) {
-        goalDescription = goalDescription.replace(task+"\n","");
+    public void deleteTask(Task task) {
+        goalTasks.remove(task);
     }
 
     public void setCompletedDate(long input) {
         completeDate = new Date(input);
     }
 
-    public void setReminderString(String goalReminderString) {
-        this.goalReminderString = goalReminderString;
-    }
-
-    public void removeOldReminders(Date currentDate) {
-        List<Date> reminders = getReminderDateList();
-        for(Date date : reminders) {
-            if(date.before(currentDate)) {
-                deleteReminder(dateFormatForReminders.format(date));
-            }
-        }
-    }
-
-    public void deleteReminder(String string) {
-        List<String> remindersList = getRemindersAsList();
-        int i=0;
-        int index = -1;
-        for(String rem : remindersList) {
-            if(string.replace("\n","").equals(rem)) {
-                index = i;
-            }
-            i++;
-        }
-        if(index!=-1) {
-            String[] notesArray = goalReminderNotesString.split("\r");
-            String toDelete = notesArray[index];
-            goalReminderNotesString = goalReminderNotesString.replace(toDelete+"\r","");
-        }
-        goalReminderString = goalReminderString.replace(string+"\n","");
-    }
-
     public String toString() {
-        return ("Goal number "+this._id+"\n"+"Title: "+ goalTitle +"\nDescription: "+ goalDescription +"\nType: "+ goalType +
+        return ("Goal number "+this._id+"\n"+"Title: "+ goalTitle +"\nDescription: " +"\nType: "+ goalType +
                 "\nTime: "+ goalTime +"\nImportance: "+ goal_importance +"\n"+"Complete: "+complete);
     }
 
@@ -390,17 +315,14 @@ public class Goal {
      * @return
      */
     public static SpannableStringBuilder
-        createSpannableString(List<String> list, boolean bullets,
+        createSpannableString(List<Task> list, boolean bullets,
                               boolean newline, boolean strikethrough) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         int current = 0;
         int location = 0;
-        for(String string : list) {
-            if (string.length() > 0) {
-                boolean incomplete = (string.charAt(0) == '0');
-                if (strikethrough) {
-                    string = string.replaceFirst("[0-1]+", "");
-                }
+        for(Task task : list) {
+                boolean incomplete = task.complete!=Goal.COMPLETE;
+                String string = task.task;
                 builder = builder.append(string);
                 if (bullets) {
                     builder.setSpan(new BulletSpan(15), current, current + string.length(), 0);
@@ -412,7 +334,6 @@ public class Goal {
                     builder.append("\n");
                 }
                 current += newline ? string.length() + 1 : string.length();
-            }
         }
         return builder;
     }
@@ -422,12 +343,37 @@ public class Goal {
      * @param task
      * @return
      */
-    public static SpannableStringBuilder createSpannableString(String task, boolean strikethrough) {
-        List<String> singleTask = new ArrayList<String>();
+    public static SpannableStringBuilder createSpannableString(Task task, boolean strikethrough) {
+        List<Task> singleTask = new ArrayList<Task>();
         singleTask.add(task);
         return createSpannableString(singleTask, true, false, strikethrough);
     }
 
+    public void addReminder(Reminder reminder) {
+        goalReminders.add(reminder);
+    }
 
+    public ArrayList<Reminder> getReminder() {
+        return goalReminders;
+    }
+
+    public void deleteReminder(Reminder reminder) {
+        goalReminders.remove(reminder);
+    }
+
+    public void setVentures(ArrayList<Venture> ventures) {
+        goalVentures = new ArrayList<>();
+        for(Venture venture : ventures) {
+            goalVentures.add(venture);
+        }
+    }
+
+    public void addVenture() {
+        goalVentures.add(new Venture());
+    }
+
+    public ArrayList<Venture> getVentures() {
+        return goalVentures;
+    }
 }
 

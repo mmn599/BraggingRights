@@ -8,12 +8,14 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.format.DateFormat;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -30,6 +32,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,16 +45,19 @@ import io.normyle.data.MySQLiteHelper;
 import io.normyle.ui.Animations;
 import io.normyle.ui.GoalTypeView;
 import io.normyle.ui.NoteView;
+import io.normyle.ui.ReminderPickerLayout;
 import io.normyle.ui.ReminderView;
 import io.normyle.ui.TaskView;
 
 public class GoalViewActivity extends ActionBarActivity implements View.OnClickListener,
-        TextView.OnEditorActionListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+        TextView.OnEditorActionListener, TimePickerDialog.OnTimeSetListener {
 
     TextView txtTitle;
     TextView txtStartTime;
     TextView txtEndTime;
     TextView txtDaysInProgress;
+    TextView txtDaysInProgress2;
+    TextView txtVentures;
     GoalTypeView imgIcon;
     Goal goal;
     LinearLayout llTasks;
@@ -94,10 +100,15 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         txtEndTime = (TextView) findViewById(R.id.txtview_end_time);
 
         llTasks = (LinearLayout) findViewById(R.id.ll_tasks);
-        List<String> taskList = goal.getTaskList();
-        for(String task : taskList) {
-            TaskView taskView = new TaskView(this,task,this);
-            llTasks.addView(taskView);
+        List<Goal.Task> taskList = goal.getTasks();
+        if(taskList.size()==0) {
+            tasksInit();
+        }
+        else {
+            for (Goal.Task task : taskList) {
+                TaskView taskView = new TaskView(this, task, this);
+                llTasks.addView(taskView);
+            }
         }
 
         ImageButton btnAddTask = (ImageButton) findViewById(R.id.btn_add_tasks);
@@ -108,14 +119,29 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
 
         inflater = (LayoutInflater)getSystemService
                 (Context.LAYOUT_INFLATER_SERVICE);
-        goal.removeOldReminders(new Date());
+    //    goal.removeOldReminders(new Date());
         db.updateGoal(goal);
         llReminders = (LinearLayout) findViewById(R.id.ll_reminders);
-        List<Date> reminderList = goal.getReminderDateList();
-        for(Date date : reminderList) {
-            ReminderView reminderView = new ReminderView(this,date,this);
-            llReminders.addView(reminderView);
+        ArrayList<Goal.Reminder> reminders = goal.getReminder();
+        if(reminders.size()==0) {
+            remindersInit();
         }
+        else {
+            for(Goal.Reminder reminder : reminders) {
+                llReminders.addView(new ReminderView(this, reminder, this));
+            }
+        }
+    //TODO:    List<Date> reminderList = goal.getReminderDateList();
+    /*    if(reminderList.size()==0) {
+            remindersInit();
+        }
+        else {
+        TODO:     for (Date date : reminderList) {
+                boolean[] tmp = {false,false,false,false,false,false,false};
+                ReminderView reminderView = new ReminderView(this, 3, 30, "poop", tmp, this);
+                llReminders.addView(reminderView);
+            }
+        } */
         findViewById(R.id.btn_add_reminders).setOnClickListener(this);
 
     /*    llNotes = (LinearLayout) findViewById(R.id.ll_notes);
@@ -149,17 +175,26 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         start.setTime(goal.getStartDate());
         int days = 1 + today.get(Calendar.DAY_OF_YEAR) - start.get(Calendar.DAY_OF_YEAR)
         + (today.get(Calendar.YEAR) - start.get(Calendar.YEAR)) * 365;
-        String inProgress = days + " Days";
-        if(days<2) {
-            inProgress = inProgress.replace("Days","Day");
-        }
+        String inProgress = days + "";
         txtDaysInProgress.setText(inProgress);
+//        txtDaysInProgress.setTypeface(Typeface.createFromAsset(getAssets(), "jayadhira.ttf"));
+        txtDaysInProgress2 = (TextView) findViewById(R.id.txt_days_in_progress2);
+        inProgress = days>1 ? "Days in progress":"Days in progress";
+        txtDaysInProgress2.setText(inProgress);
+
 
         collapsed_notes = false;
         collapsed_tasks = false;
         collapsed_reminders = false;
 
+        txtVentures = (TextView) findViewById(R.id.txtview_goal_ventures);
+        txtVentures.setText("Ventures: " + goal.getVentures());
+
+        GoalTypeView gt = (GoalTypeView) findViewById(R.id.imgview_goal_icon);
+        gt.setOnClickListener(this);
+
         db.close();
+
     }
 
     @Override
@@ -173,6 +208,23 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         return super.onOptionsItemSelected(item);
     }
 
+    private void remindersInit() {
+        TextView view = new TextView(this);
+        view.setTag("INFO");
+        view.setGravity(Gravity.CENTER_VERTICAL);
+        view.setText("Click the clock to add a goal reminder.");
+        llReminders.addView(view);
+    }
+
+    private void tasksInit() {
+        TextView view = new TextView(this);
+        view.setTag("INFO");
+        view.setText("Click the clipboard to add a goal task.");
+        view.setGravity(Gravity.CENTER_VERTICAL);
+        llTasks.addView(view);
+    }
+
+
     @Override
     public void onClick(View v) {
 
@@ -185,21 +237,21 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
             }
             if(v==oldViewSelected) {
                 oldViewSelected = null;
-                btnComplete.setText("Complete Goal");
-                btnDelete.setText("Delete Goal");
+                btnComplete.setText("Complete\nGoal");
+                btnDelete.setText("Delete\nGoal");
             }
             else {
                 if(v instanceof TaskView) {
-                    btnComplete.setText("Complete Task");
-                    btnDelete.setText("Delete Task");
+                    btnComplete.setText("Complete\nTask");
+                    btnDelete.setText("Delete\nTask");
                 }
                 else if(v instanceof NoteView) {
-                    btnComplete.setText("Complete Note");
-                    btnDelete.setText("Delete Note");
+                    btnComplete.setText("Complete\nNote");
+                    btnDelete.setText("Delete\nNote");
                 }
                 else {
-                    btnComplete.setText("Complete Goal");
-                    btnDelete.setText("Delete Reminder");
+                    btnComplete.setText("Complete\nGoal");
+                    btnDelete.setText("Delete\nReminder");
                 }
                 v.setSelected(true);
                 oldViewSelected = v;
@@ -213,13 +265,13 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                     TaskView taskView = (TaskView) oldViewSelected;
                     oldViewSelected.setSelected(false);
                     oldViewSelected = null;
-                    String newTaskString = goal.updateTaskReturnNewTask(taskView.getTaskString(), Goal.COMPLETE);
+                    Goal.Task newTask = goal.updateTask(taskView.getTask(), Goal.COMPLETE);
                     MySQLiteHelper.updateGoalInBackground(this, goal);
                     (taskView).completeTaskAnimation(
-                            new TaskView.TaskAnimatorListener(llTasks, taskView, newTaskString, this, this));
+                            new TaskView.TaskAnimatorListener(llTasks, taskView, newTask, this, this));
                 }
-                btnComplete.setText("Complete Goal");
-                btnDelete.setText("Delete Goal");
+                btnComplete.setText("Complete\nGoal");
+                btnDelete.setText("Delete\nGoal");
             }
             //the user wants to complete the goal!
             else {
@@ -247,6 +299,13 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         }
        else if(id==R.id.btn_add_tasks) {
             if(!adding_task) {
+
+                if(llTasks.getChildCount()==1) {
+                    if(llTasks.getChildAt(0).getTag()!=null) {
+                        llTasks.removeAllViews();
+                    }
+                }
+
                 View view = inflater.inflate(R.layout.txt_edit_goal_item, llTasks, true);
                 EditText editText = (EditText) view.findViewById(R.id.txt_edit_item_id);
                 editText.setTag("TASK");
@@ -276,7 +335,12 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
             }
         }*/
         else if(id==R.id.btn_add_reminders) {
-            DatePickerFragment newFragment = new DatePickerFragment();
+            if(llReminders.getChildCount()==1) {
+                if(llReminders.getChildAt(0).getTag()!=null) {
+                    llReminders.removeAllViews();
+                }
+            }
+            TimePickerFragment newFragment = new TimePickerFragment();
             newFragment.show(getSupportFragmentManager(), "datePicker");
         }
         else if(id==R.id.btn_delete_action_button) {
@@ -294,7 +358,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 ReminderView reminderView = (ReminderView) oldViewSelected;
                 oldViewSelected.setSelected(false);
                 oldViewSelected = null;
-                goal.deleteReminder(reminderView.getReminderString());
+                goal.deleteReminder(reminderView.getReminder());
                 MySQLiteHelper.updateGoal(this, goal);
                 reminderView.deleteNoteAnimation(new Animations.ViewTerminatorListener(llReminders,reminderView,this));
             }
@@ -303,30 +367,39 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 TaskView taskView = (TaskView) oldViewSelected;
                 oldViewSelected.setSelected(false);
                 oldViewSelected = null;
-                goal.deleteTask(taskView.getTaskString());
+                goal.deleteTask(taskView.getTask());
                 //TODO: debugging to ensure ^^this^^ will always work even if task ahve been changed
                 MySQLiteHelper.updateGoal(this, goal);
                 taskView.completeTaskAnimation(new Animations.ViewTerminatorListener(llTasks,taskView,this));
+                if(llTasks.getChildCount()==0) {
+                    tasksInit();
+                }
             }
             //User wants to delete the goal
             else {
-                MySQLiteHelper.deleteGoal(this,goal);
+                MySQLiteHelper.deleteGoal(this, goal);
                 Toast.makeText(this,"Deleted goal",Toast.LENGTH_LONG).show();
-                startActivity(new Intent(this,MainActivity.class));
+                startActivity(new Intent(this, MainActivity.class));
             }
 
             btnComplete.setText("Complete Goal");
             btnDelete.setText("Delete Goal");
         }
+        else if(v.getId()==R.id.imgview_goal_icon) {
+            goal.addVenture();
+            txtVentures.setText("Ventures: " + goal.getVentures());
+            MySQLiteHelper.updateGoal(this,goal);
+        }
     }
 
-    private void addNewTask(String newTask, View v) {
+    private void addNewTask(String taskString, View v) {
         llTasks.removeView(v);
-        if(newTask.length()>0) {
-            goal.addTask(newTask);
-            MySQLiteHelper.updateGoal(this, goal);
-            llTasks.addView(new TaskView(this, "0" + newTask, this));
-        }
+        Goal.Task newTask = new Goal.Task();
+        newTask.complete = 0;
+        newTask.task = taskString;
+        goal.addTask(newTask);
+        MySQLiteHelper.updateGoal(this, goal);
+        llTasks.addView(new TaskView(this, newTask, this));
     }
 
     private void addNewNote(String newNote, View v) {
@@ -338,22 +411,16 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         }
     }
 
-    private void addNewReminderDate(String note) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month_of_year);
-        calendar.set(Calendar.DAY_OF_MONTH, day_of_month);
-        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-        calendar.set(Calendar.MINUTE, minute);
-        calendar.set(Calendar.SECOND,0);
-        calendar.set(Calendar.MILLISECOND,0);
-        Date newReminderDate = new Date();
-        newReminderDate.setTime(calendar.getTimeInMillis());
-        MySQLiteHelper db = new MySQLiteHelper(this);
-        db.updateGoal(goal);
-        db.close();
-        Notifications.setOneTimeAlarm(this, calendar, goal.getTitle(), note);
-        llReminders.addView(new ReminderView(this, newReminderDate, this));
+    private void addNewReminderDate(String note, boolean[] days_selected, int hourOfDay, int minute) {
+        Goal.Reminder reminder = new Goal.Reminder();
+        reminder.repeating = true;
+        System.arraycopy(days_selected, 0, reminder.days, 0, 7);
+        reminder.hour = hourOfDay;
+        reminder.minute = minute;
+        reminder.note = note;
+        goal.addReminder(reminder);
+        MySQLiteHelper.updateGoal(this, goal);
+        llReminders.addView(new ReminderView(this, reminder, this));
     }
 
 
@@ -382,38 +449,20 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         return false;
     }
 
-    private int year;
-    private int month_of_year;
-    private int day_of_month;
-    private int hourOfDay;
-    private int minute;
-
     @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        TimePickerFragment newFragment = new TimePickerFragment();
-        newFragment.show(getSupportFragmentManager(), "timePicker");
-        this.year = year;
-        this.month_of_year = monthOfYear;
-        this.day_of_month = dayOfMonth;
-    }
-
-    @Override
-    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        this.hourOfDay = hourOfDay;
-        this.minute = minute;
-
+    public void onTimeSet(TimePicker view, final int hourOfDay, final int minute) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Enter a note for your reminder: ");
         // Set up the input
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
+        final ReminderPickerLayout layout = new ReminderPickerLayout(this);
+        builder.setView(layout);
         // Set up the buttons
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String note = input.getText().toString();
-                addNewReminderDate(note);
+                String note = layout.getNote();
+                boolean[] days_selected = layout.getTextViewSelected();
+                addNewReminderDate(note, days_selected, hourOfDay, minute);
             }
         });
         builder.show();
@@ -435,21 +484,5 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         }
     }
 
-
-    public static class DatePickerFragment extends DialogFragment {
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the current date as the default date in the picker
-            final Calendar c = Calendar.getInstance();
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
-
-            // Create a new instance of DatePickerDialog and return it
-            return new DatePickerDialog(getActivity(),
-                    (DatePickerDialog.OnDateSetListener) getActivity(), year, month, day);
-        }
-    }
 
 }

@@ -3,6 +3,7 @@ package io.normyle.ui;
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -22,12 +23,14 @@ public class Animations {
 
         LinearLayout ll;
         View oldView;
+        Activity activity;
 
         public ViewTerminatorListener(LinearLayout ll, View oldView,
                                     Activity activity) {
             super();
             this.ll = ll;
             this.oldView = oldView;
+            this.activity = activity;
         }
 
         @Override
@@ -38,6 +41,13 @@ public class Animations {
         @Override
         public void onAnimationEnd(Animator animation) {
             ll.removeView(oldView);
+            if(ll.getChildCount()==0) {
+                TextView view = new TextView(activity);
+                view.setTag("INFO");
+                view.setText("Click the clipboard to add a goal task.");
+                view.setGravity(Gravity.CENTER_VERTICAL);
+                ll.addView(view);
+            }
         }
 
         @Override

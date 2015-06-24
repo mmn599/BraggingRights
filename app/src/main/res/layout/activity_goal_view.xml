@@ -5,13 +5,15 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:animateLayoutChanges="true"
         android:layout_weight="2">
 
+   <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <TextView
         android:id="@+id/txtview_goal_title"
         android:textStyle="bold"
@@ -19,6 +21,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/accent"
         android:layout_gravity="center"
+        android:gravity="center"
         android:text="Title"
         android:textSize="26dp"/>
 
@@ -26,19 +29,20 @@
             android:id="@+id/imgview_goal_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="3dp"/>
 
-        <TextView
-            android:id="@+id/txt_days_in_progress"
-            android:layout_width="wrap_content"
-            android:layout_marginTop="1dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"/>
+       <TextView
+           android:id="@+id/txtview_goal_ventures"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_gravity="center"
+           android:layout_marginTop="3dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="15dp"
         android:orientation="horizontal">
         <ImageButton
             android:id="@+id/btn_add_tasks"
@@ -57,7 +61,6 @@
             <LinearLayout
                 android:id="@+id/ll_tasks"
                 android:layout_width="match_parent"
-                android:animateLayoutChanges="true"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"/>
         </ScrollView>
@@ -68,7 +71,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="15dp"
         android:orientation="horizontal">
         <ImageButton
             android:id="@+id/btn_add_reminders"
@@ -130,14 +133,6 @@
             android:orientation="vertical"/>
     </ScrollView> -->
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_weight="7">
-
     <LinearLayout
         android:id="@+id/ll_for_the_times"
         android:layout_width="match_parent"
@@ -162,32 +157,65 @@
             android:textSize="18sp"/>
     </LinearLayout>
 
+   </LinearLayout>
+
+    </ScrollView>
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="3">
+
     <RelativeLayout
         android:id="@+id/rl_for_the_buttons"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_margin="16dp"
+        android:layout_height="match_parent"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btn_complete_action_button"
+        <TextView
+            android:id="@+id/txt_days_in_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:text="Complete Goal"
-            android:background="@drawable/add_button_selector_color"/>
+            android:layout_centerHorizontal="true"
+            android:textSize="60sp"/>
+
+        <TextView
+            android:layout_below="@+id/txt_days_in_progress"
+            android:id="@+id/txt_days_in_progress2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textSize="12sp"/>
 
         <Button
+            android:layout_below="@+id/txt_days_in_progress2"
             android:id="@+id/btn_delete_action_button"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="Delete Goal"
+            android:layout_marginLeft="30dp"
+            android:text="Delete\nGoal"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="30dp"
             android:background="@drawable/add_button_selector_color"/>
 
-    </RelativeLayout>
+        <Button
+            android:layout_below="@+id/txt_days_in_progress2"
+            android:id="@+id/btn_complete_action_button"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="20dp"
+            android:text="Complete\nGoal"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/add_button_selector_color"/>
 
-    </LinearLayout>
+
+        </RelativeLayout>
+
+       </LinearLayout>
 
 </LinearLayout>

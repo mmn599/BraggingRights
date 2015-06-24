@@ -1,5 +1,12 @@
 package io.normyle.data;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,21 +27,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String TABLE_GOALS = "goals";
 
     private static final String KEY_ID = "id";
-    private static final String KEY_TITLE = "Title";
-    private static final String KEY_DESCRIPTION = "Description";
-    private static final String KEY_TYPE = "Type";
-    private static final String KEY_TIME = "Time";
-    private static final String KEY_IMPORTANCE = "Importance";
-    private static final String KEY_COMPLETE = "Complete";
-    private static final String KEY_NOTES = "Notes";
-    private static final String KEY_DATE = "Date";
-    private static final String KEY_COMPLETE_DATE = "EndDate";
-    private static final String KEY_REMINDER_STRING = "ReminderDates";
-    private static final String KEY_REMINDER_NOTES = "ReminderNotes";
+    private static final String KEY_GOAL = "goal";
 
-    private static final String[] COLUMNS = {KEY_ID,KEY_TITLE,KEY_DESCRIPTION,KEY_TYPE,
-            KEY_TIME,KEY_IMPORTANCE,KEY_COMPLETE,KEY_NOTES,
-            KEY_DATE,KEY_COMPLETE_DATE, KEY_REMINDER_STRING, KEY_REMINDER_NOTES};
+    private static final String[] COLUMNS = {KEY_ID,KEY_GOAL};
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -45,17 +40,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         // SQL statement to create book table
         String CREATE_GOALS_TABLE = "CREATE TABLE "+TABLE_GOALS+"(" +
                 KEY_ID+" INTEGER PRIMARY KEY AUTOINCREMENT," +
-                KEY_TITLE+" TEXT,"+
-                KEY_DESCRIPTION+" TEXT,"+
-                KEY_TYPE+" TEXT,"+
-                KEY_TIME+" TEXT,"+
-                KEY_IMPORTANCE+" INTEGER,"+
-                KEY_COMPLETE+" INTEGER,"+
-                KEY_NOTES+" TEXT,"+
-                KEY_DATE+" INTEGER,"+
-                KEY_COMPLETE_DATE+" INTEGER,"+
-                KEY_REMINDER_STRING +" TEXT,"+
-                KEY_REMINDER_NOTES+" TEXT"+")";
+                KEY_GOAL+" BLOB)";
         // create goals table
         db.execSQL(CREATE_GOALS_TABLE);
 
@@ -70,23 +55,31 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     }
 
     public long addGoal(Goal goal) {
-        //for logging
-        Log.d("addGoals", goal.toString());
-        // 1. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
-        // 2. create ContentValues to add key "column"/value
         ContentValues values = new ContentValues();
-        values.put(KEY_TITLE, goal.getTitle()); // get title
-        values.put(KEY_DESCRIPTION, goal.getDescription()); // get author
-        values.put(KEY_TYPE, goal.getType());
-        values.put(KEY_TIME, goal.getTime());
-        values.put(KEY_IMPORTANCE, goal.getImportance());
-        values.put(KEY_COMPLETE, goal.getComplete());
-        values.put(KEY_NOTES, goal.getGoalNotes());
-        values.put(KEY_DATE, goal.getStartDateLong());
-        values.put(KEY_COMPLETE_DATE, goal.getCompletedDateLong());
-        values.put(KEY_REMINDER_STRING, goal.getReminderString());
-        values.put(KEY_REMINDER_NOTES, goal.getReminderNotesString());
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        try {
+            out = new ObjectOutputStream(bos);
+            out.writeObject(goal);
+            byte[] bytes = bos.toByteArray();
+            values.put(KEY_GOAL, bytes);
+        } catch(IOException e) {
+
+        } finally {
+            try {
+                if(out!=null) {
+                    out.close();
+                }
+            } catch(IOException e) {
+
+            }
+            try {
+                bos.close();
+            } catch(IOException e) {
+
+            }
+        }
         // 3. insert
         long id = db.insert(TABLE_GOALS, // table
                 null, //nullColumnHack
@@ -116,24 +109,33 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         if (cursor != null)
             cursor.moveToFirst();
 
-        // 4. build book object
-        Goal goal = new Goal();
-        goal.setId(Integer.parseInt(cursor.getString(0)));
-        goal.setTitle(cursor.getString(1));
-        goal.setDescription(cursor.getString(2));
-        goal.setType(cursor.getString(3));
-        goal.setTime(cursor.getString(4));
-        goal.setImportance(Integer.parseInt(cursor.getString(5)));
-        goal.setComplete(Integer.parseInt(cursor.getString(6)));
-        goal.setGoalNotes(cursor.getString(7));
-        goal.setStartDate(Long.parseLong(cursor.getString(8)));
-        goal.setCompletedDate(Long.parseLong(cursor.getString(9)));
-        goal.setReminderString(cursor.getString(10));
-        goal.setReminderNotesString(cursor.getString(11));
-        //log
-        Log.d("getBook("+id+")", goal.toString());
+        int my_id = cursor.getInt(0);
 
-        // 5. return book
+        byte[] bytes = cursor.getBlob(1);
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        ObjectInput in = null;
+        Goal goal = null;
+        try {
+            in = new ObjectInputStream(bis);
+            Object o = in.readObject();
+            goal = (Goal) o;
+            goal.setId(my_id);
+        } catch(Exception e) {
+
+        } finally {
+            try {
+                bis.close();
+            } catch (IOException ex) {
+                // ignore close exception
+            }
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException ex) {
+                // ignore close exception
+            }
+        }
         return goal;
     }
 
@@ -147,19 +149,31 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     }
 
     public void updateGoal(Goal g) {
-        ContentValues cv = new ContentValues();
-        cv.put(KEY_TITLE,g.getTitle()); //These Fields should be your String values of actual column names
-        cv.put(KEY_DESCRIPTION,g.getDescription());
-        cv.put(KEY_TYPE,g.getType());
-        cv.put(KEY_TIME, g.getTime());
-        cv.put(KEY_IMPORTANCE, g.getImportance());
-        cv.put(KEY_COMPLETE, g.getComplete());
-        cv.put(KEY_NOTES, g.getGoalNotes());
-        cv.put(KEY_DATE, g.getStartDateLong());
-        cv.put(KEY_COMPLETE_DATE, g.getCompletedDateLong());
-        cv.put(KEY_REMINDER_STRING, g.getReminderString());
-        cv.put(KEY_REMINDER_NOTES, g.getReminderNotesString());
-        this.getWritableDatabase().update(TABLE_GOALS, cv, KEY_ID+" "+"="+String.valueOf(g.getId()), null);
+        ContentValues values = new ContentValues();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        try {
+            out = new ObjectOutputStream(bos);
+            out.writeObject(g);
+            byte[] bytes = bos.toByteArray();
+            values.put(KEY_GOAL, bytes);
+        } catch(IOException e) {
+
+        } finally {
+            try {
+                if(out!=null) {
+                    out.close();
+                }
+            } catch(IOException e) {
+
+            }
+            try {
+                bos.close();
+            } catch(IOException e) {
+
+            }
+        }
+        this.getWritableDatabase().update(TABLE_GOALS, values, KEY_ID+" "+"="+String.valueOf(g.getId()), null);
     }
 
     // Getting All Contacts
@@ -174,19 +188,32 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Goal goal = new Goal();
-                goal.setId(Integer.parseInt(cursor.getString(0)));
-                goal.setTitle(cursor.getString(1));
-                goal.setDescription(cursor.getString(2));
-                goal.setType(cursor.getString(3));
-                goal.setTime(cursor.getString(4));
-                goal.setImportance(Integer.parseInt(cursor.getString(5)));
-                goal.setComplete(Integer.parseInt(cursor.getString(6)));
-                goal.setGoalNotes(cursor.getString(7));
-                goal.setStartDate(Long.parseLong(cursor.getString(8)));
-                goal.setCompletedDate(Long.parseLong(cursor.getString(9)));
-                goal.setReminderString(cursor.getString(10));
-                goal.setReminderNotesString(cursor.getString(11));
+                int my_id = cursor.getInt(0);
+                byte[] bytes = cursor.getBlob(1);
+                ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+                ObjectInput in = null;
+                Goal goal = null;
+                try {
+                    in = new ObjectInputStream(bis);
+                    Object o = in.readObject();
+                    goal = (Goal) o;
+                    goal.setId(my_id);
+                } catch(Exception e) {
+
+                } finally {
+                    try {
+                        bis.close();
+                    } catch (IOException ex) {
+                        // ignore close exception
+                    }
+                    try {
+                        if (in != null) {
+                            in.close();
+                        }
+                    } catch (IOException ex) {
+                        // ignore close exception
+                    }
+                }
                 // Adding contact to list
                 goalList.add(goal);
             } while (cursor.moveToNext());
