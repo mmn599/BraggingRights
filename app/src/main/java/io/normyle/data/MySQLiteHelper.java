@@ -64,8 +64,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             out.writeObject(goal);
             byte[] bytes = bos.toByteArray();
             values.put(KEY_GOAL, bytes);
-        } catch(IOException e) {
-
+        } catch(Exception   e) {
+            e.printStackTrace();
         } finally {
             try {
                 if(out!=null) {
@@ -136,6 +136,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 // ignore close exception
             }
         }
+        cursor.close();
         return goal;
     }
 

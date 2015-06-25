@@ -58,7 +58,7 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
         holder.goalTypeView.setImageResource(type.getImageId());
         holder.goalTypeView.setColor(type.getColor());
 
-        List<String> taskList = goal.getTaskList();
+        List<Goal.Task> taskList = goal.getTasks();
         holder.txtDescription.setText(Goal.createSpannableString(taskList, true, true, true));
 
         return row;

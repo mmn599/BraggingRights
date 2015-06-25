@@ -266,9 +266,9 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                     oldViewSelected.setSelected(false);
                     oldViewSelected = null;
                     Goal.Task newTask = goal.updateTask(taskView.getTask(), Goal.COMPLETE);
-                    MySQLiteHelper.updateGoalInBackground(this, goal);
                     (taskView).completeTaskAnimation(
                             new TaskView.TaskAnimatorListener(llTasks, taskView, newTask, this, this));
+                    MySQLiteHelper.updateGoal(this, goal);
                 }
                 btnComplete.setText("Complete\nGoal");
                 btnDelete.setText("Delete\nGoal");
@@ -387,7 +387,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         }
         else if(v.getId()==R.id.imgview_goal_icon) {
             goal.addVenture();
-            txtVentures.setText("Ventures: " + goal.getVentures());
+            txtVentures.setText("Ventures: " + goal.getVentures().size());
             MySQLiteHelper.updateGoal(this,goal);
         }
     }

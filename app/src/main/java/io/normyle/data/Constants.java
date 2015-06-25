@@ -3,6 +3,9 @@ package io.normyle.data;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.text.SpannableStringBuilder;
+import android.text.style.BulletSpan;
+import android.text.style.StrikethroughSpan;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -26,9 +29,16 @@ public class Constants {
 
 
     public static HashMap<String,GoalType> getGoalTypes() {
-
         return goalTypes;
+    }
 
+    public static SpannableStringBuilder
+    createBulletString(String string) {
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        int current = 0;
+        builder = builder.append(string);
+        builder.setSpan(new BulletSpan(15), current, current + string.length(), 0);
+        return builder;
     }
 
     public static void setup(Context context) {

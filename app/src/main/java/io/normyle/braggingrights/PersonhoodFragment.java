@@ -1,6 +1,7 @@
 package io.normyle.braggingrights;
 
 import android.graphics.Color;
+import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -8,22 +9,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.LimitLine;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import io.matthew.braggingrights.R;
+import io.normyle.data.Constants;
 import io.normyle.data.Goal;
 import io.normyle.data.MySQLiteHelper;
+import io.normyle.ui.MyMarkerView;
 
 public class PersonhoodFragment extends Fragment {
 
-    GraphView graphVentures;
-    GraphView graphTasks;
-    GraphView graphGoals;
+    LineChart mTaskChart;
 
     public PersonhoodFragment() {
         // Required empty public constructor
@@ -40,56 +49,170 @@ public class PersonhoodFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_personhood, container, false);
 
-        graphVentures = (GraphView) view.findViewById(R.id.graph_ventures);
-        graphTasks = (GraphView) view.findViewById(R.id.graph_tasks);
-        graphGoals = (GraphView) view.findViewById(R.id.graph_goals);
+        mTaskChart = (LineChart) view.findViewById(R.id.chart_tasks);
 
-        setupVentures(getVentures());
-        setupTasks(getTasks());
-        setupGoals(getGoals());
+        List<Goal> goals = getGoals();
+
+        setupCharts();
+
+        setupTasks(goals);
 
         return view;
 
     }
 
-    private void setupVentures(List<Goal.Venture> ventures) {
-
-    }
-
-    private void setupTasks(List<Goal.Task> tasks) {
-
-    }
-
-    private void setupGoals(List<Goal> goals) {
-
-    }
-
-    private List<Goal.Venture> getVentures() {
-        List<Goal> goals = getGoals();
-        List<Goal.Venture> ventures = new ArrayList<Goal.Venture>();
-        for(Goal goal : goals) {
-            for(Goal.Venture venture : goal.getVentures()) {
-                ventures.add(venture);
+  /*  private void setupVentures(List<Goal> goals) {
+        for(Constants.GoalType goalType : Constants.getGoalTypes().values()) {
+            //get all goals of goalType
+            List<Goal> relevantGoals = Goal.getGoalsOfType(goals,goalType);
+            //initialize data for graph
+            DataPoint[] data = new DataPoint[5];
+            for(int i=0;i<data.length;i++) {
+                //get time period
+                Calendar beginning = GregorianCalendar.getInstance();
+                beginning.setFirstDayOfWeek(Calendar.SUNDAY);
+                beginning.set(Calendar.DAY_OF_WEEK, beginning.getFirstDayOfWeek());
+                beginning.set(Calendar.HOUR, 0);
+                beginning.set(Calendar.MINUTE, 0);
+                beginning.set(Calendar.SECOND, 0);
+                beginning.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - i);
+                Calendar end = GregorianCalendar.getInstance();
+                end.setFirstDayOfWeek(Calendar.SUNDAY);
+                end.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                end.set(Calendar.HOUR, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 59);
+                end.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - i);
+                Date a = beginning.getTime();
+                Date b = end.getTime();
+                //get ventures within time period of goals of right type
+                List<Goal.Venture> relevantVentures = new ArrayList<>();
+                for(Goal.Venture venture : Goal.getAllVentures(relevantGoals)) {
+                    if(venture.date.after(a) && venture.date.before(b)) {
+                        relevantVentures.add(venture);
+                    }
+                }
+                data[i] = new DataPoint(i,relevantVentures.size());
             }
+            LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
+            series.setColor(goalType.getColor());
+            mGraphVentures.addSeries(series);
         }
-        return ventures;
+    } */
+
+    private void setupTasks(List<Goal> goals) {
+        ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
+        boolean first = true;
+        ArrayList<String> xVals = new ArrayList<String>();
+        for(Constants.GoalType goalType : Constants.getGoalTypes().values()) {
+            //get all goals of goalType
+            List<Goal> relevantGoals = Goal.getGoalsOfType(goals, goalType);
+            //initialize data for graph
+            ArrayList<Entry> yVals = new ArrayList<Entry>();
+            for (int i = 0; i < 5; i++) {
+                //get time period
+                Calendar beginning = GregorianCalendar.getInstance();
+                beginning.setFirstDayOfWeek(Calendar.SUNDAY);
+                beginning.set(Calendar.DAY_OF_WEEK, beginning.getFirstDayOfWeek());
+                beginning.set(Calendar.HOUR, 0);
+                beginning.set(Calendar.MINUTE, 0);
+                beginning.set(Calendar.SECOND, 0);
+                beginning.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - (4-i));
+                Calendar end = GregorianCalendar.getInstance();
+                end.setFirstDayOfWeek(Calendar.SUNDAY);
+                end.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                end.set(Calendar.HOUR, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 59);
+                end.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - (4-i));
+                Date a = beginning.getTime();
+                Date b = end.getTime();
+                //get ventures within time period of goals of right type
+                List<Goal.Task> relevantTasks = new ArrayList<>();
+                for (Goal.Task task : Goal.getAllCompleteTasks(relevantGoals)) {
+                    if (task.completeDate.after(a) && task.completeDate.before(b)) {
+                        relevantTasks.add(task);
+                    }
+                }
+                yVals.add(new Entry(relevantTasks.size(),i));
+                if(first) {
+                    xVals.add(new SimpleDateFormat("M d").format(beginning.getTime()));
+                }
+            }
+            first = false;
+            LineDataSet set = new LineDataSet(yVals, goalType.getType());
+            set.setColor(goalType.getColor());
+            dataSets.add(set);
+        }
+        LineData data = new LineData(xVals, dataSets);
+        mTaskChart.setData(data);
     }
 
-    private List<Goal.Task> getTasks() {
-        List<Goal> goals = getGoals();
-        List<Goal.Task> tasks = new ArrayList<Goal.Task>();
-        for(Goal goal : goals) {
-            for(Goal.Task task : goal.getTasks()) {
-                tasks.add(task);
+   /* private void setupGoals(List<Goal> goals) {
+        for(Constants.GoalType goalType : Constants.getGoalTypes().values()) {
+            //get all goals of goalType
+            List<Goal> relevantGoals = Goal.getGoalsOfType(goals, goalType);
+            //initialize data for graph
+            DataPoint[] data = new DataPoint[5];
+            for (int i = 0; i < data.length; i++) {
+                //get time period
+                Calendar beginning = GregorianCalendar.getInstance();
+                beginning.setFirstDayOfWeek(Calendar.SUNDAY);
+                beginning.set(Calendar.DAY_OF_WEEK, beginning.getFirstDayOfWeek());
+                beginning.set(Calendar.HOUR, 0);
+                beginning.set(Calendar.MINUTE, 0);
+                beginning.set(Calendar.SECOND, 0);
+                beginning.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - i);
+                Calendar end = GregorianCalendar.getInstance();
+                end.setFirstDayOfWeek(Calendar.SUNDAY);
+                end.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                end.set(Calendar.HOUR, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 59);
+                end.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - i);
+                Date a = beginning.getTime();
+                Date b = end.getTime();
+                List<Goal> complete = new ArrayList<Goal>();
+                for (Goal goal : relevantGoals) {
+                    if (goal.getCompleteDate().after(a) && goal.getCompleteDate().before(b)
+                            && goal.getComplete()==Goal.COMPLETE) {
+                        complete.add(goal);
+                    }
+                }
+                data[i] = new DataPoint(i, complete.size());
             }
+            LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
+            series.setColor(goalType.getColor());
+            mGraphGoals.addSeries(series);
         }
-        return tasks;
-    }
+
+    } */
 
     private List<Goal> getGoals() {
         MySQLiteHelper db = new MySQLiteHelper(getActivity());
         List<Goal> goals = db.getAllGoals();
         db.close();
         return goals;
+    }
+
+    private void setupCharts() {
+        // no description text
+        mTaskChart.setDescription("");
+        mTaskChart.setNoDataTextDescription("You need to provide data for the chart.");
+
+        YAxis leftAxis = mTaskChart.getAxisLeft();
+        leftAxis.setAxisMaxValue(20);
+        leftAxis.setAxisMinValue(0);
+        leftAxis.setStartAtZero(false);
+        leftAxis.setDrawGridLines(false);
+
+        XAxis xAxis = mTaskChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextSize(10f);
+        xAxis.setTextColor(Color.RED);
+        xAxis.setDrawGridLines(false);
+        xAxis.setAvoidFirstLastClipping(true);
+
+        mTaskChart.getAxisRight().setEnabled(false);
     }
 }

@@ -65,7 +65,7 @@ public class ReminderView extends TextView {
 
         this.reminder = reminder;
 
-        this.setText(Goal.createSpannableString(reminder.note+" "+reminder.hour+":"+reminder.minute+" "+dayString, false));
+        this.setText(Constants.createBulletString(reminder.note+" "+reminder.hour+":"+reminder.minute+" "+dayString));
 
         selected_color = context.getResources().getColor(R.color.accent);
         unselected_color = this.getCurrentTextColor();

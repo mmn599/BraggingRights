@@ -11,7 +11,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class Goal {
+public class Goal implements Serializable {
 
 	/*
 	TODO: better equality checking for task/reminders
@@ -26,6 +26,10 @@ public class Goal {
     private int _id;
     private int complete;
     private String goalNotes;
+
+    private ArrayList<Reminder> goalReminders;
+    private ArrayList<Task> goalTasks;
+    private ArrayList<Venture> goalVentures;
 
     public static class Reminder implements Serializable {
         public boolean repeating;
@@ -81,9 +85,6 @@ public class Goal {
         }
     }
 
-    private ArrayList<Reminder> goalReminders;
-    private ArrayList<Task> goalTasks;
-    private ArrayList<Venture> goalVentures;
 
     public static final SimpleDateFormat dateFormatForReminders =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -191,6 +192,10 @@ public class Goal {
         return completeDate.getTime();
     }
 
+    public Date getCompleteDate() {
+        return completeDate;
+    }
+
 
     /**
      * Returns unformatted goalNotes.
@@ -283,7 +288,7 @@ public class Goal {
     }
 
     public void deleteNote(String note) {
-        goalNotes = goalNotes.replace(note+"\r","");
+        goalNotes = goalNotes.replace(note + "\r", "");
     }
 
     public void deleteTask(Task task) {
@@ -374,6 +379,39 @@ public class Goal {
 
     public ArrayList<Venture> getVentures() {
         return goalVentures;
+    }
+
+    public static List<Goal> getGoalsOfType(List<Goal> goals, Constants.GoalType type) {
+        List<Goal> relevantGoals = new ArrayList<Goal>();
+        for(Goal goal : goals) {
+            if(goal.getType().equals(type.getType())) {
+                relevantGoals.add(goal);
+            }
+        }
+        return relevantGoals;
+    }
+
+    public static List<Venture> getAllVentures(List<Goal> goals) {
+        List<Venture> ventures = new ArrayList<Venture>();
+        for(Goal goal : goals) {
+            for(Venture venture : goal.getVentures()) {
+                ventures.add(venture);
+            }
+        }
+        return ventures;
+    }
+
+
+    public static List<Task> getAllCompleteTasks(List<Goal> goals) {
+        List<Task> tasks = new ArrayList<Task>();
+        for(Goal goal : goals) {
+            for(Task task : goal.getTasks()) {
+                if(task.complete==Goal.COMPLETE) {
+                    tasks.add(task);
+                }
+            }
+        }
+        return tasks;
     }
 }
 

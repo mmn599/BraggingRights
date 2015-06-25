@@ -4,32 +4,9 @@
     android:orientation="vertical"
     tools:context="io.normyle.braggingrights.PersonhoodFragment">
 
-    <ScrollView
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/chart_tasks"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-    <com.jjoe64.graphview.GraphView
-        android:layout_width="match_parent"
-        android:layout_height="200dip"
-        android:id="@+id/graph_ventures"/>
-
-    <com.jjoe64.graphview.GraphView
-        android:layout_width="match_parent"
-        android:layout_height="200dip"
-        android:id="@+id/graph_tasks" />
-
-    <com.jjoe64.graphview.GraphView
-        android:layout_width="match_parent"
-        android:layout_height="200dip"
-        android:id="@+id/graph_goals" />
-
-
-        </LinearLayout>
-    </ScrollView>
+        android:layout_height="200dip" />
 
 </LinearLayout>

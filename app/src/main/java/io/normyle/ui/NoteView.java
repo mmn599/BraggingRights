@@ -43,7 +43,7 @@ public class NoteView extends FrameLayout {
         setOnClickListener(listener);
         View view = inflater.inflate(R.layout.noteview_layout,this,true);
         title = (TextView) view.findViewById(R.id.txtview_note_contents);
-        title.setText(Goal.createSpannableString(noteString,false));
+//        title.setText(Goal.createSpannableString(noteString,false));
     }
 
     public NoteView(Context context, AttributeSet attrs) {
