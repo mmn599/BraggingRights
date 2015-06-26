@@ -16,7 +16,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.utils.ValueFormatter;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,6 +35,8 @@ import io.normyle.ui.MyMarkerView;
 public class PersonhoodFragment extends Fragment {
 
     LineChart mTaskChart;
+    LineChart mGoalsChart;
+    LineChart mVenturesChart;
 
     public PersonhoodFragment() {
         // Required empty public constructor
@@ -50,24 +54,34 @@ public class PersonhoodFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_personhood, container, false);
 
         mTaskChart = (LineChart) view.findViewById(R.id.chart_tasks);
+        mGoalsChart = (LineChart) view.findViewById(R.id.chart_goals);
+        mVenturesChart = (LineChart) view.findViewById(R.id.chart_ventures);
 
         List<Goal> goals = getGoals();
 
-        setupCharts();
-
         setupTasks(goals);
+        setupGoals(goals);
+        setupVentures(goals);
+
+        List<LineChart> charts = new ArrayList<>();
+        charts.add(mTaskChart);
+        charts.add(mGoalsChart);
+        charts.add(mVenturesChart);
+        setupCharts(charts);
 
         return view;
-
     }
 
-  /*  private void setupVentures(List<Goal> goals) {
+    private void setupVentures(List<Goal> goals) {
+        ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
+        boolean first = true;
+        ArrayList<String> xVals = new ArrayList<String>();
         for(Constants.GoalType goalType : Constants.getGoalTypes().values()) {
             //get all goals of goalType
-            List<Goal> relevantGoals = Goal.getGoalsOfType(goals,goalType);
+            List<Goal> relevantGoals = Goal.getGoalsOfType(goals, goalType);
             //initialize data for graph
-            DataPoint[] data = new DataPoint[5];
-            for(int i=0;i<data.length;i++) {
+            ArrayList<Entry> yVals = new ArrayList<Entry>();
+            for (int i = 0; i < 5; i++) {
                 //get time period
                 Calendar beginning = GregorianCalendar.getInstance();
                 beginning.setFirstDayOfWeek(Calendar.SUNDAY);
@@ -75,30 +89,38 @@ public class PersonhoodFragment extends Fragment {
                 beginning.set(Calendar.HOUR, 0);
                 beginning.set(Calendar.MINUTE, 0);
                 beginning.set(Calendar.SECOND, 0);
-                beginning.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - i);
+                beginning.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - (4-i));
                 Calendar end = GregorianCalendar.getInstance();
                 end.setFirstDayOfWeek(Calendar.SUNDAY);
                 end.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
                 end.set(Calendar.HOUR, 23);
                 end.set(Calendar.MINUTE, 59);
                 end.set(Calendar.SECOND, 59);
-                end.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - i);
+                end.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - (4-i));
                 Date a = beginning.getTime();
                 Date b = end.getTime();
                 //get ventures within time period of goals of right type
                 List<Goal.Venture> relevantVentures = new ArrayList<>();
-                for(Goal.Venture venture : Goal.getAllVentures(relevantGoals)) {
-                    if(venture.date.after(a) && venture.date.before(b)) {
+                for (Goal.Venture venture : Goal.getAllVentures(relevantGoals)) {
+                    if (venture.date.after(a) && venture.date.before(b)) {
                         relevantVentures.add(venture);
                     }
                 }
-                data[i] = new DataPoint(i,relevantVentures.size());
+                yVals.add(new Entry(relevantVentures.size(),i));
+                if(first) {
+                    xVals.add(new SimpleDateFormat("M d").format(beginning.getTime()));
+                }
             }
-            LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
-            series.setColor(goalType.getColor());
-            mGraphVentures.addSeries(series);
+            first = false;
+            LineDataSet set = new LineDataSet(yVals, goalType.getType());
+            set.setColor(goalType.getColor());
+            set.setCircleColor(goalType.getColor());
+            set.setCircleSize(5f);
+            dataSets.add(set);
         }
-    } */
+        LineData data = new LineData(xVals, dataSets);
+        mVenturesChart.setData(data);
+    }
 
     private void setupTasks(List<Goal> goals) {
         ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
@@ -142,19 +164,25 @@ public class PersonhoodFragment extends Fragment {
             first = false;
             LineDataSet set = new LineDataSet(yVals, goalType.getType());
             set.setColor(goalType.getColor());
+            set.setCircleColor(goalType.getColor());
+            set.setCircleSize(5f);
             dataSets.add(set);
         }
         LineData data = new LineData(xVals, dataSets);
         mTaskChart.setData(data);
     }
 
-   /* private void setupGoals(List<Goal> goals) {
+    private void setupGoals(List<Goal> goals) {
+        ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
+        boolean first = true;
+        ArrayList<String> xVals = new ArrayList<String>();
         for(Constants.GoalType goalType : Constants.getGoalTypes().values()) {
             //get all goals of goalType
+            //TODO: don't get all goals
             List<Goal> relevantGoals = Goal.getGoalsOfType(goals, goalType);
             //initialize data for graph
-            DataPoint[] data = new DataPoint[5];
-            for (int i = 0; i < data.length; i++) {
+            ArrayList<Entry> yVals = new ArrayList<Entry>();
+            for (int i = 0; i < 5; i++) {
                 //get time period
                 Calendar beginning = GregorianCalendar.getInstance();
                 beginning.setFirstDayOfWeek(Calendar.SUNDAY);
@@ -162,31 +190,39 @@ public class PersonhoodFragment extends Fragment {
                 beginning.set(Calendar.HOUR, 0);
                 beginning.set(Calendar.MINUTE, 0);
                 beginning.set(Calendar.SECOND, 0);
-                beginning.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - i);
+                beginning.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - (4-i));
                 Calendar end = GregorianCalendar.getInstance();
                 end.setFirstDayOfWeek(Calendar.SUNDAY);
                 end.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
                 end.set(Calendar.HOUR, 23);
                 end.set(Calendar.MINUTE, 59);
                 end.set(Calendar.SECOND, 59);
-                end.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - i);
+                end.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - (4-i));
                 Date a = beginning.getTime();
                 Date b = end.getTime();
                 List<Goal> complete = new ArrayList<Goal>();
                 for (Goal goal : relevantGoals) {
-                    if (goal.getCompleteDate().after(a) && goal.getCompleteDate().before(b)
-                            && goal.getComplete()==Goal.COMPLETE) {
+                    if (goal.getComplete()==Goal.COMPLETE
+                            && goal.getCompleteDate().after(a) &&
+                            goal.getCompleteDate().before(b)) {
                         complete.add(goal);
                     }
                 }
-                data[i] = new DataPoint(i, complete.size());
+                yVals.add(new Entry(complete.size(),i));
+                if(first) {
+                    xVals.add(new SimpleDateFormat("M d").format(beginning.getTime()));
+                }
             }
-            LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
-            series.setColor(goalType.getColor());
-            mGraphGoals.addSeries(series);
+            first = false;
+            LineDataSet set = new LineDataSet(yVals, goalType.getType());
+            set.setColor(goalType.getColor());
+            set.setCircleSize(5f);
+            set.setCircleColor(goalType.getColor());
+            dataSets.add(set);
         }
-
-    } */
+        LineData data = new LineData(xVals, dataSets);
+        mGoalsChart.setData(data);
+    }
 
     private List<Goal> getGoals() {
         MySQLiteHelper db = new MySQLiteHelper(getActivity());
@@ -195,24 +231,46 @@ public class PersonhoodFragment extends Fragment {
         return goals;
     }
 
-    private void setupCharts() {
-        // no description text
-        mTaskChart.setDescription("");
-        mTaskChart.setNoDataTextDescription("You need to provide data for the chart.");
+    private void setupCharts(List<LineChart> charts) {
 
-        YAxis leftAxis = mTaskChart.getAxisLeft();
-        leftAxis.setAxisMaxValue(20);
-        leftAxis.setAxisMinValue(0);
-        leftAxis.setStartAtZero(false);
-        leftAxis.setDrawGridLines(false);
+        for(LineChart chart : charts) {
 
-        XAxis xAxis = mTaskChart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setTextSize(10f);
-        xAxis.setTextColor(Color.RED);
-        xAxis.setDrawGridLines(false);
-        xAxis.setAvoidFirstLastClipping(true);
+            // no description text
+            chart.setDescription("");
+            chart.setNoDataTextDescription("You need to provide data for the chart.");
 
-        mTaskChart.getAxisRight().setEnabled(false);
+            YAxis leftAxis = chart.getAxisLeft();
+            leftAxis.setAxisMaxValue(20);
+            leftAxis.setAxisMinValue(0);
+            leftAxis.setStartAtZero(false);
+            leftAxis.setDrawGridLines(false);
+            leftAxis.setValueFormatter(new MyValueFormatter());
+
+            XAxis xAxis = chart.getXAxis();
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setTextSize(10f);
+            xAxis.setDrawGridLines(false);
+            xAxis.setAvoidFirstLastClipping(true);
+
+            chart.getAxisRight().setEnabled(false);
+
+            chart.getLineData().setValueTextSize(13f);
+            chart.getLineData().setValueFormatter(new MyValueFormatter());
+        }
+    }
+
+    public static class MyValueFormatter implements ValueFormatter {
+
+        private DecimalFormat mFormat;
+
+        public MyValueFormatter() {
+            mFormat = new DecimalFormat("###,###,##0"); // use one decimal
+        }
+
+        @Override
+        public String getFormattedValue(float value) {
+            return mFormat.format(value);
+        }
+
     }
 }

@@ -188,7 +188,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         collapsed_reminders = false;
 
         txtVentures = (TextView) findViewById(R.id.txtview_goal_ventures);
-        txtVentures.setText("Ventures: " + goal.getVentures());
+        txtVentures.setText("Ventures: " + goal.getVentures().size());
 
         GoalTypeView gt = (GoalTypeView) findViewById(R.id.imgview_goal_icon);
         gt.setOnClickListener(this);

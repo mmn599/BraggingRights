@@ -2,11 +2,36 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="io.normyle.braggingrights.PersonhoodFragment">
+    tools:context="io.normyle.braggingrights.PersonhoodFragment"
+    android:background="@null">
+
+
+    <ScrollView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+    <LinearLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="vertical">
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/chart_ventures"
+        android:layout_width="match_parent"
+        android:layout_height="200dip" />
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart_tasks"
         android:layout_width="match_parent"
         android:layout_height="200dip" />
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/chart_goals"
+        android:layout_width="match_parent"
+        android:layout_height="200dip" />
+
+    </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>
