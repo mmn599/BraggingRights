@@ -53,8 +53,14 @@ public class GoalAdapter extends ArrayAdapter<Goal> {
         holder.txtTitle.setText(goal.getTitle());
 
         //TODO: this is crappy code. change to hash
-        HashMap<String, Constants.GoalType> goalTypes = Constants.getGoalTypes();
-        Constants.GoalType type = goalTypes.get(goal.getType());
+        List<Constants.GoalType> goalTypes = Constants.getGoalTypes(context);
+        String typeString = goal.getType();
+        Constants.GoalType type = null;
+        for(Constants.GoalType gt : goalTypes) {
+            if(typeString.equals(gt.getType())) {
+                type = gt;
+            }
+        }
         holder.goalTypeView.setImageResource(type.getImageId());
         holder.goalTypeView.setColor(type.getColor());
 

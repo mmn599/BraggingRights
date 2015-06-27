@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +27,8 @@ public class Goal implements Serializable {
     private int _id;
     private int complete;
     private String goalNotes;
+
+    private int dateOffset;
 
     private ArrayList<Reminder> goalReminders;
     private ArrayList<Task> goalTasks;
@@ -80,8 +83,11 @@ public class Goal implements Serializable {
 
     public static class Venture implements Serializable {
         public Date date;
-        public Venture() {
-            date = new Date();
+        public Venture(int dateOffset) {
+            /* for DB padding only */
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.WEEK_OF_YEAR, calendar.get(Calendar.WEEK_OF_YEAR) - dateOffset);
+            date = calendar.getTime();
         }
     }
 
@@ -96,10 +102,11 @@ public class Goal implements Serializable {
      * Default constructor, typically used by the database to build a new goal.
      */
     public Goal() {
-        this("","","","",0);
+        this("","","","",0,0);
     }
 
-    public Goal(String goaltitle, String goaldescription, String goaltype, String goaltime, int goalimportance) {
+    public Goal(String goaltitle, String goaldescription, String goaltype,
+                String goaltime, int goalimportance, int dateOffset) {
         this.goalTitle = goaltitle;
         this.goalType = goaltype;
         this.goalTime = goaltime;
@@ -107,12 +114,22 @@ public class Goal implements Serializable {
         this._id = 0;
         this.complete = 0;
         this.goalNotes = "";
-        this.startDate = new Date(); //sets startDate to current time
-        this.completeDate = new Date();
+
+
+        /* for DB padding only */
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.WEEK_OF_YEAR, calendar.get(Calendar.WEEK_OF_YEAR) - dateOffset);
+
+        this.startDate = calendar.getTime(); //sets startDate to current time
+        this.completeDate = calendar.getTime();
+
         this.goalReminders = new ArrayList<Reminder>();
         this.goalTasks = new ArrayList<Task>();
         this.goalVentures = new ArrayList<Venture>();
        // this.goalReminders = new ArrayList<Reminder>();
+
+        /* TODO: remove */
+        this.dateOffset = dateOffset;
     }
 
     /**
@@ -249,7 +266,10 @@ public class Goal implements Serializable {
 
     public void setComplete(int input) {
         if(input==1) {
-            completeDate = new Date();
+            /* for DB padding only */
+            Calendar date = Calendar.getInstance();
+            date.set(Calendar.WEEK_OF_YEAR, date.get(Calendar.WEEK_OF_YEAR) - dateOffset);
+            completeDate = date.getTime();
         }
         complete=input;
     }
@@ -262,18 +282,6 @@ public class Goal implements Serializable {
         goalTasks.add(task);
     }
 
-    public void setImportance(int imp) {
-        goal_importance = imp;
-    }
-
-    public void setGoalNotes(String input) {
-        goalNotes = input;
-    }
-
-    public void setStartDate(long input) {
-        startDate = new Date(input);
-    }
-
     public ArrayList<Task> getTasks() {
         return goalTasks;
     }
@@ -282,7 +290,10 @@ public class Goal implements Serializable {
         task = goalTasks.get(goalTasks.indexOf(task));
         task.complete = complete;
         if(task.complete==Goal.COMPLETE) {
-            task.completeDate = new Date();
+            /* for DB padding only */
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.WEEK_OF_YEAR, calendar.get(Calendar.WEEK_OF_YEAR) - dateOffset);
+            task.completeDate = calendar.getTime();
         }
         return task;
     }
@@ -293,10 +304,6 @@ public class Goal implements Serializable {
 
     public void deleteTask(Task task) {
         goalTasks.remove(task);
-    }
-
-    public void setCompletedDate(long input) {
-        completeDate = new Date(input);
     }
 
     public String toString() {
@@ -374,7 +381,7 @@ public class Goal implements Serializable {
     }
 
     public void addVenture() {
-        goalVentures.add(new Venture());
+        goalVentures.add(new Venture(dateOffset));
     }
 
     public ArrayList<Venture> getVentures() {
@@ -412,6 +419,16 @@ public class Goal implements Serializable {
             }
         }
         return tasks;
+    }
+
+    public static List<Goal> getCompleteGoals(List<Goal> goals) {
+        List<Goal> completedGoals = new ArrayList<>();
+        for(Goal goal : goals) {
+            if(goal.getComplete()==Goal.COMPLETE) {
+                completedGoals.add(goal);
+            }
+        }
+        return completedGoals;
     }
 }
 

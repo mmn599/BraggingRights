@@ -22,18 +22,20 @@ import io.normyle.data.Constants;
 import io.normyle.data.Goal;
 import io.normyle.data.MySQLiteHelper;
 import io.normyle.ui.GoalTypeView;
+import io.normyle.ui.GoalTypeViewer;
 
 public class CreateGoalActivity extends ActionBarActivity implements View.OnClickListener {
 
     EditText txtTitle;
     boolean title_in;
-    String type;
     String time;
     RadioButton radioYears;
     FloatingActionButton btnComplete;
-    LinearLayout llicons;
-    ArrayList<Constants.GoalType> goalTypes;
-    ArrayList<GoalTypeView> typeViews;
+    GoalTypeViewer mGoalTypeViewer;
+    View selected;
+
+    //TODO: remove
+    EditText offset;
 
 
     @Override
@@ -66,55 +68,29 @@ public class CreateGoalActivity extends ActionBarActivity implements View.OnClic
             }
         });
 
-        llicons = (LinearLayout) findViewById(R.id.ll_icons);
+        mGoalTypeViewer = (GoalTypeViewer) findViewById(R.id.goaltypeviewer_create);
 
-
-        /* todo: background */
-        goalTypes = new ArrayList<Constants.GoalType>(Constants.getGoalTypes().values());
-        typeViews = new ArrayList<GoalTypeView>();
         setupTypes();
 
         radioYears = (RadioButton) findViewById(R.id.radio_days);
         radioYears.setChecked(true);
         time = "Days";
+
+        offset = (EditText) findViewById(R.id.txt_offset);
     }
 
     public void setupTypes() {
-
-        LinearLayout.LayoutParams buttonLayoutParams =
-                new LinearLayout.LayoutParams(180, 170);
-        buttonLayoutParams.setMargins(0,0,70,0);
-
-        for(Constants.GoalType goalType : goalTypes) {
-            //TODO : performance
-            GoalTypeView view = new GoalTypeView(this, null, goalType.getColor());
-            view.setImageResource(goalType.getImageId());
-            view.setTag(goalType.getType());
-            view.setOnClickListener(this);
-            view.setColor(goalType.getColor());
-
-            typeViews.add(view);
-            llicons.addView(view);
-
-            view.setLayoutParams(buttonLayoutParams);
-        }
-
-        /* TODO: add exception for empty categories */
-        typeViews.get(0).setSelected(true);
-        type = (String) typeViews.get(0).getTag();
-
+        mGoalTypeViewer.setOnClickListener(this);
+        mGoalTypeViewer.setData(Constants.getGoalTypes(this));
+        mGoalTypeViewer.setSpacing(40);
     }
 
     public void onClick(View v) {
         int id = v.getId();
         if(id==R.id.btn_complete_button) {
             String title = txtTitle.getText().toString();
-            createGoal(new Goal(title,"",type,time,1));
-        }
-        else {
-            deselectButtons();
-            v.setSelected(true);
-            type = (String) v.getTag();
+            createGoal(new Goal(title,"",mGoalTypeViewer.getSelected(),time,1,
+                    Integer.parseInt(offset.getText().toString())));
         }
     }
 
@@ -136,9 +112,7 @@ public class CreateGoalActivity extends ActionBarActivity implements View.OnClic
     }
 
     private void deselectButtons() {
-        for(GoalTypeView btn : typeViews) {
-            btn.setSelected(false);
-        }
+
     }
 
     private void createGoal(Goal goal) {

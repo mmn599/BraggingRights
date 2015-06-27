@@ -12,6 +12,7 @@
         <activity android:name="io.normyle.braggingrights.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -46,9 +47,8 @@
         </receiver>
 
         <activity
-            android:name="io.normyle.braggingrights.NewViewGoalActivity"
-            android:label="@string/title_activity_new_view_goal"
-            android:parentActivityName="io.normyle.braggingrights.MainActivity">
+            android:name="io.normyle.braggingrights.AnimationActivity"
+            android:label="@string/title_activity_animation" >
         </activity>
     </application>
 

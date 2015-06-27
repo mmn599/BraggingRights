@@ -3,4 +3,6 @@
         <attr name="imageResource" format="reference" />
         <attr name="cc" format="color" />
     </declare-styleable>
+    <declare-styleable name="GoalTypeViewer">
+    </declare-styleable>
 </resources>

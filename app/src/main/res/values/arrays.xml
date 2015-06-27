@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="icon_arr">
+        <item>@drawable/biceps1</item>
+        <item>@drawable/books8</item>
+        <item>@drawable/leaf70</item>
+        <item>@drawable/sprint</item>
+        <item>@drawable/sunny35</item>
+    </string-array>
+</resources>

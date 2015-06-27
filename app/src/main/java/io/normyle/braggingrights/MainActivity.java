@@ -39,6 +39,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     public static final String PRESENT_TITLE = "In Progress";
     public static final String PAST_TITLE = "Completed";
     public static final String PERSONHOOD_TITLE = "Personhood";
+    public static final String CATEGORIES_TITLE = "Categories";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         title = drawerTitle = getTitle();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList = (ListView) findViewById(R.id.left_drawer);
-        String areas[] = {"In Progress","Completed","Personhood"};
+        String areas[] = {PRESENT_TITLE,PAST_TITLE,PERSONHOOD_TITLE,CATEGORIES_TITLE};
         drawerList.setAdapter(new DrawerAdapter(this,R.layout.drawer_listview_row,areas));
         drawerList.setOnItemClickListener(this);
         drawerToggle = new ActionBarDrawerToggle(
@@ -142,7 +143,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     public void onClick(View v) {
         if(v.getId()==R.id.btn_action_button) {
-            startActivity(new Intent(this,CreateGoalActivity.class));
+            startActivity(new Intent(this, CreateGoalActivity.class));
         }
     }
 
@@ -184,6 +185,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             viewing_goals = false;
             setTitle(PERSONHOOD_TITLE);
             updateFragment(new PersonhoodFragment());
+        }
+        //settings
+        else if(position==3) {
+            viewing_goals = false;
+            setTitle(CATEGORIES_TITLE);
+            updateFragment(new SettingsFragment());
         }
         drawerLayout.closeDrawers();
     }

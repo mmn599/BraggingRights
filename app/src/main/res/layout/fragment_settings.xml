@@ -1,0 +1,71 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context="io.normyle.braggingrights.SettingsFragment">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+
+
+    <io.normyle.ui.GoalTypeViewer
+        android:id="@+id/goaltypeviewer_settings"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"/>
+
+    <LinearLayout
+        android:id="@+id/ll_types"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:animateLayoutChanges="true">
+    <Button
+        android:id="@+id/btn_add"
+        android:layout_width="wrap_content"
+        android:text="Add"
+        android:background="@drawable/add_button_selector_color"
+        android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/txt_goal_type_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textCapWords"
+            android:imeOptions="actionDone"
+            android:hint="Enter category name"/>
+        <com.larswerkman.holocolorpicker.ColorPicker
+            android:id="@+id/colorpicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <it.sephiroth.android.library.widget.HListView
+            android:id="@+id/hl_icons"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_height="40dp"
+            android:background="@null" />
+    </LinearLayout>
+
+
+</LinearLayout>
+
+
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/btn_complete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/check"
+        fab:fab_colorNormal="@color/primary"
+        fab:fab_colorPressed="@color/primary_dark"
+        fab:fab_colorRipple="@color/primary_dark" />
+
+    </RelativeLayout>

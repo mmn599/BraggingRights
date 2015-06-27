@@ -153,10 +153,18 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         findViewById(R.id.btn_add_note_id).setOnClickListener(this);*/
 
 
-        HashMap<String, Constants.GoalType> goalTypes = Constants.getGoalTypes();
-        Constants.GoalType type = goalTypes.get(goal.getType());
-        imgIcon.setImageResource(type.getImageId());
-        imgIcon.setColor(type.getColor());
+        List<Constants.GoalType> goalTypes = Constants.getGoalTypes(this);
+        String typeString = goal.getType();
+        Constants.GoalType myType = null;
+        for(Constants.GoalType type : goalTypes) {
+            if(type.getType().equals(typeString)) {
+                myType = type;
+            }
+        }
+        if(myType!=null) {
+            imgIcon.setImageResource(myType.getImageId());
+            imgIcon.setColor(myType.getColor());
+        }
 
         txtStartTime.setText("Started on: \n" + goal.getStartDateString());
         if(goal.getComplete()==Goal.COMPLETE) {

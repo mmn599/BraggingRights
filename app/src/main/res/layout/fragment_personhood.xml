@@ -2,36 +2,109 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="io.normyle.braggingrights.PersonhoodFragment"
-    android:background="@null">
+    tools:context="io.normyle.braggingrights.PersonhoodFragment">
 
+        <io.normyle.ui.GoalTypeViewer
+            android:id="@+id/goaltypeviewer_personhood"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"/>
 
-    <ScrollView
-        android:layout_height="match_parent"
-        android:layout_width="match_parent">
+        <TextView
+            android:id="@+id/txtview_goal_type"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/accent"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/txtview_goals"
+                android:textColor="@color/accent"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginRight="10dp"
+                android:textSize="26sp"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/txtview_goals_des"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:text="Goals"/>
+        </LinearLayout>
+
 
     <LinearLayout
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:orientation="vertical">
-
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chart_ventures"
-        android:layout_width="match_parent"
-        android:layout_height="200dip" />
-
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chart_tasks"
-        android:layout_width="match_parent"
-        android:layout_height="200dip" />
-
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chart_goals"
-        android:layout_width="match_parent"
-        android:layout_height="200dip" />
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/txtview_tasks"
+            android:layout_width="wrap_content"
+            android:textColor="@color/accent"
+            android:layout_gravity="center"
+            android:layout_marginRight="10dp"
+            android:textSize="26sp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/txtview_tasks_des"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:text="Tasks"/>
 
     </LinearLayout>
 
-    </ScrollView>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/txtview_ventures"
+            android:layout_width="wrap_content"
+            android:textColor="@color/accent"
+            android:layout_gravity="center"
+            android:layout_marginRight="10dp"
+            android:textSize="26sp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/txtview_ventures_des"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Ventures"/>
+
+        </LinearLayout>
+
+
+    <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
+        <Spinner
+            android:id="@+id/spinner_which_chart"
+            android:layout_width="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="5dp"
+            android:layout_height="wrap_content">
+            <requestFocus />
+        </Spinner>
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/chart_data"
+            android:background="@null"
+            android:layout_width="match_parent"
+            android:layout_height="250dip"/>
+
+        </RelativeLayout>
 
 </LinearLayout>

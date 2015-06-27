@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import io.matthew.braggingrights.R;
+import io.normyle.braggingrights.MainActivity;
 
 /**
  * Created by MatthewNew on 12/17/2014.
@@ -46,14 +47,17 @@ public class DrawerAdapter extends ArrayAdapter<String> {
         }
 
         String location = data[position];
-        if(location.equals("In Progress")) {
+        if(location.equals(MainActivity.PRESENT_TITLE)) {
             holder.image.setImageResource(R.drawable.present_icon);
         }
-        else if(location.equals("Completed")) {
+        else if(location.equals(MainActivity.PAST_TITLE)) {
             holder.image.setImageResource(R.drawable.past_icon);
         }
-        else {
+        else if(location.equals(MainActivity.PERSONHOOD_TITLE))  {
             holder.image.setImageResource(R.drawable.personhood_icon);
+        }
+        else {
+            holder.image.setImageResource(R.drawable.gear);
         }
         holder.txt.setText(location);
         return row;

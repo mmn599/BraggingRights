@@ -8,8 +8,8 @@
     tools:context="io.normyle.braggingrights.CreateGoalActivity">
 
 
-    <LinearLayout
-        android:id="@+id/ll_icons"
+    <io.normyle.ui.GoalTypeViewer
+        android:id="@+id/goaltypeviewer_create"
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:layout_height="wrap_content"
@@ -18,13 +18,13 @@
         android:focusableInTouchMode="true"
         android:gravity="center">
         <requestFocus />
-    </LinearLayout>
+    </io.normyle.ui.GoalTypeViewer>
 
     <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:id="@+id/radiogroup_time"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ll_icons"
+        android:layout_below="@+id/goaltypeviewer_create"
         android:orientation="horizontal">
         <RadioButton android:id="@+id/radio_days"
             android:layout_width="fill_parent"
@@ -76,5 +76,12 @@
         android:hint="Title"
         android:layout_marginTop="20dp"
         android:gravity="center"/>
+
+    <EditText
+        android:id="@+id/txt_offset"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"/>
 
 </RelativeLayout>

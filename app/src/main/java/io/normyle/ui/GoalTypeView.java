@@ -20,17 +20,20 @@ import io.matthew.braggingrights.R;
  */
 public class GoalTypeView extends View {
 
+    public static int DEFAULT_SIZE = 63;
+
     Paint mCirclePaint;
     Paint mSelectedPaint;
     int mWidth;
     int mHeight;
     int mColor;
+    int mSize = 63;
     int mImageResource;
     boolean mSelected;
     Bitmap mImage;
 
     public GoalTypeView(Context context) {
-        this(context, null);
+        this(context,null);
     }
 
     public GoalTypeView(Context context, AttributeSet attrs) {
@@ -85,6 +88,10 @@ public class GoalTypeView extends View {
         mSelectedPaint.setStrokeWidth(6);
     }
 
+    public void setSize(int size) {
+        mSize = size;
+    }
+
     @Override
     public void setSelected(boolean selected) {
         super.setSelected(selected);
@@ -111,12 +118,16 @@ public class GoalTypeView extends View {
                     mHeight/2 - mImage.getHeight()/2, null);
         }
         if(mSelected) {
-            canvas.drawCircle(mWidth / 2, mHeight / 2, 63, mSelectedPaint);
+            canvas.drawCircle(mWidth / 2, mHeight / 2, mSize, mSelectedPaint);
         }
+    }
+
+    public int getColor() {
+        return mColor;
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(132, 132);
+        setMeasuredDimension(mSize*2+5, mSize*2+5);
     }
 }

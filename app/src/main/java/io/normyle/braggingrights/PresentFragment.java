@@ -156,10 +156,11 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
                 txtviewIntro.setText("You don't have any goals.");
                 toolTip.withText("Click here to add one.");
                 toolTipView = toolTipRelativeLayout.showToolTipForView(toolTip, fab);
-            } else {
-                txtviewIntro.setText("When you complete a goal, it will be displayed here.");
             }
             txtviewIntro.setVisibility(View.VISIBLE);
+        }
+        if(!display_present && Goal.getCompleteGoals(goals).size()==0) {
+            txtviewIntro.setText("When you complete a goal it will be displayed here.");
         }
         else {
             txtviewIntro.setVisibility(View.GONE);
