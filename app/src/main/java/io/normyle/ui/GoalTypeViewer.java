@@ -1,6 +1,7 @@
 package io.normyle.ui;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -8,6 +9,7 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.matthew.braggingrights.R;
 import io.normyle.braggingrights.PersonhoodFragment;
 import io.normyle.data.Constants;
 
@@ -68,13 +70,16 @@ public class GoalTypeViewer extends LinearLayout implements View.OnClickListener
                     view.setLayoutParams(params);
                 }
                 view.setTag(type.getType());
-                if(i==0) {
-                    view.setSelected(true);
-                    mSelected = view;
-                }
                 view.setOnClickListener(this);
                 this.addView(view);
             }
+        }
+    }
+
+    public void selectFirst() {
+        if(this.getChildCount()>0) {
+            mSelected = (GoalTypeView) this.getChildAt(0);
+            mSelected.setBackgroundColor(mContext.getResources().getColor(R.color.amber_500));
         }
     }
 
@@ -82,12 +87,12 @@ public class GoalTypeViewer extends LinearLayout implements View.OnClickListener
         if(mSelected!=null) {
             return (String) mSelected.getTag();
         }
-        throw new RuntimeException();
+        return MagicListener.UNSELECTED_STRING;
     }
 
     public void clearSelected() {
         if(mSelected!=null) {
-            mSelected.setSelected(false);
+            mSelected.setBackgroundColor(Color.TRANSPARENT);
         }
         if(mListener!=null) {
             mListener.onChange(MagicListener.UNSELECTED_STRING);
@@ -111,17 +116,17 @@ public class GoalTypeViewer extends LinearLayout implements View.OnClickListener
     @Override
     public void onClick(View v) {
         if(mSelected!=null) {
-            mSelected.setSelected(false);
+            mSelected.setBackgroundColor(Color.TRANSPARENT);
         }
         if(!(mSelected==v) || mIgnoreReclicks) {
-            v.setSelected(true);
+            v.setBackgroundColor(mContext.getResources().getColor(R.color.amber_500));
             mSelected = (GoalTypeView) v;
             if (mListener != null) {
                 mListener.onChange((String) v.getTag());
             }
         }
         else {
-            v.setSelected(false);
+            mSelected.setBackgroundColor(Color.TRANSPARENT);
             mSelected = null;
             if(mListener!=null) {
                 mListener.onChange(MagicListener.UNSELECTED_STRING);

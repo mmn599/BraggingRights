@@ -1,31 +1,31 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:orientation="vertical"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:layout_height="match_parent"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="io.normyle.braggingrights.CreateGoalActivity">
 
 
-    <io.normyle.ui.GoalTypeViewer
-        android:id="@+id/goaltypeviewer_create"
+    <HorizontalScrollView
+        android:id="@+id/scroll_goal_types"
         android:layout_width="match_parent"
-        android:orientation="horizontal"
         android:layout_height="wrap_content"
-        android:focusable="true"
-        android:layout_marginBottom="15dp"
-        android:focusableInTouchMode="true"
-        android:gravity="center">
-        <requestFocus />
-    </io.normyle.ui.GoalTypeViewer>
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="16dp">
+    <io.normyle.ui.GoalTypeViewer
+        android:id="@+id/viewer_goal_types"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content"/>
+    </HorizontalScrollView>
 
     <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:id="@+id/radiogroup_time"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/goaltypeviewer_create"
-        android:orientation="horizontal">
+        android:layout_below="@+id/scroll_goal_types"
+        android:orientation="horizontal"
+        android:layout_margin="16dp">
         <RadioButton android:id="@+id/radio_days"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -74,6 +74,7 @@
         android:layout_height="wrap_content"
         android:inputType="textCapWords"
         android:hint="Title"
+        android:layout_margin="16dp"
         android:layout_marginTop="20dp"
         android:gravity="center"/>
 

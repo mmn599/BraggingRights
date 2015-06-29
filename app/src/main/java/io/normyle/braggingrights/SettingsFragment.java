@@ -36,7 +36,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     FloatingActionButton mFab;
     HListView mListViewIcons;
 
-    GoalTypeViewer mGoalTypeViewer;
+    GoalTypeViewer mViewerGoalType;
+
 
     IconAdapter mIconAdapter;
 
@@ -75,11 +76,19 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                 getActivity(),R.layout.icon_row,data);
         mListViewIcons.setAdapter(mIconAdapter);
         mListViewIcons.setVisibility(View.GONE);
-        mGoalTypeViewer = (GoalTypeViewer) v.findViewById(R.id.goaltypeviewer_settings);
-        mGoalTypeViewer.setReclicks(false);
-        mGoalTypeViewer.clearSelected();
-        mGoalTypeViewer.setListener(this);
+
+
+        mViewerGoalType = (GoalTypeViewer) v.findViewById(R.id.viewer_goal_types);
+        mViewerGoalType.setListener(this);
+        mViewerGoalType.setReclicks(false);
+        mViewerGoalType.clearSelected();
+
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     private static class IconAdapter extends ArrayAdapter<Integer> implements View.OnClickListener {
@@ -133,7 +142,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onClick(View v) {
         if(v.getId()==R.id.btn_add) {
-            if(mSelectedType.equals(MagicListener.UNSELECTED_STRING)) {
+            if(mViewerGoalType.getSelected().equals(MagicListener.UNSELECTED_STRING)) {
                 v.setVisibility(View.GONE);
                 mTxtGoalTypeName.setVisibility(View.VISIBLE);
                 mColorPicker.setVisibility(View.VISIBLE);
@@ -142,8 +151,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             }
             else {
                 //trying to delete a type
-                deleteType(mSelectedType);
-                mGoalTypeViewer.clearSelected();
+                deleteType(mViewerGoalType.getSelected());
             }
         }
         if(v.getId()==R.id.btn_complete_button) {
@@ -151,12 +159,13 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                 v.setVisibility(View.GONE);
                 Constants.GoalType goalType = new Constants.GoalType(mTxtGoalTypeName.getText().toString(),
                         mIconAdapter.getImgId(),mColorPicker.getColor());
-                Constants.addGoalType(getActivity(),goalType);
-                mGoalTypeViewer.updateData();
+                Constants.addGoalType(getActivity(), goalType);
+                mViewerGoalType.updateData();
                 mTxtGoalTypeName.setVisibility(View.GONE);
                 mColorPicker.setVisibility(View.GONE);
                 mFab.setVisibility(View.GONE);
                 mListViewIcons.setVisibility(View.GONE);
+                mTxtGoalTypeName.setText("");
                 mBtnAdd.setVisibility(View.VISIBLE);
             }
         }
@@ -171,16 +180,13 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         }
         if(goalType!=null) {
             Constants.deleteGoalType(getActivity(), goalType);
-            mGoalTypeViewer.updateData();
+            mViewerGoalType.updateData();
         }
     }
 
-    private String mSelectedType = MagicListener.UNSELECTED_STRING;
-
     @Override
     public void onChange(String type) {
-        mSelectedType = type;
-        if(mSelectedType.equals(MagicListener.UNSELECTED_STRING)) {
+        if(type.equals(UNSELECTED_STRING)) {
             mBtnAdd.setText("Add");
         }
         else {

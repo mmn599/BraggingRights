@@ -12,12 +12,19 @@
     android:layout_height="wrap_content">
 
 
-    <io.normyle.ui.GoalTypeViewer
-        android:id="@+id/goaltypeviewer_settings"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
+    <HorizontalScrollView
+        android:id="@+id/scroll_goal_types"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="16dp">
+        <io.normyle.ui.GoalTypeViewer
+            android:id="@+id/viewer_goal_types"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"/>
+    </HorizontalScrollView>
+
 
     <LinearLayout
         android:id="@+id/ll_types"

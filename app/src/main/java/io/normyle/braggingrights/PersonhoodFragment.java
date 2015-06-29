@@ -1,10 +1,12 @@
 package io.normyle.braggingrights;
 
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -33,10 +35,13 @@ import io.matthew.braggingrights.R;
 import io.normyle.data.Constants;
 import io.normyle.data.Goal;
 import io.normyle.data.MySQLiteHelper;
+import io.normyle.ui.GoalTypeAdapter;
 import io.normyle.ui.GoalTypeViewer;
 import io.normyle.ui.MagicListener;
+import it.sephiroth.android.library.widget.HListView;
 
-public class PersonhoodFragment extends Fragment implements AdapterView.OnItemSelectedListener, MagicListener {
+public class PersonhoodFragment extends Fragment implements
+        AdapterView.OnItemSelectedListener, MagicListener {
 
     LineChart mChart;
     String[] mAccomplishmentTypeStrings = {"Ventures","Tasks","Goals"};
@@ -93,13 +98,19 @@ public class PersonhoodFragment extends Fragment implements AdapterView.OnItemSe
         mTxtviewTasksDes = (TextView) view.findViewById(R.id.txtview_tasks_des);
         mTxtviewVenturesDes = (TextView) view.findViewById(R.id.txtview_ventures_des);
 
-        GoalTypeViewer viewer =
-                (GoalTypeViewer) view.findViewById(R.id.goaltypeviewer_personhood);
-        viewer.setListener(this);
-        mBackground = view.getBackground();
 
+        GoalTypeViewer viewer = (GoalTypeViewer) view.findViewById(R.id.viewer_goal_types);
+        viewer.setListener(this);
+        viewer.selectFirst();
+        mBackground = view.getBackground();
         setupTextInfo(viewer.getSelected());
+        viewer.clearSelected();
         return view;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
     }
 
     private void setupVentures() {
@@ -152,7 +163,7 @@ public class PersonhoodFragment extends Fragment implements AdapterView.OnItemSe
             dataSets.add(set);
         }
         LineData data = new LineData(xVals, dataSets);
-        mChart.getAxisLeft().setAxisMaxValue(16);
+        mChart.getAxisLeft().setAxisMaxValue(10);
         mChart.setData(data);
     }
 
@@ -324,26 +335,11 @@ public class PersonhoodFragment extends Fragment implements AdapterView.OnItemSe
 
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String value = mAccomplishmentTypeStrings[position];
-        if(value.equals("Ventures")) {
-            setupVentures();
-        }
-        else if(value.equals("Tasks")) {
-            setupTasks();
-        }
-        else {
-            setupGoals();
-        }
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        setupVentures();
-    }
 
     private void setupTextInfo(String type) {
+        if(type.equals(UNSELECTED_STRING)) {
+            return;
+        }
         mTxtviewTypeTitle.setText(type + " totals:");
         Constants.GoalType goalType = null;
         for(Constants.GoalType curtype : Constants.getGoalTypes(getActivity())) {
@@ -384,11 +380,32 @@ public class PersonhoodFragment extends Fragment implements AdapterView.OnItemSe
         }
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String value = ((TextView)view).getText().toString();
+        if(value.equals("Ventures")) {
+            setupVentures();
+        }
+        else if(value.equals("Tasks")) {
+            setupTasks();
+        }
+        else {
+            setupGoals();
+        }
+    }
+
+
+    @Override
     public void onChange(String type) {
-        setupTextInfo(type);
+        if(!type.equals(UNSELECTED_STRING)) {
+            setupTextInfo(type);
+        }
     }
 
-    public void onColorPick(int color) {
-
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        setupVentures();
     }
+
 }
+

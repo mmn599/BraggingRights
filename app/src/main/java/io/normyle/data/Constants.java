@@ -148,6 +148,12 @@ public class Constants {
                 new GoalType("Body", R.drawable.sprint, res.getColor(R.color.red_400)));
         goalTypes.add(
                 new GoalType("Spirit", R.drawable.sunny35, res.getColor(R.color.yellow_500)));
+        goalTypes.add(
+                new GoalType("Cake", R.drawable.sunny35, res.getColor(R.color.yellow_500)));
+        goalTypes.add(
+                new GoalType("Food", R.drawable.sunny35, res.getColor(R.color.yellow_500)));
+        goalTypes.add(
+                new GoalType("Love", R.drawable.sunny35, res.getColor(R.color.yellow_500)));
         writeTypes(context, goalTypes);
         return goalTypes;
     }

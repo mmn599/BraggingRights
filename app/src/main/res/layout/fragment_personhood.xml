@@ -1,22 +1,46 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="16dp"
     tools:context="io.normyle.braggingrights.PersonhoodFragment">
 
+
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/cardview_types"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        card_view:cardElevation="2dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+    <HorizontalScrollView
+        android:id="@+id/scroll_goal_types"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="2dp">
         <io.normyle.ui.GoalTypeViewer
-            android:id="@+id/goaltypeviewer_personhood"
-            android:layout_gravity="center"
+            android:id="@+id/viewer_goal_types"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"/>
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"/>
+    </HorizontalScrollView>
 
         <TextView
             android:id="@+id/txtview_goal_type"
             android:layout_width="wrap_content"
             android:layout_gravity="center"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:textColor="@color/accent"/>
 
         <LinearLayout
@@ -85,11 +109,22 @@
 
         </LinearLayout>
 
+        </LinearLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/cardview_charts"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardElevation="2dp">
 
     <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
+            android:layout_height="wrap_content">
         <Spinner
             android:id="@+id/spinner_which_chart"
             android:layout_width="wrap_content"
@@ -106,5 +141,7 @@
             android:layout_height="250dip"/>
 
         </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
 
 </LinearLayout>

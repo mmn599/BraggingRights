@@ -106,8 +106,6 @@ public class GoalTypeView extends View {
         this.mHeight = h;
     }
 
-
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
