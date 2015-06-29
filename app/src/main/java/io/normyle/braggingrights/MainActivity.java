@@ -23,30 +23,33 @@ import io.normyle.ui.DrawerAdapter;
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener,ListView.OnItemClickListener {
 
-    ActionBarDrawerToggle drawerToggle;
-    DrawerLayout drawerLayout;
-    ListView drawerList;
-    CharSequence drawerTitle;
-    CharSequence title;
-    ActionBar actionBar;
+    private ActionBarDrawerToggle drawerToggle;
+    private DrawerLayout drawerLayout;
+    private ListView drawerList;
+    private CharSequence drawerTitle;
+    private CharSequence title;
+    private ActionBar actionBar;
 
     boolean viewing_goals;
 
     public static final String PASTGOALS = "PAST";
     public static final String PRESENTGOALS = "PRESENT";
     public static final String PERSONHOODFRAGMENT = "PERSONHOOD";
+    public static final String SETTINGSFRAGMENT = "SETTINGS";
 
     public static final String PRESENT_TITLE = "In Progress";
     public static final String PAST_TITLE = "Completed";
     public static final String PERSONHOOD_TITLE = "Personhood";
     public static final String CATEGORIES_TITLE = "Categories";
 
+    private boolean mSetup;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Constants.setup(this);
+        mSetup = Constants.isSetup(this);
 
         actionBar = getSupportActionBar();
         title = drawerTitle = getTitle();
@@ -71,8 +74,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         };
         drawerLayout.setDrawerListener(drawerToggle);
 
+        if(mSetup) {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
+        }
 
         //sets up a few constants
         Point size = new Point();
@@ -81,35 +86,46 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         Constants.SCREEN_HEIGHT = size.y;
     }
 
+    public void finishedSetup() {
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
+        mSetup = true;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        // Create a new Fragment to be placed in the activity layout
-        viewing_goals = true;
-        Fragment initialFragment = new PresentFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString(PresentFragment.WHICH_GOALS, PRESENTGOALS);
-        initialFragment.setArguments(bundle);
-        setTitle(PRESENT_TITLE);
-        Intent callingIntent = getIntent();
-        if(callingIntent!=null) {
-            Bundle extras = getIntent().getExtras();
-            if(extras!=null) {
-                if (extras.containsKey("WHICH_FRAGMENT")) {
-                    String s = getIntent().getExtras().getString("WHICH_FRAGMENT");
-                    if (s.equals(PASTGOALS)) {
-                        initialFragment = new PresentFragment();
-                        bundle = new Bundle();
-                        bundle.putString(PresentFragment.WHICH_GOALS,PASTGOALS);
-                        initialFragment.setArguments(bundle);
-                        setTitle(PAST_TITLE);
-                    } else if (s.equals(PERSONHOODFRAGMENT)) {
-                        initialFragment = new PersonhoodFragment();
-                        setTitle(PERSONHOOD_TITLE);
-                        viewing_goals = false;
+        Fragment initialFragment = null;
+        if(mSetup) {
+            viewing_goals = true;
+            initialFragment = new PresentFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString(PresentFragment.WHICH_GOALS, PRESENTGOALS);
+            initialFragment.setArguments(bundle);
+            setTitle(PRESENT_TITLE);
+            Intent callingIntent = getIntent();
+            if (callingIntent != null) {
+                Bundle extras = getIntent().getExtras();
+                if (extras != null) {
+                    if (extras.containsKey("WHICH_FRAGMENT")) {
+                        String s = getIntent().getExtras().getString("WHICH_FRAGMENT");
+                        if (s.equals(PASTGOALS)) {
+                            initialFragment = new PresentFragment();
+                            bundle = new Bundle();
+                            bundle.putString(PresentFragment.WHICH_GOALS, PASTGOALS);
+                            initialFragment.setArguments(bundle);
+                            setTitle(PAST_TITLE);
+                        } else if (s.equals(PERSONHOODFRAGMENT)) {
+                            initialFragment = new PersonhoodFragment();
+                            setTitle(PERSONHOOD_TITLE);
+                            viewing_goals = false;
+                        }
                     }
                 }
             }
+        }
+        else {
+            initialFragment = new SettingsFragment();
         }
         // Add the fragment to the 'fragment_container' FrameLayout
         getSupportFragmentManager().beginTransaction()
@@ -137,7 +153,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             return true;
         }
         // Handle your other action bar items...
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -147,15 +162,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
     }
 
-    //TODO: get better performance with background threads and shit
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
         Fragment current = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         if(current instanceof PresentFragment) {
             ((PresentFragment) current).removeTooltip();
         }
-
         //present
         if(position==0 || position==1) {
             Bundle bundle = new Bundle();
@@ -199,6 +211,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment);
         transaction.commit();
+    }
+
+    public boolean isSetup() {
+        return mSetup;
     }
 
 }

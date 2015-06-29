@@ -6,5 +6,15 @@
         <item>@drawable/leaf70</item>
         <item>@drawable/sprint</item>
         <item>@drawable/sunny35</item>
+        <item>@drawable/check52</item>
+        <item>@drawable/finances1</item>
+        <item>@drawable/flamenco22</item>
+        <item>@drawable/happy6</item>
+        <item>@drawable/happy50</item>
+        <item>@drawable/mask13</item>
+        <item>@drawable/money132</item>
+        <item>@drawable/prize3</item>
+        <item>@drawable/stopwatch</item>
+        <item>@drawable/woman5</item>
     </string-array>
 </resources>

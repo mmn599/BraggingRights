@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
 
@@ -21,6 +22,7 @@ import io.normyle.data.Goal;
 import io.normyle.data.MySQLiteHelper;
 import io.normyle.ui.GoalTypeAdapter;
 import io.normyle.ui.GoalTypeViewer;
+import io.normyle.ui.MagicListener;
 
 public class CreateGoalActivity extends ActionBarActivity implements View.OnClickListener {
 
@@ -30,7 +32,6 @@ public class CreateGoalActivity extends ActionBarActivity implements View.OnClic
     RadioButton radioYears;
     FloatingActionButton btnComplete;
     GoalTypeViewer mGoalTypeViewer;
-    View mSelectedType = null;
 
     //TODO: remove
     EditText offset;
@@ -68,6 +69,7 @@ public class CreateGoalActivity extends ActionBarActivity implements View.OnClic
 
         mGoalTypeViewer = (GoalTypeViewer) findViewById(R.id.viewer_goal_types);
         mGoalTypeViewer.setReclicks(true);
+        mGoalTypeViewer.selectFirst();
 
         radioYears = (RadioButton) findViewById(R.id.radio_days);
         radioYears.setChecked(true);
@@ -79,10 +81,11 @@ public class CreateGoalActivity extends ActionBarActivity implements View.OnClic
     public void onClick(View v) {
         int id = v.getId();
         if(id==R.id.btn_complete_button) {
-            String title = txtTitle.getText().toString();
-            createGoal(new Goal(title,"",
-                    ((TextView)mSelectedType.findViewById(R.id.txtview_type_description)).getText().toString()
-                    ,time,1,Integer.parseInt(offset.getText().toString())));
+            if(validateInput()) {
+                String title = txtTitle.getText().toString();
+                createGoal(new Goal(title, "",
+                        mGoalTypeViewer.getSelected(), time, 1, Integer.parseInt(offset.getText().toString())));
+            }
         }
     }
 
@@ -110,6 +113,22 @@ public class CreateGoalActivity extends ActionBarActivity implements View.OnClic
         data.putInt("GOAL_ID", id);
         intent.putExtras(data);
         startActivity(intent);
+    }
+
+    private boolean validateInput() {
+        if(txtTitle.getText()==null) {
+            Toast.makeText(this,"Make sure to put a goal title",Toast.LENGTH_LONG).show();
+            return false;
+        }
+        else if(mGoalTypeViewer.getSelected().equals(MagicListener.UNSELECTED_STRING)) {
+            Toast.makeText(this,"Make sure to select a goal type", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        else if(offset.getText()==null) {
+            Toast.makeText(this,"Put an offset stupid bitch",Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
     }
 
 }

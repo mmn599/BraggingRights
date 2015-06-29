@@ -24,13 +24,16 @@ public class Animations {
         LinearLayout ll;
         View oldView;
         Activity activity;
+        //TASKS OR REMINDERS
+        String which;
 
         public ViewTerminatorListener(LinearLayout ll, View oldView,
-                                    Activity activity) {
+                                    Activity activity, String which) {
             super();
             this.ll = ll;
             this.oldView = oldView;
             this.activity = activity;
+            this.which = which;
         }
 
         @Override
@@ -44,7 +47,12 @@ public class Animations {
             if(ll.getChildCount()==0) {
                 TextView view = new TextView(activity);
                 view.setTag("INFO");
-                view.setText("Click the clipboard to add a goal task.");
+                if (which.equals("REMINDERS")) {
+                    view.setText("Click the clock add a goal reminder.");
+                }
+                else if (which.equals("TASKS")) {
+                    view.setText("Click the clipboard to add a goal task.");
+                }
                 view.setGravity(Gravity.CENTER_VERTICAL);
                 ll.addView(view);
             }

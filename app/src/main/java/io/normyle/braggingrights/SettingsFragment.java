@@ -1,18 +1,28 @@
 package io.normyle.braggingrights;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.PagerAdapter;
+import android.support.v7.widget.CardView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.melnykov.fab.FloatingActionButton;
@@ -35,11 +45,16 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     ColorPicker mColorPicker;
     FloatingActionButton mFab;
     HListView mListViewIcons;
+    TextView mTxtIntro;
+    HorizontalScrollView mScrollGoalTypes;
 
     GoalTypeViewer mViewerGoalType;
 
+    boolean mSetup;
 
     IconAdapter mIconAdapter;
+
+    MainActivity mActivity;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -48,6 +63,12 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mActivity = (MainActivity) activity;
     }
 
     @Override
@@ -77,18 +98,51 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         mListViewIcons.setAdapter(mIconAdapter);
         mListViewIcons.setVisibility(View.GONE);
 
-
+        mScrollGoalTypes = (HorizontalScrollView) v.findViewById(R.id.scroll_goal_types);
         mViewerGoalType = (GoalTypeViewer) v.findViewById(R.id.viewer_goal_types);
         mViewerGoalType.setListener(this);
         mViewerGoalType.setReclicks(false);
         mViewerGoalType.clearSelected();
+        mTxtIntro = (TextView) v.findViewById(R.id.txt_intro);
+        if(!mActivity.isSetup()) {
+            //not setup yet
+            mSetup = false;
+            introSetup();
+        }
+        else {
+            //already setup
+            nonIntroSetup();
+            mSetup = true;
+            mTxtIntro.setVisibility(View.GONE);
+        }
+
+        mTxtGoalTypeName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mTxtIntro.setVisibility(View.GONE);
+                mFab.setVisibility(View.VISIBLE);
+            }
+        });
 
         return v;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    private void introSetup() {
+        mTxtIntro.setText("Welcome to Bragging Rights!\nTo get started, let's add some goal categories.\n" +
+                "Chose a category name, color, and icon using the interface below.");
+        mViewerGoalType.setVisibility(View.GONE);
+        mBtnAdd.setVisibility(View.GONE);
+        mTxtGoalTypeName.setVisibility(View.VISIBLE);
+        mColorPicker.setVisibility(View.VISIBLE);
+        mListViewIcons.setVisibility(View.VISIBLE);
+//       LinearLayout.LayoutParams params =
+//                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//        params.setMargins(0,0,0,0);
+//        mScrollGoalTypes.setLayoutParams(params);
+        mScrollGoalTypes.setVisibility(View.GONE);
+    }
+
+    private void nonIntroSetup() {
     }
 
     private static class IconAdapter extends ArrayAdapter<Integer> implements View.OnClickListener {
@@ -142,6 +196,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onClick(View v) {
         if(v.getId()==R.id.btn_add) {
+            if(mSetup && mTxtIntro.getVisibility()==View.VISIBLE) {
+                mTxtIntro.setVisibility(View.GONE);
+            }
             if(mViewerGoalType.getSelected().equals(MagicListener.UNSELECTED_STRING)) {
                 v.setVisibility(View.GONE);
                 mTxtGoalTypeName.setVisibility(View.VISIBLE);
@@ -152,14 +209,36 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             else {
                 //trying to delete a type
                 deleteType(mViewerGoalType.getSelected());
+                mViewerGoalType.clearSelected();
+                mBtnAdd.setText("Add");
             }
         }
         if(v.getId()==R.id.btn_complete_button) {
             if(validateInput()) {
+                if(!mSetup) {
+                    mSetup = true;
+                    mTxtIntro.setText("Great! Consider adding more goal categories. These define the different" +
+                            " areas of your life that you care about. Once you're done, explore the app and start " +
+                            " completing goals!");
+                    mTxtIntro.setVisibility(View.VISIBLE);
+                    mScrollGoalTypes.setVisibility(View.VISIBLE);
+//                    int value = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+//                            (float) 10, getResources().getDisplayMetrics());
+//                    LinearLayout.LayoutParams params =
+//                            new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//                    params.setMargins(0, 0, 0, value);
+//                    mScrollGoalTypes.setLayoutParams(params);
+                    mScrollGoalTypes.setVisibility(View.VISIBLE);
+                    mViewerGoalType.setVisibility(View.VISIBLE);
+                    mActivity.finishedSetup();
+                }
+                else {
+                    mTxtIntro.setVisibility(View.GONE);
+                }
                 v.setVisibility(View.GONE);
                 Constants.GoalType goalType = new Constants.GoalType(mTxtGoalTypeName.getText().toString(),
                         mIconAdapter.getImgId(),mColorPicker.getColor());
-                Constants.addGoalType(getActivity(), goalType);
+                Constants.addGoalType(mActivity, goalType);
                 mViewerGoalType.updateData();
                 mTxtGoalTypeName.setVisibility(View.GONE);
                 mColorPicker.setVisibility(View.GONE);
@@ -167,19 +246,20 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                 mListViewIcons.setVisibility(View.GONE);
                 mTxtGoalTypeName.setText("");
                 mBtnAdd.setVisibility(View.VISIBLE);
+                mFab.setVisibility(View.GONE);
             }
         }
     }
 
     private void deleteType(String type) {
         Constants.GoalType goalType = null;
-        for(Constants.GoalType gt : Constants.getGoalTypes(getActivity())) {
+        for(Constants.GoalType gt : Constants.getGoalTypes(mActivity)) {
             if(gt.getType().equals(type)) {
                 goalType = gt;
             }
         }
         if(goalType!=null) {
-            Constants.deleteGoalType(getActivity(), goalType);
+            Constants.deleteGoalType(mActivity, goalType);
             mViewerGoalType.updateData();
         }
     }
@@ -195,6 +275,23 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     }
 
     private boolean validateInput() {
+        List<Constants.GoalType> goalTypes = Constants.getGoalTypes(mActivity);
+        if(mTxtGoalTypeName.getText().toString().length()==0) {
+            Toast.makeText(mActivity,"Remember to put a name for your category",Toast.LENGTH_LONG).show();
+            return false;
+        }
+        String name = mTxtGoalTypeName.getText().toString();
+        for(Constants.GoalType type : goalTypes) {
+            if(name.equals(type.getType())) {
+                Toast.makeText(mActivity,"Don't use a category name more than once",
+                        Toast.LENGTH_LONG).show();
+                return false;
+            }
+        }
+        if(mIconAdapter.getImgId()==0) {
+            Toast.makeText(mActivity,"Remember to choose a category icon",Toast.LENGTH_LONG).show();
+            return false;
+        }
         return true;
     }
 }

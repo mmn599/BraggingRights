@@ -104,7 +104,6 @@ public class PersonhoodFragment extends Fragment implements
         viewer.selectFirst();
         mBackground = view.getBackground();
         setupTextInfo(viewer.getSelected());
-        viewer.clearSelected();
         return view;
     }
 

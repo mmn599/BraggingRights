@@ -221,6 +221,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         view.setTag("INFO");
         view.setGravity(Gravity.CENTER_VERTICAL);
         view.setText("Click the clock to add a goal reminder.");
+        view.setOnClickListener(this);
         llReminders.addView(view);
     }
 
@@ -229,6 +230,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         view.setTag("INFO");
         view.setText("Click the clipboard to add a goal task.");
         view.setGravity(Gravity.CENTER_VERTICAL);
+        view.setOnClickListener(this);
         llTasks.addView(view);
     }
 
@@ -307,7 +309,6 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         }
        else if(id==R.id.btn_add_tasks) {
             if(!adding_task) {
-
                 if(llTasks.getChildCount()==1) {
                     if(llTasks.getChildAt(0).getTag()!=null) {
                         llTasks.removeAllViews();
@@ -321,6 +322,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 editText.setHint("New Task");
                 editText.setFocusableInTouchMode(true);
                 editText.requestFocus();
+                editText.setGravity(Gravity.CENTER_VERTICAL);
                 final InputMethodManager inputMethodManager = (InputMethodManager) this
                         .getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
@@ -368,7 +370,8 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 oldViewSelected = null;
                 goal.deleteReminder(reminderView.getReminder());
                 MySQLiteHelper.updateGoal(this, goal);
-                reminderView.deleteNoteAnimation(new Animations.ViewTerminatorListener(llReminders,reminderView,this));
+                reminderView.deleteNoteAnimation(new Animations.ViewTerminatorListener(
+                        llReminders,reminderView,this,"REMINDERS"));
             }
             //user wants to delete a task
             else if(oldViewSelected instanceof TaskView) {
@@ -378,7 +381,8 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 goal.deleteTask(taskView.getTask());
                 //TODO: debugging to ensure ^^this^^ will always work even if task ahve been changed
                 MySQLiteHelper.updateGoal(this, goal);
-                taskView.completeTaskAnimation(new Animations.ViewTerminatorListener(llTasks,taskView,this));
+                taskView.completeTaskAnimation(new Animations.ViewTerminatorListener(
+                        llTasks,taskView,this,"TASKS"));
                 if(llTasks.getChildCount()==0) {
                     tasksInit();
                 }
@@ -401,13 +405,18 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
     }
 
     private void addNewTask(String taskString, View v) {
-        llTasks.removeView(v);
-        Goal.Task newTask = new Goal.Task();
-        newTask.complete = 0;
-        newTask.task = taskString;
-        goal.addTask(newTask);
-        MySQLiteHelper.updateGoal(this, goal);
-        llTasks.addView(new TaskView(this, newTask, this));
+        if(taskString.length()>0) {
+            llTasks.removeView(v);
+            Goal.Task newTask = new Goal.Task();
+            newTask.complete = 0;
+            newTask.task = taskString;
+            goal.addTask(newTask);
+            MySQLiteHelper.updateGoal(this, goal);
+            llTasks.addView(new TaskView(this, newTask, this));
+        }
+        else {
+            Toast.makeText(this, "Your task must have a name.", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void addNewNote(String newNote, View v) {

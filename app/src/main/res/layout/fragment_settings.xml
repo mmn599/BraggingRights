@@ -4,20 +4,46 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context="io.normyle.braggingrights.SettingsFragment">
+    tools:context="io.normyle.braggingrights.SettingsFragment"
+    android:animateLayoutChanges="true"
+    android:padding="10dp">
 
 <LinearLayout
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true">
 
+    <TextView
+        android:id="@+id/txt_intro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginBottom="10dp"/>
+
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/cardview_goal_info"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        card_view:cardElevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="vertical">
 
     <HorizontalScrollView
         android:id="@+id/scroll_goal_types"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="16dp">
+        android:paddingBottom="10dp"
+        android:animateLayoutChanges="true">
         <io.normyle.ui.GoalTypeViewer
             android:id="@+id/viewer_goal_types"
             android:layout_width="wrap_content"
@@ -30,7 +56,6 @@
         android:id="@+id/ll_types"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:gravity="center"
         android:orientation="vertical"
         android:animateLayoutChanges="true">
@@ -39,7 +64,7 @@
         android:layout_width="wrap_content"
         android:text="Add"
         android:background="@drawable/add_button_selector_color"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"/>
         <EditText
             android:id="@+id/txt_goal_type_name"
             android:layout_width="wrap_content"
@@ -56,8 +81,12 @@
             android:layout_width="wrap_content"
             android:layout_gravity="center"
             android:layout_height="40dp"
-            android:background="@null" />
+            android:background="@null"/>
     </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 
 
 </LinearLayout>

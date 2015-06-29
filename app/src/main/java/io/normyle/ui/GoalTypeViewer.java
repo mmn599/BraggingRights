@@ -30,7 +30,7 @@ public class GoalTypeViewer extends LinearLayout implements View.OnClickListener
         super(context);
         mContext = context;
         mData = Constants.getGoalTypes(mContext);
-        mSpacing = 60;
+        mSpacing = 40;
         mListener = null;
     }
 
@@ -38,7 +38,7 @@ public class GoalTypeViewer extends LinearLayout implements View.OnClickListener
         super(context, attrs);
         mContext = context;
         mData = Constants.getGoalTypes(mContext);
-        mSpacing = 60;
+        mSpacing = 40;
         mListener = null;
         setupIcons();
     }

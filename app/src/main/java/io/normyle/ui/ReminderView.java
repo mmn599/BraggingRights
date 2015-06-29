@@ -59,9 +59,9 @@ public class ReminderView extends TextView {
             }
         }
 
-        this.setGravity(Gravity.CENTER);
+//        this.setGravity(Gravity.CENTER);
         this.setLayoutParams(
-                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         this.reminder = reminder;
 

@@ -64,6 +64,10 @@ public class Constants {
 
     }};
 
+    public static boolean isSetup(Context context) {
+        return getGoalTypes(context).size()!=0;
+    }
+
     public static List<Integer> getAllRemainingColors(Context context) {
         List<Integer> colors = new ArrayList<>();
         Resources res = context.getResources();
@@ -79,10 +83,6 @@ public class Constants {
         colors.add(res.getColor(R.color.purple_500));
         colors.add(res.getColor(R.color.teal_500));
         return colors;
-    }
-
-    public static void setup(Context context) {
-
     }
 
     public static String TYPES_FILE_NAME_STRING = "typesFiles";
@@ -115,9 +115,6 @@ public class Constants {
                 }
             }
         }
-        else {
-            ret = defaultTypes(context);
-        }
         return ret;
     }
 
@@ -148,12 +145,6 @@ public class Constants {
                 new GoalType("Body", R.drawable.sprint, res.getColor(R.color.red_400)));
         goalTypes.add(
                 new GoalType("Spirit", R.drawable.sunny35, res.getColor(R.color.yellow_500)));
-        goalTypes.add(
-                new GoalType("Cake", R.drawable.sunny35, res.getColor(R.color.yellow_500)));
-        goalTypes.add(
-                new GoalType("Food", R.drawable.sunny35, res.getColor(R.color.yellow_500)));
-        goalTypes.add(
-                new GoalType("Love", R.drawable.sunny35, res.getColor(R.color.yellow_500)));
         writeTypes(context, goalTypes);
         return goalTypes;
     }
