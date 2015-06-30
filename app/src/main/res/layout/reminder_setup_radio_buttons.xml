@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:id="@+id/rgroup_reminder_type">
+
+    <RadioButton
+        android:id="@+id/rbtn_repeating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Repeating"/>
+
+    <RadioButton
+        android:id="@+id/rbtn_one_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="One time"/>
+
+</RadioGroup>

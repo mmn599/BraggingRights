@@ -4,23 +4,30 @@ import android.content.Context;
 import android.graphics.Color;
 import android.text.InputType;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import io.matthew.braggingrights.R;
 
 import java.util.ArrayList;
 
 /**
  * Created by matthew on 6/11/15.
  */
-public class ReminderPickerLayout extends LinearLayout implements View.OnClickListener {
+public class ReminderPickerLayout extends LinearLayout implements View.OnClickListener,
+        RadioGroup.OnCheckedChangeListener{
 
     LinearLayout llDays;
     EditText input;
     ArrayList<TextView> daysList;
+    RadioGroup mRadioGroup;
+    boolean mRepeating;
 
     public ReminderPickerLayout(Context context) {
         super(context);
@@ -33,6 +40,14 @@ public class ReminderPickerLayout extends LinearLayout implements View.OnClickLi
 
         llDays = new LinearLayout(context);
         llDays.setOrientation(LinearLayout.HORIZONTAL);
+
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mRadioGroup = (RadioGroup) (inflater
+                .inflate(context.getResources()
+                        .getLayout(R.layout.reminder_setup_radio_buttons), this, true))
+                        .findViewById(R.id.rgroup_reminder_type);
+        mRadioGroup.setOnCheckedChangeListener(this);
+        mRepeating = true;
 
         this.addView(llDays);
 
@@ -76,18 +91,36 @@ public class ReminderPickerLayout extends LinearLayout implements View.OnClickLi
     }
 
     public boolean[] getTextViewSelected() {
-        boolean[] ret = new boolean[7];
-        int i=0;
-        for(TextView view : daysList) {
-            if(view.isSelected()) {
-                ret[i] = true;
+        if(mRepeating) {
+            boolean[] ret = new boolean[7];
+            int i = 0;
+            for (TextView view : daysList) {
+                if (view.isSelected()) {
+                    ret[i] = true;
+                } else {
+                    ret[i] = false;
+                }
+                i++;
             }
-            else {
-                ret[i] = false;
-            }
-            i++;
+            return ret;
         }
-        return ret;
+        return null;
+    }
+
+    public boolean getRepeating() {
+        return mRepeating;
+    }
+
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        if(checkedId==R.id.rbtn_one_time) {
+            mRepeating = false;
+            llDays.setVisibility(View.GONE);
+        }
+        else if(checkedId==R.id.rbtn_repeating) {
+            mRepeating = true;
+            llDays.setVisibility(View.VISIBLE);
+        }
     }
 
     public String getNote() {

@@ -15,7 +15,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import io.matthew.braggingrights.R;
 import io.normyle.data.Constants;
@@ -65,7 +67,17 @@ public class ReminderView extends TextView {
 
         this.reminder = reminder;
 
-        this.setText(Constants.createBulletString(reminder.note+" "+reminder.hour+":"+reminder.minute+" "+dayString));
+        if(reminder.repeating) {
+            this.setText(Constants.createBulletString(reminder.note +
+                    " " + reminder.calendar.get(Calendar.HOUR) +
+                    ":" + reminder.calendar.get(Calendar.MINUTE) +
+                    " on " + dayString));
+        }
+        else {
+            this.setText(Constants.createBulletString((reminder.note.length()>0 ? reminder.note + " ":"") +
+                    new SimpleDateFormat("H:m", Locale.US).format(reminder.calendar.getTime()) + " on " +
+                    new SimpleDateFormat("MMMM d", Locale.US).format(reminder.calendar.getTime())));
+        }
 
         selected_color = context.getResources().getColor(R.color.accent);
         unselected_color = this.getCurrentTextColor();

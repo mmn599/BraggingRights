@@ -66,19 +66,12 @@ public class Notifications {
     public static void setupAlarms(Context context, List<Goal> goalList) {
         for(Goal goal : goalList) {
             for(Goal.Reminder reminder : goal.getReminder()) {
+                Calendar calendar = reminder.calendar;
                 if(reminder.repeating) {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(Calendar.HOUR, reminder.hour);
-                    calendar.set(Calendar.MINUTE, reminder.minute);
                     Notifications.setRepeatingAlarm(context,
                             calendar, reminder.days, goal.getTitle(), reminder.note);
                 }
                 else {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(Calendar.DAY_OF_YEAR, reminder.day_of_year);
-                    calendar.set(Calendar.HOUR, reminder.hour);
-                    calendar.set(Calendar.MINUTE, reminder.minute);
-                    calendar.set(Calendar.YEAR, reminder.year);
                     Notifications.setOneTimeAlarm(context, calendar, goal.getTitle(), reminder.note);
                 }
             }

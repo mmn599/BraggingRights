@@ -3,6 +3,7 @@
     android:layout_height="match_parent"
     android:paddingTop="10dp"
     android:paddingLeft="10dp"
+    android:animateLayoutChanges="true"
     android:paddingRight="10dp">
 
 
@@ -13,16 +14,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
+        android:animateLayoutChanges="true"
         card_view:cardElevation="2dp">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true">
 
    <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
     <TextView
         android:id="@+id/txtview_goal_title"
         android:textStyle="bold"
@@ -42,6 +46,15 @@
             android:layout_marginTop="3dp"/>
 
        <TextView
+           android:id="@+id/txt_effort_intro"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_gravity="center"
+           android:gravity="center"
+           android:layout_marginTop="3dp"
+           android:text="Hit the icon above if you've put effort into achieving your goal."/>
+
+       <TextView
            android:id="@+id/txtview_goal_ventures"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
@@ -52,6 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
+        android:animateLayoutChanges="true"
         android:orientation="horizontal">
         <ImageButton
             android:id="@+id/btn_add_tasks"
@@ -71,6 +85,7 @@
                 android:id="@+id/ll_tasks"
                 android:layout_width="match_parent"
                 android:gravity="center_vertical"
+                android:animateLayoutChanges="true"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"/>
         </ScrollView>
@@ -95,6 +110,7 @@
             android:id="@+id/scrollview_reminders"
             android:layout_width="match_parent"
             android:layout_marginLeft="10dp"
+            android:animateLayoutChanges="true"
             android:layout_height="wrap_content">
             <LinearLayout
                 android:id="@+id/ll_reminders"
@@ -157,17 +173,20 @@
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
         card_view:cardElevation="2dp">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true">
 
     <RelativeLayout
         android:id="@+id/rl_for_the_buttons"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
         android:orientation="horizontal">
 
         <TextView
@@ -190,6 +209,7 @@
             android:id="@+id/ll_for_the_times"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
             android:layout_gravity="bottom"
             android:orientation="horizontal">
             <TextView

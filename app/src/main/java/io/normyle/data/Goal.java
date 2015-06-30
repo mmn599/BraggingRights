@@ -38,10 +38,7 @@ public class Goal implements Serializable {
         public boolean repeating;
         public String note;
         public boolean[] days;
-        public int hour;
-        public int minute;
-        public int day_of_year;
-        public int year;
+        public Calendar calendar;
         public Reminder() {
             days = new boolean[7];
         }
@@ -55,8 +52,12 @@ public class Goal implements Serializable {
 
             //TODO: MAKE MORE ROBUST TO ENSURE SIMILAR GOALS AREN'T CONSIDERED EQUAL
             Reminder other = (Reminder) o;
-            if(this.note.equals(other.note) && this.repeating==other.repeating
-                && this.hour==other.hour && this.minute==other.minute) {
+            int hour = calendar.get(Calendar.HOUR);
+            int minute = calendar.get(Calendar.MINUTE);
+            if(this.note.equals(other.note)
+                    && this.repeating==other.repeating
+                        && hour==other.calendar.get(Calendar.HOUR)
+                            && minute==other.calendar.get(Calendar.MINUTE)) {
                 return true;
             }
             return false;

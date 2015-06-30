@@ -8,12 +8,10 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.InputType;
 import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -26,7 +24,6 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -34,8 +31,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import io.matthew.braggingrights.R;
@@ -50,7 +46,7 @@ import io.normyle.ui.ReminderView;
 import io.normyle.ui.TaskView;
 
 public class GoalViewActivity extends ActionBarActivity implements View.OnClickListener,
-        TextView.OnEditorActionListener, TimePickerDialog.OnTimeSetListener {
+        TextView.OnEditorActionListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
 
     TextView txtTitle;
     TextView txtStartTime;
@@ -58,6 +54,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
     TextView txtDaysInProgress;
     TextView txtDaysInProgress2;
     TextView txtVentures;
+    TextView txtEffortIntro;
     GoalTypeView imgIcon;
     Goal goal;
     LinearLayout llTasks;
@@ -98,6 +95,13 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         imgIcon = (GoalTypeView) findViewById(R.id.imgview_goal_icon);
         txtStartTime = (TextView) findViewById(R.id.txtview_start_time);
         txtEndTime = (TextView) findViewById(R.id.txtview_end_time);
+        txtEffortIntro = (TextView) findViewById(R.id.txt_effort_intro);
+        txtEffortIntro.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                txtEffortIntro.setVisibility(View.GONE);
+            }
+        }, 5000);
 
         llTasks = (LinearLayout) findViewById(R.id.ll_tasks);
         List<Goal.Task> taskList = goal.getTasks();
@@ -350,8 +354,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                     llReminders.removeAllViews();
                 }
             }
-            TimePickerFragment newFragment = new TimePickerFragment();
-            newFragment.show(getSupportFragmentManager(), "datePicker");
+            createReminderDialog();
         }
         else if(id==R.id.btn_delete_action_button) {
             //user wants to delete a note
@@ -428,12 +431,14 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         }
     }
 
-    private void addNewReminderDate(String note, boolean[] days_selected, int hourOfDay, int minute) {
+    private void addNewReminder(String note, boolean repeating, boolean[] days_selected,
+                                Calendar calendar) {
         Goal.Reminder reminder = new Goal.Reminder();
-        reminder.repeating = true;
-        System.arraycopy(days_selected, 0, reminder.days, 0, 7);
-        reminder.hour = hourOfDay;
-        reminder.minute = minute;
+        reminder.repeating = repeating;
+        if(repeating) {
+            System.arraycopy(days_selected, 0, reminder.days, 0, 7);
+        }
+        reminder.calendar = calendar;
         reminder.note = note;
         goal.addReminder(reminder);
         MySQLiteHelper.updateGoal(this, goal);
@@ -466,8 +471,13 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         return false;
     }
 
-    @Override
-    public void onTimeSet(TimePicker view, final int hourOfDay, final int minute) {
+    private String mNote;
+    private boolean[] mDaysSelected;
+    private boolean mRepeating;
+    private Calendar mCalendar;
+
+    public void createReminderDialog() {
+        mCalendar = GregorianCalendar.getInstance();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Enter a note for your reminder: ");
         // Set up the input
@@ -477,16 +487,56 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String note = layout.getNote();
-                boolean[] days_selected = layout.getTextViewSelected();
-                addNewReminderDate(note, days_selected, hourOfDay, minute);
+                mNote = layout.getNote();
+                mRepeating = layout.getRepeating();
+                boolean[] days_selected = null;
+                if(mRepeating) {
+                     mDaysSelected = layout.getTextViewSelected();
+                }
+                TimePickerFragment newFragment = new TimePickerFragment();
+                newFragment.show(getSupportFragmentManager(), "timePicker");
             }
         });
         builder.show();
     }
 
-    public static class TimePickerFragment extends DialogFragment {
+    @Override
+    public void onTimeSet(TimePicker view, final int hourOfDay, final int minute) {
+        if(mRepeating) {
+            mCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            mCalendar.set(Calendar.MINUTE, minute);
+            addNewReminder(mNote, mRepeating, mDaysSelected, mCalendar);
+        }
+        else {
+            DatePickerFragment newFragment = new DatePickerFragment();
+            newFragment.show(getSupportFragmentManager(), "datePicker");
+        }
+    }
 
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        mCalendar.set(Calendar.YEAR, year);
+        mCalendar.set(Calendar.MONTH, monthOfYear);
+        mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        addNewReminder(mNote, mRepeating, mDaysSelected, mCalendar);
+    }
+
+    public static class DatePickerFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current date as the default date in the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(),
+                    (DatePickerDialog.OnDateSetListener) getActivity(), year, month, day);
+        }
+    }
+
+    public static class TimePickerFragment extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current time as the default values for the picker
