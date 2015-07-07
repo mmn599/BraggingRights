@@ -12,6 +12,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import io.normyle.braggingrights.Notifications;
+
 public class Goal implements Serializable {
 
 	/*
@@ -27,6 +29,7 @@ public class Goal implements Serializable {
     private int _id;
     private int complete;
     private String goalNotes;
+    private boolean opened;
 
     private int dateOffset;
 
@@ -131,6 +134,8 @@ public class Goal implements Serializable {
 
         /* TODO: remove */
         this.dateOffset = dateOffset;
+
+        this.opened = false;
     }
 
     /**
@@ -363,6 +368,8 @@ public class Goal implements Serializable {
     }
 
     public void addReminder(Reminder reminder) {
+        if(reminder.repeating) {
+        }
         goalReminders.add(reminder);
     }
 
@@ -430,6 +437,14 @@ public class Goal implements Serializable {
             }
         }
         return completedGoals;
+    }
+
+    public boolean getOpened() {
+        return opened;
+    }
+
+    public void setOpened(boolean opened) {
+        this.opened = opened;
     }
 }
 

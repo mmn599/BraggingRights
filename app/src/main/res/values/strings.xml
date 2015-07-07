@@ -15,5 +15,6 @@
     <string name="personhood_coming_soon">The Personhood feature allows you to keep track of your progress in things that are important to you.\n\nComing soon!</string>
     <string name="title_activity_new_view_goal">NewViewGoalActivity</string>
     <string name="title_activity_animation">AnimationActivity</string>
+    <string name="effort_name">Practice Point</string>
 
 </resources>

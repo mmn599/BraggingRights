@@ -128,9 +128,11 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     }
 
     private void introSetup() {
-        mTxtIntro.setText("Welcome to Bragging Rights!\nTo get started, let's add some goal categories.\n" +
-                "Chose a category name, color, and icon using the interface below.");
-        mViewerGoalType.setVisibility(View.GONE);
+        mTxtIntro.setTextSize(14);
+        mTxtIntro.setText("Welcome to Bragging Rights!\nTo get started, add one or more goal categories using the interface below." +
+                " These categories are the different areas of your life you want to complete goals in. Once you've added some, explore the app and start" +
+                " completing goals!");
+        mViewerGoalType.setVisibility(View.INVISIBLE);
         mBtnAdd.setVisibility(View.GONE);
         mTxtGoalTypeName.setVisibility(View.VISIBLE);
         mColorPicker.setVisibility(View.VISIBLE);
@@ -139,7 +141,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 //                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 //        params.setMargins(0,0,0,0);
 //        mScrollGoalTypes.setLayoutParams(params);
-        mScrollGoalTypes.setVisibility(View.GONE);
+        mScrollGoalTypes.setVisibility(View.INVISIBLE);
     }
 
     private void nonIntroSetup() {
@@ -217,17 +219,6 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             if(validateInput()) {
                 if(!mSetup) {
                     mSetup = true;
-                    mTxtIntro.setText("Great! Consider adding more goal categories. These define the different" +
-                            " areas of your life that you care about. Once you're done, explore the app and start " +
-                            " completing goals!");
-                    mTxtIntro.setVisibility(View.VISIBLE);
-                    mScrollGoalTypes.setVisibility(View.VISIBLE);
-//                    int value = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-//                            (float) 10, getResources().getDisplayMetrics());
-//                    LinearLayout.LayoutParams params =
-//                            new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//                    params.setMargins(0, 0, 0, value);
-//                    mScrollGoalTypes.setLayoutParams(params);
                     mScrollGoalTypes.setVisibility(View.VISIBLE);
                     mViewerGoalType.setVisibility(View.VISIBLE);
                     mActivity.finishedSetup();

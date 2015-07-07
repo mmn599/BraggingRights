@@ -1,10 +1,12 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:paddingTop="10dp"
-    android:paddingLeft="10dp"
-    android:animateLayoutChanges="true"
-    android:paddingRight="10dp">
+    android:layout_width="match_parent">
+
+<LinearLayout
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
 
 
     <android.support.v7.widget.CardView
@@ -17,16 +19,11 @@
         android:animateLayoutChanges="true"
         card_view:cardElevation="2dp">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:animateLayoutChanges="true">
-
    <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:animateLayoutChanges="true">
+        android:animateLayoutChanges="true"
+        android:layout_height="wrap_content">
     <TextView
         android:id="@+id/txtview_goal_title"
         android:textStyle="bold"
@@ -52,7 +49,7 @@
            android:layout_gravity="center"
            android:gravity="center"
            android:layout_marginTop="3dp"
-           android:text="Hit the icon above if you've put effort into achieving your goal."/>
+           android:text="Hit the icon above when you've put effort into achieving your goal."/>
 
        <TextView
            android:id="@+id/txtview_goal_ventures"
@@ -65,7 +62,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:animateLayoutChanges="true"
         android:orientation="horizontal">
         <ImageButton
             android:id="@+id/btn_add_tasks"
@@ -78,15 +74,14 @@
             android:id="@+id/scrollview_tasks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
             android:layout_marginLeft="10dp"
             android:divider="@null">
             <LinearLayout
                 android:id="@+id/ll_tasks"
                 android:layout_width="match_parent"
                 android:gravity="center_vertical"
-                android:animateLayoutChanges="true"
                 android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
                 android:orientation="vertical"/>
         </ScrollView>
     </LinearLayout>
@@ -95,7 +90,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:animateLayoutChanges="true"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="5dp"
         android:orientation="horizontal">
@@ -110,13 +104,11 @@
             android:id="@+id/scrollview_reminders"
             android:layout_width="match_parent"
             android:layout_marginLeft="10dp"
-            android:animateLayoutChanges="true"
             android:layout_height="wrap_content">
             <LinearLayout
                 android:id="@+id/ll_reminders"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
                 android:orientation="vertical">
             </LinearLayout>
         </ScrollView>
@@ -160,105 +152,88 @@
             android:orientation="vertical"/>
     </ScrollView> -->
 
+       <RelativeLayout
+           android:id="@+id/rl_for_the_buttons"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:orientation="horizontal">
+
+           <TextView
+               android:id="@+id/txt_days_in_progress"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_centerHorizontal="true"
+               android:textSize="60sp"/>
+
+           <TextView
+               android:layout_below="@+id/txt_days_in_progress"
+               android:id="@+id/txt_days_in_progress2"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_centerHorizontal="true"
+               android:textSize="12sp"/>
+
+
+           <LinearLayout
+               android:id="@+id/ll_for_the_times"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_gravity="bottom"
+               android:orientation="horizontal">
+               <TextView
+                   android:id="@+id/txtview_start_time"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:gravity="center"
+                   android:layout_gravity="center"
+                   android:layout_weight="1"
+                   android:textSize="18sp"/>
+               <TextView
+                   android:id="@+id/txtview_end_time"
+                   android:layout_width="match_parent"
+                   android:gravity="center"
+                   android:layout_height="wrap_content"
+                   android:layout_gravity="center"
+                   android:layout_weight="1"
+                   android:textSize="18sp"/>
+           </LinearLayout>
+
+           <Button
+               android:layout_below="@+id/txt_days_in_progress2"
+               android:id="@+id/btn_delete_action_button"
+               android:layout_width="100dp"
+               android:layout_height="wrap_content"
+               android:layout_marginLeft="30dp"
+               android:text="Delete\nGoal"
+               android:layout_alignParentLeft="true"
+               android:layout_marginTop="20dp"
+               android:layout_marginBottom="30dp"
+               android:background="@drawable/add_button_selector_color"/>
+
+           <Button
+               android:layout_below="@+id/txt_days_in_progress2"
+               android:id="@+id/btn_complete_action_button"
+               android:layout_width="100dp"
+               android:layout_height="wrap_content"
+               android:layout_marginRight="30dp"
+               android:layout_marginTop="20dp"
+               android:text="Complete\nGoal"
+               android:layout_alignParentRight="true"
+               android:layout_marginBottom="30dp"
+               android:background="@drawable/add_button_selector_color"/>
+
+       </RelativeLayout>
+
+
+
 
    </LinearLayout>
 
-    </ScrollView>
 
     </android.support.v7.widget.CardView>
 
-    <android.support.v7.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/cardview_buttons"
-        android:layout_gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:animateLayoutChanges="true"
-        card_view:cardElevation="2dp">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:animateLayoutChanges="true">
-
-    <RelativeLayout
-        android:id="@+id/rl_for_the_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:animateLayoutChanges="true"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/txt_days_in_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:textSize="60sp"/>
-
-        <TextView
-            android:layout_below="@+id/txt_days_in_progress"
-            android:id="@+id/txt_days_in_progress2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:textSize="12sp"/>
-
-
-        <LinearLayout
-            android:id="@+id/ll_for_the_times"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
-            android:layout_gravity="bottom"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/txtview_start_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:textSize="18sp"/>
-            <TextView
-                android:id="@+id/txtview_end_time"
-                android:layout_width="match_parent"
-                android:gravity="center"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:textSize="18sp"/>
-        </LinearLayout>
-
-        <Button
-            android:layout_below="@+id/txt_days_in_progress2"
-            android:id="@+id/btn_delete_action_button"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:text="Delete\nGoal"
-            android:layout_alignParentLeft="true"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="30dp"
-            android:background="@drawable/add_button_selector_color"/>
-
-        <Button
-            android:layout_below="@+id/txt_days_in_progress2"
-            android:id="@+id/btn_complete_action_button"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="20dp"
-            android:text="Complete\nGoal"
-            android:layout_alignParentRight="true"
-            android:layout_marginBottom="30dp"
-            android:background="@drawable/add_button_selector_color"/>
-
-
-        </RelativeLayout>
-
-       </LinearLayout>
-
-    </android.support.v7.widget.CardView>
 
 </LinearLayout>
+
+</ScrollView>

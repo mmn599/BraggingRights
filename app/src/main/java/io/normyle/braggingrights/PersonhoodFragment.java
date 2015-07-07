@@ -1,6 +1,5 @@
 package io.normyle.braggingrights;
 
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -30,32 +29,32 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 import io.matthew.braggingrights.R;
 import io.normyle.data.Constants;
 import io.normyle.data.Goal;
 import io.normyle.data.MySQLiteHelper;
-import io.normyle.ui.GoalTypeAdapter;
 import io.normyle.ui.GoalTypeViewer;
 import io.normyle.ui.MagicListener;
-import it.sephiroth.android.library.widget.HListView;
 
 public class PersonhoodFragment extends Fragment implements
         AdapterView.OnItemSelectedListener, MagicListener {
 
     LineChart mChart;
-    String[] mAccomplishmentTypeStrings = {"Ventures","Tasks","Goals"};
+    String[] mAccomplishmentTypeStrings = {
+            "Goals Completed","Goals Created","Tasks Completed","Practice Points"};
     List<Goal> mGoals;
     Drawable mBackground;
     TextView mTxtviewTypeTitle;
 
     TextView mTxtviewGoals;
     TextView mTxtviewTasks;
-    TextView mTxtviewVentures;
+    TextView mTxtviewPP;
 
     TextView mTxtviewGoalsDes;
     TextView mTxtviewTasksDes;
-    TextView mTxtviewVenturesDes;
+    TextView mTxtviewPPDes;
 
     public PersonhoodFragment() {
         // Required empty public constructor
@@ -82,7 +81,7 @@ public class PersonhoodFragment extends Fragment implements
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
-        setupVentures();
+        setupCompletedGoals();
         setupChart();
 
         Legend legend = mChart.getLegend();
@@ -92,12 +91,11 @@ public class PersonhoodFragment extends Fragment implements
 
         mTxtviewGoals = (TextView) view.findViewById(R.id.txtview_goals);
         mTxtviewTasks = (TextView) view.findViewById(R.id.txtview_tasks);
-        mTxtviewVentures = (TextView) view.findViewById(R.id.txtview_ventures);
+        mTxtviewPP = (TextView) view.findViewById(R.id.txtview_ventures);
 
         mTxtviewGoalsDes = (TextView) view.findViewById(R.id.txtview_goals_des);
         mTxtviewTasksDes = (TextView) view.findViewById(R.id.txtview_tasks_des);
-        mTxtviewVenturesDes = (TextView) view.findViewById(R.id.txtview_ventures_des);
-
+        mTxtviewPPDes = (TextView) view.findViewById(R.id.txtview_ventures_des);
 
         GoalTypeViewer viewer = (GoalTypeViewer) view.findViewById(R.id.viewer_goal_types);
         viewer.setListener(this);
@@ -125,19 +123,18 @@ public class PersonhoodFragment extends Fragment implements
             for (int i = 0; i < 5; i++) {
                 //get time period
                 Calendar beginning = GregorianCalendar.getInstance();
-                beginning.setFirstDayOfWeek(Calendar.SUNDAY);
-                beginning.set(Calendar.DAY_OF_WEEK, beginning.getFirstDayOfWeek());
+                beginning.set(Calendar.MONTH, beginning.get(Calendar.MONTH) - (4-i));
+                beginning.set(Calendar.DAY_OF_MONTH,
+                        beginning.getActualMinimum(Calendar.DAY_OF_MONTH));
                 beginning.set(Calendar.HOUR, 0);
                 beginning.set(Calendar.MINUTE, 0);
                 beginning.set(Calendar.SECOND, 0);
-                beginning.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - (4-i));
                 Calendar end = GregorianCalendar.getInstance();
-                end.setFirstDayOfWeek(Calendar.SUNDAY);
-                end.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                end.set(Calendar.MONTH, end.get(Calendar.MONTH) - (4-i));
+                end.set(Calendar.DAY_OF_MONTH, end.getActualMaximum(Calendar.DAY_OF_MONTH));
                 end.set(Calendar.HOUR, 23);
                 end.set(Calendar.MINUTE, 59);
                 end.set(Calendar.SECOND, 59);
-                end.set(Calendar.WEEK_OF_YEAR, end.get(Calendar.WEEK_OF_YEAR) - (4-i));
                 Date a = beginning.getTime();
                 Date b = end.getTime();
                 //get ventures within time period of goals of right type
@@ -149,7 +146,7 @@ public class PersonhoodFragment extends Fragment implements
                 }
                 yVals.add(new Entry(relevantVentures.size(),i));
                 if(first) {
-                    xVals.add(new SimpleDateFormat("MMMM d").format(beginning.getTime()));
+                    xVals.add(new SimpleDateFormat("MMMM yyyy", Locale.US).format(beginning.getTime()));
                 }
             }
             first = false;
@@ -179,19 +176,18 @@ public class PersonhoodFragment extends Fragment implements
             for (int i = 0; i < 5; i++) {
                 //get time period
                 Calendar beginning = GregorianCalendar.getInstance();
-                beginning.setFirstDayOfWeek(Calendar.SUNDAY);
-                beginning.set(Calendar.DAY_OF_WEEK, beginning.getFirstDayOfWeek());
+                beginning.set(Calendar.MONTH, beginning.get(Calendar.MONTH) - (4-i));
+                beginning.set(Calendar.DAY_OF_MONTH,
+                        beginning.getActualMinimum(Calendar.DAY_OF_MONTH));
                 beginning.set(Calendar.HOUR, 0);
                 beginning.set(Calendar.MINUTE, 0);
                 beginning.set(Calendar.SECOND, 0);
-                beginning.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - (4-i));
                 Calendar end = GregorianCalendar.getInstance();
-                end.setFirstDayOfWeek(Calendar.SUNDAY);
-                end.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                end.set(Calendar.MONTH, end.get(Calendar.MONTH) - (4-i));
+                end.set(Calendar.DAY_OF_MONTH, end.getActualMaximum(Calendar.DAY_OF_MONTH));
                 end.set(Calendar.HOUR, 23);
                 end.set(Calendar.MINUTE, 59);
                 end.set(Calendar.SECOND, 59);
-                end.set(Calendar.WEEK_OF_YEAR, end.get(Calendar.WEEK_OF_YEAR) - (4-i));
                 Date a = beginning.getTime();
                 Date b = end.getTime();
                 //get ventures within time period of goals of right type
@@ -203,7 +199,7 @@ public class PersonhoodFragment extends Fragment implements
                 }
                 yVals.add(new Entry(relevantTasks.size(),i));
                 if(first) {
-                    xVals.add(new SimpleDateFormat("MMMM d").format(beginning.getTime()));
+                    xVals.add(new SimpleDateFormat("MMMM yyyy", Locale.US).format(beginning.getTime()));
                 }
             }
             first = false;
@@ -220,7 +216,7 @@ public class PersonhoodFragment extends Fragment implements
         mChart.setData(data);
     }
 
-    private void setupGoals() {
+    private void setupCompletedGoals() {
         mChart.clear();
         ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
         boolean first = true;
@@ -234,19 +230,18 @@ public class PersonhoodFragment extends Fragment implements
             for (int i = 0; i < 5; i++) {
                 //get time period
                 Calendar beginning = GregorianCalendar.getInstance();
-                beginning.setFirstDayOfWeek(Calendar.SUNDAY);
-                beginning.set(Calendar.DAY_OF_WEEK, beginning.getFirstDayOfWeek());
+                beginning.set(Calendar.MONTH, beginning.get(Calendar.MONTH) - (4-i));
+                beginning.set(Calendar.DAY_OF_MONTH,
+                        beginning.getActualMinimum(Calendar.DAY_OF_MONTH));
                 beginning.set(Calendar.HOUR, 0);
                 beginning.set(Calendar.MINUTE, 0);
                 beginning.set(Calendar.SECOND, 0);
-                beginning.set(Calendar.WEEK_OF_YEAR, beginning.get(Calendar.WEEK_OF_YEAR) - (4-i));
                 Calendar end = GregorianCalendar.getInstance();
-                end.setFirstDayOfWeek(Calendar.SUNDAY);
-                end.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                end.set(Calendar.MONTH, end.get(Calendar.MONTH) - (4-i));
+                end.set(Calendar.DAY_OF_MONTH, end.getActualMaximum(Calendar.DAY_OF_MONTH));
                 end.set(Calendar.HOUR, 23);
                 end.set(Calendar.MINUTE, 59);
                 end.set(Calendar.SECOND, 59);
-                end.set(Calendar.WEEK_OF_YEAR, end.get(Calendar.WEEK_OF_YEAR) - (4-i));
                 Date a = beginning.getTime();
                 Date b = end.getTime();
                 List<Goal> complete = new ArrayList<Goal>();
@@ -259,7 +254,7 @@ public class PersonhoodFragment extends Fragment implements
                 }
                 yVals.add(new Entry(complete.size(),i));
                 if(first) {
-                    xVals.add(new SimpleDateFormat("MMMM d").format(beginning.getTime()));
+                    xVals.add(new SimpleDateFormat("MMMM yyyy", Locale.US).format(beginning.getTime()));
                 }
             }
             first = false;
@@ -275,6 +270,62 @@ public class PersonhoodFragment extends Fragment implements
         mChart.getAxisLeft().setAxisMaxValue(10);
         mChart.setData(data);
     }
+
+
+    private void setupCreatedGoals() {
+        mChart.clear();
+        ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
+        boolean first = true;
+        ArrayList<String> xVals = new ArrayList<String>();
+        for(Constants.GoalType goalType : Constants.getGoalTypes(getActivity())) {
+            //get all goals of goalType
+            //TODO: don't get all goals
+            List<Goal> relevantGoals = Goal.getGoalsOfType(mGoals, goalType);
+            //initialize data for graph
+            ArrayList<Entry> yVals = new ArrayList<Entry>();
+            for (int i = 0; i < 5; i++) {
+                //get time period
+                Calendar beginning = GregorianCalendar.getInstance();
+                beginning.set(Calendar.MONTH, beginning.get(Calendar.MONTH) - (4-i));
+                beginning.set(Calendar.DAY_OF_MONTH,
+                        beginning.getActualMinimum(Calendar.DAY_OF_MONTH));
+                beginning.set(Calendar.HOUR, 0);
+                beginning.set(Calendar.MINUTE, 0);
+                beginning.set(Calendar.SECOND, 0);
+                Calendar end = GregorianCalendar.getInstance();
+                end.set(Calendar.MONTH, end.get(Calendar.MONTH) - (4-i));
+                end.set(Calendar.DAY_OF_MONTH, end.getActualMaximum(Calendar.DAY_OF_MONTH));
+                end.set(Calendar.HOUR, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 59);
+                Date a = beginning.getTime();
+                Date b = end.getTime();
+                List<Goal> complete = new ArrayList<Goal>();
+                for (Goal goal : relevantGoals) {
+                    if (goal.getStartDate().after(a) &&
+                            goal.getStartDate().before(b)) {
+                        complete.add(goal);
+                    }
+                }
+                yVals.add(new Entry(complete.size(),i));
+                if(first) {
+                    xVals.add(new SimpleDateFormat("MMMM yyyy", Locale.US).format(beginning.getTime()));
+                }
+            }
+            first = false;
+            LineDataSet set = new LineDataSet(yVals, goalType.getType());
+            set.setColor(goalType.getColor());
+            set.setCircleSize(5f);
+            set.setCircleColor(goalType.getColor());
+            set.setValueTextSize(10f);
+            set.setValueFormatter(new MyValueFormatter());
+            dataSets.add(set);
+        }
+        LineData data = new LineData(xVals, dataSets);
+        mChart.getAxisLeft().setAxisMaxValue(10);
+        mChart.setData(data);
+    }
+
 
     private List<Goal> getGoals() {
         MySQLiteHelper db = new MySQLiteHelper(getActivity());
@@ -366,7 +417,7 @@ public class PersonhoodFragment extends Fragment implements
         }
         mTxtviewGoals.setText(numGoals + "");
         mTxtviewTasks.setText(numTasks + "");
-        mTxtviewVentures.setText(numVentures + "");
+        mTxtviewPP.setText(numVentures + "");
 
         if(numGoals==1) {
             mTxtviewGoalsDes.setText("Goal");
@@ -375,21 +426,24 @@ public class PersonhoodFragment extends Fragment implements
             mTxtviewTasksDes.setText("Task");
         }
         if(numVentures==1) {
-            mTxtviewVenturesDes.setText("Venture");
+            mTxtviewPPDes.setText("Practice Point");
         }
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String value = ((TextView)view).getText().toString();
-        if(value.equals("Ventures")) {
+        if(value.equals("Practice Points")){
             setupVentures();
         }
-        else if(value.equals("Tasks")) {
+        else if(value.equals("Tasks Completed")) {
             setupTasks();
         }
-        else {
-            setupGoals();
+        else if(value.equals("Goals Completed")){
+            setupCompletedGoals();
+        }
+        else if(value.equals("Goals Created")) {
+            setupCreatedGoals();
         }
     }
 

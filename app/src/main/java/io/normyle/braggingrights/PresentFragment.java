@@ -44,8 +44,6 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
     GoalAdapter goalAdapter;
     View view;
     TextView txtviewIntro;
-    ToolTipRelativeLayout toolTipRelativeLayout;
-    ToolTipView toolTipView;
 
     boolean display_present;
 
@@ -53,12 +51,6 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
 
     public PresentFragment() {
 
-    }
-
-    public void removeTooltip() {
-        if(toolTipView!=null) {
-            toolTipView.remove();
-        }
     }
 
     @Override
@@ -91,9 +83,6 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
         MySQLiteHelper db = new MySQLiteHelper(activity);
         List<Goal> goals = db.getAllGoals();
         db.close();
-
-        toolTipRelativeLayout = (ToolTipRelativeLayout) view.findViewById(R.id.activity_main_tooltipRelativeLayout);
-        toolTipRelativeLayout.setX(toolTipRelativeLayout.getX() - 15);
 
         displayGoals(display_present);
 
@@ -147,20 +136,13 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
                 }
             });
         }
-        if(goals.size()==0) {
-            ToolTip toolTip = new ToolTip()
-                    .withColor(getResources().getColor(R.color.primary))
-                    .withShadow()
-                    .withAnimationType(ToolTip.AnimationType.FROM_TOP);
-            if(display_present) {
-                txtviewIntro.setText("You don't have any goals.");
-                toolTip.withText("Click here to add one.");
-                toolTipView = toolTipRelativeLayout.showToolTipForView(toolTip, fab);
-            }
+        if(goals.size()==0 && display_present) {
+            txtviewIntro.setText("Press the action button to add a goal.");
             txtviewIntro.setVisibility(View.VISIBLE);
         }
-        if(!display_present && Goal.getCompleteGoals(goals).size()==0) {
+        else if(!display_present && Goal.getCompleteGoals(goals).size()==0) {
             txtviewIntro.setText("When you complete a goal it will be displayed here.");
+            txtviewIntro.setVisibility(View.VISIBLE);
         }
         else {
             txtviewIntro.setVisibility(View.GONE);

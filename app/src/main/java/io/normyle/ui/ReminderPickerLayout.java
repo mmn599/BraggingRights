@@ -46,6 +46,7 @@ public class ReminderPickerLayout extends LinearLayout implements View.OnClickLi
                 .inflate(context.getResources()
                         .getLayout(R.layout.reminder_setup_radio_buttons), this, true))
                         .findViewById(R.id.rgroup_reminder_type);
+        ((RadioButton)mRadioGroup.findViewById(R.id.rbtn_repeating)).setChecked(true);
         mRadioGroup.setOnCheckedChangeListener(this);
         mRepeating = true;
 

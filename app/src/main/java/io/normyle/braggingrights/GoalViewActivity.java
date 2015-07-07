@@ -53,7 +53,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
     TextView txtEndTime;
     TextView txtDaysInProgress;
     TextView txtDaysInProgress2;
-    TextView txtVentures;
+    TextView txtPracticePoints;
     TextView txtEffortIntro;
     GoalTypeView imgIcon;
     Goal goal;
@@ -96,12 +96,14 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         txtStartTime = (TextView) findViewById(R.id.txtview_start_time);
         txtEndTime = (TextView) findViewById(R.id.txtview_end_time);
         txtEffortIntro = (TextView) findViewById(R.id.txt_effort_intro);
-        txtEffortIntro.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                txtEffortIntro.setVisibility(View.GONE);
-            }
-        }, 5000);
+        if(!goal.getOpened()) {
+            txtEffortIntro.setVisibility(View.VISIBLE);
+            goal.setOpened(true);
+            db.updateGoal(goal);
+        }
+        else {
+            txtEffortIntro.setVisibility(View.GONE);
+        }
 
         llTasks = (LinearLayout) findViewById(R.id.ll_tasks);
         List<Goal.Task> taskList = goal.getTasks();
@@ -192,6 +194,9 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
 //        txtDaysInProgress.setTypeface(Typeface.createFromAsset(getAssets(), "jayadhira.ttf"));
         txtDaysInProgress2 = (TextView) findViewById(R.id.txt_days_in_progress2);
         inProgress = days>1 ? "Days in progress":"Days in progress";
+        if(goal.getComplete()==Goal.COMPLETE) {
+            inProgress.replace("in","of");
+        }
         txtDaysInProgress2.setText(inProgress);
 
 
@@ -199,8 +204,8 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         collapsed_tasks = false;
         collapsed_reminders = false;
 
-        txtVentures = (TextView) findViewById(R.id.txtview_goal_ventures);
-        txtVentures.setText("Ventures: " + goal.getVentures().size());
+        txtPracticePoints = (TextView) findViewById(R.id.txtview_goal_ventures);
+        txtPracticePoints.setText(getResources().getString(R.string.effort_name) + "s: " + goal.getVentures().size());
 
         GoalTypeView gt = (GoalTypeView) findViewById(R.id.imgview_goal_icon);
         gt.setOnClickListener(this);
@@ -318,8 +323,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                         llTasks.removeAllViews();
                     }
                 }
-
-                View view = inflater.inflate(R.layout.txt_edit_goal_item, llTasks, true);
+                View view = inflater.inflate(R.layout.txt_edit_goal_item, llTasks, false);
                 EditText editText = (EditText) view.findViewById(R.id.txt_edit_item_id);
                 editText.setTag("TASK");
                 editText.setOnEditorActionListener(this);
@@ -327,6 +331,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 editText.setFocusableInTouchMode(true);
                 editText.requestFocus();
                 editText.setGravity(Gravity.CENTER_VERTICAL);
+                llTasks.addView(view, 0);
                 final InputMethodManager inputMethodManager = (InputMethodManager) this
                         .getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
@@ -397,12 +402,13 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 startActivity(new Intent(this, MainActivity.class));
             }
 
-            btnComplete.setText("Complete Goal");
+            btnComplete.setText(goal.getComplete()!=Goal.COMPLETE ? "Complete Goal" : "Uncomplete Goal" );
             btnDelete.setText("Delete Goal");
         }
         else if(v.getId()==R.id.imgview_goal_icon) {
             goal.addVenture();
-            txtVentures.setText("Ventures: " + goal.getVentures().size());
+            txtPracticePoints.setText(
+                    getResources().getString(R.string.effort_name)+ "s: "+ goal.getVentures().size());
             MySQLiteHelper.updateGoal(this,goal);
         }
     }
@@ -415,7 +421,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
             newTask.task = taskString;
             goal.addTask(newTask);
             MySQLiteHelper.updateGoal(this, goal);
-            llTasks.addView(new TaskView(this, newTask, this));
+            llTasks.addView(new TaskView(this, newTask, this), 0);
         }
         else {
             Toast.makeText(this, "Your task must have a name.", Toast.LENGTH_LONG).show();
@@ -441,8 +447,9 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         reminder.calendar = calendar;
         reminder.note = note;
         goal.addReminder(reminder);
+        Notifications.setAlarm(this,goal,reminder);
         MySQLiteHelper.updateGoal(this, goal);
-        llReminders.addView(new ReminderView(this, reminder, this));
+        llReminders.addView(new ReminderView(this, reminder, this), 0);
     }
 
 

@@ -69,14 +69,15 @@ public class ReminderView extends TextView {
 
         if(reminder.repeating) {
             this.setText(Constants.createBulletString(reminder.note +
-                    " " + reminder.calendar.get(Calendar.HOUR) +
-                    ":" + reminder.calendar.get(Calendar.MINUTE) +
+                    (reminder.note.length()>0 ? " ":"")+new SimpleDateFormat("HH:mm", Locale.US).format(reminder.calendar.getTime()) +
                     " on " + dayString));
         }
         else {
-            this.setText(Constants.createBulletString((reminder.note.length()>0 ? reminder.note + " ":"") +
-                    new SimpleDateFormat("H:m", Locale.US).format(reminder.calendar.getTime()) + " on " +
-                    new SimpleDateFormat("MMMM d", Locale.US).format(reminder.calendar.getTime())));
+            String string = (reminder.note.length()>0 ? reminder.note + " ":"") +
+                    new SimpleDateFormat("HH:mm", Locale.US).format(reminder.calendar.getTime()) + " on " +
+                    new SimpleDateFormat("MMMM d", Locale.US).format(reminder.calendar.getTime());
+            string = string.trim();
+            this.setText(Constants.createBulletString(string));
         }
 
         selected_color = context.getResources().getColor(R.color.accent);

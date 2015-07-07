@@ -3,7 +3,10 @@ package io.normyle.ui;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.GridLayout;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
@@ -30,7 +33,7 @@ public class GoalTypeViewer extends LinearLayout implements View.OnClickListener
         super(context);
         mContext = context;
         mData = Constants.getGoalTypes(mContext);
-        mSpacing = 40;
+        mSpacing = 30;
         mListener = null;
     }
 
@@ -38,7 +41,7 @@ public class GoalTypeViewer extends LinearLayout implements View.OnClickListener
         super(context, attrs);
         mContext = context;
         mData = Constants.getGoalTypes(mContext);
-        mSpacing = 40;
+        mSpacing = 30;
         mListener = null;
         setupIcons();
     }
@@ -68,6 +71,9 @@ public class GoalTypeViewer extends LinearLayout implements View.OnClickListener
                 view.setColor(type.getColor());
                 if(i!=(mData.size()-1)) {
                     view.setLayoutParams(params);
+                }
+                else {
+                    view.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 }
                 view.setTag(type.getType());
                 view.setOnClickListener(this);
