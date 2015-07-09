@@ -118,6 +118,7 @@ public class Goal implements Serializable {
         this._id = 0;
         this.complete = 0;
         this.goalNotes = "";
+        this.dateOffset = 0;
 
 
         /* for DB padding only */

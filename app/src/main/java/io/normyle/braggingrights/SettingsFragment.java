@@ -129,9 +129,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
     private void introSetup() {
         mTxtIntro.setTextSize(14);
-        mTxtIntro.setText("Welcome to Bragging Rights!\nTo get started, add one or more goal categories using the interface below." +
-                " These categories are the different areas of your life you want to complete goals in. Once you've added some, explore the app and start" +
-                " completing goals!");
+        mTxtIntro.setText("Welcome to Bragging Rights! To get started, add one or more goal categories using the interface below.");
         mViewerGoalType.setVisibility(View.INVISIBLE);
         mBtnAdd.setVisibility(View.GONE);
         mTxtGoalTypeName.setVisibility(View.VISIBLE);
@@ -173,6 +171,13 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             imgView.setTag(mData.get(position));
             imgView.setOnClickListener(this);
             return imgView;
+        }
+
+        public void clear() {
+            if(mSelected!=null) {
+                mSelected.setSelected(false);
+                mSelected.setBackgroundColor(Color.TRANSPARENT);
+            }
         }
 
         @Override
@@ -238,6 +243,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                 mTxtGoalTypeName.setText("");
                 mBtnAdd.setVisibility(View.VISIBLE);
                 mFab.setVisibility(View.GONE);
+                mIconAdapter.clear();
             }
         }
     }

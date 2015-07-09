@@ -30,34 +30,32 @@ public class Notifications {
 
         if(reminder.repeating) {
             for(int i=1;i<8;i++) {
-                reminder.calendar.setFirstDayOfWeek(Calendar.SUNDAY);
                 if(reminder.days[(i-1)]) {
                     Calendar alarmCal = GregorianCalendar.getInstance();
                     alarmCal.setTime(reminder.calendar.getTime());
-                    alarmCal.setFirstDayOfWeek(Calendar.SUNDAY);
-                    alarmCal.set(Calendar.MINUTE, 0);
-                    if(i>=Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
-                        alarmCal.set(Calendar.DAY_OF_WEEK,i);
-                        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, alarmCal.getTimeInMillis(),
-                                AlarmManager.INTERVAL_DAY * 7, alarmIntent);
-//                        alarmMgr.set(AlarmManager.RTC_WAKEUP,
-//                                alarmCal.getTimeInMillis(), alarmIntent);
-                    }
-                    else {
-                        alarmCal.add(Calendar.WEEK_OF_YEAR,1);
-                        alarmCal.set(Calendar.DAY_OF_WEEK, i);
-                        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, alarmCal.getTimeInMillis(),
-                                AlarmManager.INTERVAL_DAY * 7, alarmIntent);
-//                        alarmMgr.set(AlarmManager.RTC_WAKEUP,
-//                                alarmCal.getTimeInMillis(), alarmIntent);
-                    }
+                    alarmCal.set(Calendar.DAY_OF_WEEK, i);
+                    intent.putExtra(AlarmReceiver.EXTRA_REPEATING, true);
+                    alarmMgr.setExact(AlarmManager.RTC_WAKEUP, alarmCal.getTimeInMillis(),
+                            alarmIntent);
                 }
             }
         }
         else {
-            alarmMgr.set(AlarmManager.RTC_WAKEUP,
+            intent.putExtra(AlarmReceiver.EXTRA_REPEATING, false);
+            alarmMgr.setExact(AlarmManager.RTC_WAKEUP,
                     reminder.calendar.getTimeInMillis(), alarmIntent);
         }
+    }
+
+    public static void repeatSetAlarm(Context context, String title, String note, int id, Calendar calendar) {
+        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.putExtra(AlarmReceiver.EXTRA_TITLE, title);
+        intent.putExtra(AlarmReceiver.EXTRA_NOTE, note);
+        intent.putExtra(AlarmReceiver.EXTRA_ID, id);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, id++, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmMgr.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                alarmIntent);
     }
 
     public static void setupAlarms(Context context, List<Goal> goalList) {

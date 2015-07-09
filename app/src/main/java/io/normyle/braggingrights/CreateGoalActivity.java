@@ -33,10 +33,6 @@ public class CreateGoalActivity extends ActionBarActivity implements View.OnClic
     FloatingActionButton btnComplete;
     GoalTypeViewer mGoalTypeViewer;
 
-    //TODO: remove
-    EditText offset;
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,8 +70,6 @@ public class CreateGoalActivity extends ActionBarActivity implements View.OnClic
         radioYears = (RadioButton) findViewById(R.id.radio_days);
         radioYears.setChecked(true);
         time = "Days";
-
-        offset = (EditText) findViewById(R.id.txt_offset);
     }
 
     public void onClick(View v) {
@@ -84,7 +78,7 @@ public class CreateGoalActivity extends ActionBarActivity implements View.OnClic
             if(validateInput()) {
                 String title = txtTitle.getText().toString();
                 createGoal(new Goal(title, "",
-                        mGoalTypeViewer.getSelected(), time, 1, Integer.parseInt(offset.getText().toString())));
+                        mGoalTypeViewer.getSelected(), time, 1, 0));
             }
         }
     }
@@ -122,10 +116,6 @@ public class CreateGoalActivity extends ActionBarActivity implements View.OnClic
         }
         else if(mGoalTypeViewer.getSelected().equals(MagicListener.UNSELECTED_STRING)) {
             Toast.makeText(this,"Make sure to select a goal type", Toast.LENGTH_LONG).show();
-            return false;
-        }
-        else if(offset.getText()==null) {
-            Toast.makeText(this,"Put an offset stupid bitch",Toast.LENGTH_LONG).show();
             return false;
         }
         return true;

@@ -77,16 +77,18 @@
             android:inputType="textCapWords"
             android:imeOptions="actionDone"
             android:hint="Enter category name"/>
-        <com.larswerkman.holocolorpicker.ColorPicker
-            android:id="@+id/colorpicker"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
         <it.sephiroth.android.library.widget.HListView
             android:id="@+id/hl_icons"
             android:layout_width="wrap_content"
             android:layout_gravity="center"
             android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:background="@null"/>
+        <com.larswerkman.holocolorpicker.ColorPicker
+            android:id="@+id/colorpicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
         </LinearLayout>

@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import io.matthew.braggingrights.R;
 
 public class AlarmReceiver extends BroadcastReceiver {
@@ -17,6 +20,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     public static final String EXTRA_TITLE = "TITLE";
     public static final String EXTRA_NOTE = "NOTE";
     public static final String EXTRA_ID = "ID";
+    public static final String EXTRA_REPEATING = "REP";
 
     public AlarmReceiver() {
 
@@ -31,6 +35,12 @@ public class AlarmReceiver extends BroadcastReceiver {
             title = (String) bundle.get(EXTRA_TITLE);
             note = (String) bundle.get(EXTRA_NOTE);
             goal_id = (int) bundle.get(EXTRA_ID);
+            boolean repeating = bundle.getBoolean(EXTRA_REPEATING);
+            if(repeating) {
+                Calendar calendar = GregorianCalendar.getInstance();
+                calendar.add(Calendar.DAY_OF_YEAR, 7);
+                Notifications.repeatSetAlarm(context, title, note, goal_id, calendar);
+            }
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(context)
                             .setSmallIcon(R.drawable.tree)
@@ -45,9 +55,9 @@ public class AlarmReceiver extends BroadcastReceiver {
                     | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             PendingIntent pintent = PendingIntent.getActivity(context, 0,
                     notificationIntent, 0);
+            mBuilder.setContentIntent(pintent);
             Notification notification = mBuilder.build();
             notification.flags = Notification.DEFAULT_LIGHTS | Notification.FLAG_AUTO_CANCEL;
-            mBuilder.setContentIntent(pintent);
             mNotifyMgr.notify(mNotificationId, notification);
         } catch (Exception e) {
 
