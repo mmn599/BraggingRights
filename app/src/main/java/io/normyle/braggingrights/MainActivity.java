@@ -17,31 +17,41 @@ import android.widget.ListView;
 
 import io.matthew.braggingrights.R;
 import io.normyle.data.Constants;
-import io.normyle.data.MySQLiteHelper;
 import io.normyle.ui.DrawerAdapter;
 
 
+/**
+ * MainActivity class, primarily serves to setup and enable the user to switch between three
+ * fragments in the MainActivity's FrameLayout UI.
+ *
+ * The three fragments are GoalsFragment for viewing goals, PersonhoodFragment for viewing goal history,
+ * and SettingsFragment for add and removing goal categories.
+ *
+ * GoalsFragment sometimes contains In Progress (Present) goals, sometimes Completed (Past) goals
+ */
 public class MainActivity extends ActionBarActivity implements View.OnClickListener,ListView.OnItemClickListener {
 
-    private ActionBarDrawerToggle drawerToggle;
-    private DrawerLayout drawerLayout;
-    private ListView drawerList;
-    private CharSequence drawerTitle;
-    private CharSequence title;
-    private ActionBar actionBar;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
+    private ActionBar mActionBar;
 
-    boolean viewing_goals;
+    boolean mViewingGoals;
 
+    //Keys to specify which fragment to open when onResume is called
     public static final String PASTGOALS = "PAST";
     public static final String PRESENTGOALS = "PRESENT";
     public static final String PERSONHOODFRAGMENT = "PERSONHOOD";
-    public static final String SETTINGSFRAGMENT = "SETTINGS";
+    public static final String WHICH_FRAGMENT_KEY = "WHICH_FRAGMENT";
 
+    //Titles for action bar depending on which fragment is opened
     public static final String PRESENT_TITLE = "In Progress";
     public static final String PAST_TITLE = "Completed";
     public static final String PERSONHOOD_TITLE = "Personhood";
     public static final String CATEGORIES_TITLE = "Categories";
 
+
+    /*boolean indicating whether the user has setup at least one goal category
+      if false, automatically opens SettingsFragment with intro text*/
     private boolean mSetup;
 
     @Override
@@ -49,20 +59,21 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Checks how many goal categories the user has created. If zero, the app needs to be setup.
         mSetup = Constants.isSetup(this);
 
-        actionBar = getSupportActionBar();
-        title = drawerTitle = getTitle();
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerList = (ListView) findViewById(R.id.left_drawer);
+        //Sets up navigation drawer
+        mActionBar = getSupportActionBar();
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ListView drawerList = (ListView) findViewById(R.id.left_drawer);
         String areas[] = {PRESENT_TITLE,PAST_TITLE,PERSONHOOD_TITLE,CATEGORIES_TITLE};
         drawerList.setAdapter(new DrawerAdapter(this,R.layout.drawer_listview_row,areas));
         drawerList.setOnItemClickListener(this);
-        drawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                drawerLayout,         /* DrawerLayout object */
-                R.string.drawer_open,  /* "open drawer" description for accessibility */
-                R.string.drawer_close)  /* "close drawer" description for accessibility */
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                mDrawerLayout,
+                R.string.drawer_open,
+                R.string.drawer_close)
          {
             public void onDrawerClosed(View view) {
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
@@ -72,62 +83,76 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
-        drawerLayout.setDrawerListener(drawerToggle);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
+        //Don't let the user navigate elsewhere in the app if no goal categories
         if(mSetup) {
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
+            mActionBar.setDisplayHomeAsUpEnabled(true);
+            mActionBar.setHomeButtonEnabled(true);
         }
 
-        //sets up a few constants
+        //sets up a few constants, TODO: bad form to store static constants, switch to ContentProvider
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
         Constants.SCREEN_WIDTH = size.x;
         Constants.SCREEN_HEIGHT = size.y;
     }
 
+    /**
+     * Called from SettingsFragment once user has setup at least one goal category.
+     * Allows navigation to rest of app.
+     */
     public void finishedSetup() {
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
+        mActionBar.setDisplayHomeAsUpEnabled(true);
+        mActionBar.setHomeButtonEnabled(true);
         mSetup = true;
     }
 
+    /**
+     * Sets up proper fragment in the FrameLayout depending on the calling intent
+     * If the calling intent is null, just pull up Goals Fragment w/ in progress goals
+     * Otherwise, the calling intent will specify which fragment to load in WHICH_FRAGMENT key
+     */
     @Override
     protected void onResume() {
         super.onResume();
-        Fragment initialFragment = null;
+        Fragment initialFragment;
         if(mSetup) {
-            viewing_goals = true;
-            initialFragment = new PresentFragment();
+            //if app is setup, default to viewing in progress goals
+            mViewingGoals = true;
+            initialFragment = new GoalsFragment();
             Bundle bundle = new Bundle();
-            bundle.putString(PresentFragment.WHICH_GOALS, PRESENTGOALS);
+            bundle.putString(GoalsFragment.WHICH_GOALS, PRESENTGOALS);
             initialFragment.setArguments(bundle);
             setTitle(PRESENT_TITLE);
             Intent callingIntent = getIntent();
+
+            //if there's a calling intent, may need to display another fragment
             if (callingIntent != null) {
                 Bundle extras = getIntent().getExtras();
                 if (extras != null) {
-                    if (extras.containsKey("WHICH_FRAGMENT")) {
-                        String s = getIntent().getExtras().getString("WHICH_FRAGMENT");
+                    if (extras.containsKey(WHICH_FRAGMENT_KEY)) {
+                        String s = getIntent().getExtras().getString(WHICH_FRAGMENT_KEY);
                         if (s.equals(PASTGOALS)) {
-                            initialFragment = new PresentFragment();
-                            bundle = new Bundle();
-                            bundle.putString(PresentFragment.WHICH_GOALS, PASTGOALS);
-                            initialFragment.setArguments(bundle);
+                            //display goals fragment with past goals
+                            bundle.putString(GoalsFragment.WHICH_GOALS, PASTGOALS);
                             setTitle(PAST_TITLE);
                         } else if (s.equals(PERSONHOODFRAGMENT)) {
+                            //display personhood fragment
                             initialFragment = new PersonhoodFragment();
                             setTitle(PERSONHOOD_TITLE);
-                            viewing_goals = false;
+                            mViewingGoals = false;
                         }
                     }
                 }
             }
         }
         else {
+            //app isn't setup, load settings fragment
             initialFragment = new SettingsFragment();
         }
-        // Add the fragment to the 'fragment_container' FrameLayout
+
+        // Add the fragment to the fragment_container FrameLayout
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container,initialFragment).commit();
     }
@@ -136,20 +161,20 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        drawerToggle.syncState();
+        mDrawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        drawerToggle.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle, if it returns
         // true, then it has handled the app icon touch event
-        if (drawerToggle.onOptionsItemSelected(item)) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
         // Handle your other action bar items...
@@ -162,46 +187,53 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
     }
 
+
+    //constants defining fragment positions
+    public static final int POS_PRESENT = 0;
+    public static final int POS_PAST = 1;
+    public static final int POS_PERSONHOOD = 2;
+    public static final int POS_SETTINGS = 3;
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Fragment current = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-        //present
-        if(position==0 || position==1) {
+        //goals fragment, either present (in progress), or past (completed)
+        if(position==POS_PRESENT || position==POS_PAST) {
             Bundle bundle = new Bundle();
             boolean display_present = false;
-            if(position==0) {
+            if(position==POS_PRESENT) {
                 setTitle(PRESENT_TITLE);
-                bundle.putString(PresentFragment.WHICH_GOALS, PRESENTGOALS);
+                bundle.putString(GoalsFragment.WHICH_GOALS, PRESENTGOALS);
                 display_present = true;
             }
-            else if(position==1) {
+            else {
                 setTitle(PAST_TITLE);
-                bundle.putString(PresentFragment.WHICH_GOALS, PASTGOALS);
+                bundle.putString(GoalsFragment.WHICH_GOALS, PASTGOALS);
                 display_present = false;
             }
-            if(viewing_goals) {
+            if(mViewingGoals) {
+                //don't reload fragment if already viewing goals, just reload which goals are viewed
                 Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-                ((PresentFragment) fragment).displayGoals(display_present);
+                ((GoalsFragment) fragment).displayGoals(display_present);
             }
             else {
-                PresentFragment newFragment = new PresentFragment();
+                GoalsFragment newFragment = new GoalsFragment();
                 newFragment.setArguments(bundle);
                 updateFragment(newFragment);
             }
         }
         //personhood
-        else if(position==2) {
-            viewing_goals = false;
+        else if(position==POS_PERSONHOOD) {
+            mViewingGoals = false;
             setTitle(PERSONHOOD_TITLE);
             updateFragment(new PersonhoodFragment());
         }
         //settings
-        else if(position==3) {
-            viewing_goals = false;
+        else if(position==POS_SETTINGS) {
+            mViewingGoals = false;
             setTitle(CATEGORIES_TITLE);
             updateFragment(new SettingsFragment());
         }
-        drawerLayout.closeDrawers();
+        mDrawerLayout.closeDrawers();
     }
 
     private void updateFragment(Fragment newFragment) {

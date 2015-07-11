@@ -38,11 +38,19 @@ import io.normyle.data.MySQLiteHelper;
 import io.normyle.ui.GoalTypeViewer;
 import io.normyle.ui.MagicListener;
 
+/**
+ * Fragment within MainActivity in charge of displaying the user's goal history
+ * 
+ * Honestly, this code sucks. The various chart setup methods need to be consolidated into
+ * one.
+ *
+
+ */
 public class PersonhoodFragment extends Fragment implements
         AdapterView.OnItemSelectedListener, MagicListener {
 
     LineChart mChart;
-    String[] mAccomplishmentTypeStrings = {
+    static String[] ACCOMPLISHMENT_TYPE_STRINGS = {
             "Goals Completed","Goals Created","Tasks Completed","Practice Points"};
     List<Goal> mGoals;
     Drawable mBackground;
@@ -77,7 +85,7 @@ public class PersonhoodFragment extends Fragment implements
 
         Spinner spinner = (Spinner) view.findViewById(R.id.spinner_which_chart);
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(getActivity(),R.layout.spinner_accomplishment_types,mAccomplishmentTypeStrings);
+                new ArrayAdapter<String>(getActivity(),R.layout.spinner_accomplishment_types, ACCOMPLISHMENT_TYPE_STRINGS);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
@@ -110,7 +118,7 @@ public class PersonhoodFragment extends Fragment implements
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupVentures() {
+    private void setupPracticePoints() {
         mChart.clear();
         ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
         boolean first = true;
@@ -434,7 +442,7 @@ public class PersonhoodFragment extends Fragment implements
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String value = ((TextView)view).getText().toString();
         if(value.equals("Practice Points")){
-            setupVentures();
+            setupPracticePoints();
         }
         else if(value.equals("Tasks Completed")) {
             setupTasks();
@@ -457,7 +465,7 @@ public class PersonhoodFragment extends Fragment implements
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        setupVentures();
+        setupPracticePoints();
     }
 
 }

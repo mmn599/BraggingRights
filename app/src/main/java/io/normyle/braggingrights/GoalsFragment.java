@@ -34,7 +34,7 @@ import io.normyle.data.MySQLiteHelper;
 import io.normyle.ui.GoalAdapter;
 
 
-public class PresentFragment extends Fragment implements View.OnClickListener,ListView.OnItemClickListener {
+public class GoalsFragment extends Fragment implements View.OnClickListener,ListView.OnItemClickListener {
 
     ListView goalsListView;
     FloatingActionButton fab;
@@ -49,7 +49,7 @@ public class PresentFragment extends Fragment implements View.OnClickListener,Li
 
     public static final String WHICH_GOALS = "WHICH_GOALS";
 
-    public PresentFragment() {
+    public GoalsFragment() {
 
     }
 
