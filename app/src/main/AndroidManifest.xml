@@ -28,7 +28,6 @@
             android:windowSoftInputMode="adjustPan" >
         </activity>
 
-        <!-- TODO: programatically enable this when at least one alarm is set -->
         <receiver
             android:name="io.normyle.braggingrights.BootupReceiver"
             android:enabled="true"
@@ -37,19 +36,16 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
         <receiver
             android:name="io.normyle.braggingrights.AlarmReceiver"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="io.normyle.braggingrights.AlarmReceiver" />
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name="io.normyle.braggingrights.AnimationActivity"
-            android:label="@string/title_activity_animation" >
-        </activity>
     </application>
 
 </manifest>

@@ -6,11 +6,6 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.PagerAdapter;
-import android.support.v7.widget.CardView;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +15,6 @@ import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,10 +27,10 @@ import java.util.List;
 import io.matthew.braggingrights.R;
 import io.normyle.data.Constants;
 import io.normyle.ui.GoalTypeViewer;
-import io.normyle.ui.MagicListener;
+import io.normyle.ui.TypeSelectedListener;
 import it.sephiroth.android.library.widget.HListView;
 
-public class SettingsFragment extends Fragment implements View.OnClickListener, MagicListener {
+public class SettingsFragment extends Fragment implements View.OnClickListener, TypeSelectedListener {
 
     Button mBtnAdd;
     LinearLayout mLLTypes;
@@ -206,7 +200,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             if(mSetup && mTxtIntro.getVisibility()==View.VISIBLE) {
                 mTxtIntro.setVisibility(View.GONE);
             }
-            if(mViewerGoalType.getSelected().equals(MagicListener.UNSELECTED_STRING)) {
+            if(mViewerGoalType.getSelected().equals(TypeSelectedListener.UNSELECTED_STRING)) {
                 v.setVisibility(View.GONE);
                 mTxtGoalTypeName.setVisibility(View.VISIBLE);
                 mColorPicker.setVisibility(View.VISIBLE);

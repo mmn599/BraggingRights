@@ -36,7 +36,7 @@ import io.normyle.data.Constants;
 import io.normyle.data.Goal;
 import io.normyle.data.MySQLiteHelper;
 import io.normyle.ui.GoalTypeViewer;
-import io.normyle.ui.MagicListener;
+import io.normyle.ui.TypeSelectedListener;
 
 /**
  * Fragment within MainActivity in charge of displaying the user's goal history
@@ -47,7 +47,7 @@ import io.normyle.ui.MagicListener;
 
  */
 public class PersonhoodFragment extends Fragment implements
-        AdapterView.OnItemSelectedListener, MagicListener {
+        AdapterView.OnItemSelectedListener, TypeSelectedListener {
 
     LineChart mChart;
     static String[] ACCOMPLISHMENT_TYPE_STRINGS = {

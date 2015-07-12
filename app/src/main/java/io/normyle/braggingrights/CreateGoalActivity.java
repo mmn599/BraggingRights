@@ -1,28 +1,22 @@
 package io.normyle.braggingrights;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
 
 import io.matthew.braggingrights.R;
-import io.normyle.data.Constants;
 import io.normyle.data.Goal;
 import io.normyle.data.MySQLiteHelper;
-import io.normyle.ui.GoalTypeAdapter;
 import io.normyle.ui.GoalTypeViewer;
-import io.normyle.ui.MagicListener;
+import io.normyle.ui.TypeSelectedListener;
 
 public class CreateGoalActivity extends ActionBarActivity implements View.OnClickListener {
 
@@ -114,7 +108,7 @@ public class CreateGoalActivity extends ActionBarActivity implements View.OnClic
             Toast.makeText(this,"Make sure to put a goal title",Toast.LENGTH_LONG).show();
             return false;
         }
-        else if(mGoalTypeViewer.getSelected().equals(MagicListener.UNSELECTED_STRING)) {
+        else if(mGoalTypeViewer.getSelected().equals(TypeSelectedListener.UNSELECTED_STRING)) {
             Toast.makeText(this,"Make sure to select a goal type", Toast.LENGTH_LONG).show();
             return false;
         }

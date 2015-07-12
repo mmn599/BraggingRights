@@ -27,7 +27,7 @@ public class GoalTypeView extends View {
     int mWidth;
     int mHeight;
     int mColor;
-    int mSize = 63;
+    int mSize = DEFAULT_SIZE;
     int mImageResource;
     boolean mSelected;
     Bitmap mImage;

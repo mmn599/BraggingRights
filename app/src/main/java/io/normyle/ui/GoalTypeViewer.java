@@ -3,17 +3,13 @@ package io.normyle.ui;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridLayout;
 import android.widget.LinearLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.matthew.braggingrights.R;
-import io.normyle.braggingrights.PersonhoodFragment;
 import io.normyle.data.Constants;
 
 /**
@@ -24,7 +20,7 @@ public class GoalTypeViewer extends LinearLayout implements View.OnClickListener
     private int mSpacing;
     private Context mContext;
     private List<Constants.GoalType> mData;
-    private MagicListener mListener;
+    private TypeSelectedListener mListener;
     private boolean mIgnoreReclicks = true;
 
     private GoalTypeView mSelected = null;
@@ -93,7 +89,7 @@ public class GoalTypeViewer extends LinearLayout implements View.OnClickListener
         if(mSelected!=null) {
             return (String) mSelected.getTag();
         }
-        return MagicListener.UNSELECTED_STRING;
+        return TypeSelectedListener.UNSELECTED_STRING;
     }
 
     public void clearSelected() {
@@ -101,7 +97,7 @@ public class GoalTypeViewer extends LinearLayout implements View.OnClickListener
             mSelected.setBackgroundColor(Color.TRANSPARENT);
         }
         if(mListener!=null) {
-            mListener.onChange(MagicListener.UNSELECTED_STRING);
+            mListener.onChange(TypeSelectedListener.UNSELECTED_STRING);
         }
         mSelected = null;
     }
@@ -115,7 +111,7 @@ public class GoalTypeViewer extends LinearLayout implements View.OnClickListener
         setData(goalTypes);
     }
 
-    public void setListener(MagicListener listener) {
+    public void setListener(TypeSelectedListener listener) {
         mListener = listener;
     }
 
@@ -132,10 +128,12 @@ public class GoalTypeViewer extends LinearLayout implements View.OnClickListener
             }
         }
         else {
-            mSelected.setBackgroundColor(Color.TRANSPARENT);
+            if(mSelected!=null) {
+                mSelected.setBackgroundColor(Color.TRANSPARENT);
+            }
             mSelected = null;
             if(mListener!=null) {
-                mListener.onChange(MagicListener.UNSELECTED_STRING);
+                mListener.onChange(TypeSelectedListener.UNSELECTED_STRING);
             }
         }
     }
