@@ -123,16 +123,12 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
     private void introSetup() {
         mTxtIntro.setTextSize(14);
-        mTxtIntro.setText("Welcome to Bragging Rights! To get started, add one or more goal categories using the interface below.");
+        mTxtIntro.setText("Welcome to Brag! To get started, add one or more goal categories using the interface below.");
         mViewerGoalType.setVisibility(View.INVISIBLE);
         mBtnAdd.setVisibility(View.GONE);
         mTxtGoalTypeName.setVisibility(View.VISIBLE);
         mColorPicker.setVisibility(View.VISIBLE);
         mListViewIcons.setVisibility(View.VISIBLE);
-//       LinearLayout.LayoutParams params =
-//                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//        params.setMargins(0,0,0,0);
-//        mScrollGoalTypes.setLayoutParams(params);
         mScrollGoalTypes.setVisibility(View.INVISIBLE);
     }
 
