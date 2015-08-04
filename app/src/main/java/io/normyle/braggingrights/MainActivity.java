@@ -220,6 +220,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 newFragment.setArguments(bundle);
                 updateFragment(newFragment);
             }
+            mViewingGoals = true;
         }
         //personhood
         else if(position==POS_PERSONHOOD) {

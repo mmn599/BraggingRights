@@ -4,6 +4,11 @@
     android:layout_height="match_parent"
      tools:context=".MainActivity">
 
+    <RelativeLayout
+        android:paddingRight="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <TextView
         android:id="@+id/txtview_goals_intro"
         android:layout_width="match_parent"
@@ -19,6 +24,9 @@
         android:divider="@null"
         android:dividerHeight="0dp"
         android:background="@null"/>
+
+
+    </RelativeLayout>
 
     <com.melnykov.fab.FloatingActionButton
         android:id="@+id/btn_action_button"

@@ -1,27 +1,20 @@
 package io.normyle.braggingrights;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -68,7 +61,7 @@ public class GoalsFragment extends Fragment implements View.OnClickListener,List
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        view = inflater.inflate(R.layout.fragment_present, container, false);
+        view = inflater.inflate(R.layout.frament_goals, container, false);
 
         txtviewIntro = (TextView) view.findViewById(R.id.txtview_goals_intro);
         txtviewIntro.setTextColor(Color.GRAY);
