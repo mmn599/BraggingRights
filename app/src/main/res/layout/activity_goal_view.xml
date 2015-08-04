@@ -16,13 +16,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:animateLayoutChanges="true"
         card_view:cardElevation="2dp">
 
    <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:animateLayoutChanges="true"
         android:layout_height="wrap_content">
     <TextView
         android:id="@+id/txtview_goal_title"
@@ -70,20 +68,13 @@
             android:layout_marginLeft="10dp"
             android:background="@null"
             android:src="@drawable/writing47"/>
-        <ScrollView
-            android:id="@+id/scrollview_tasks"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:divider="@null">
             <LinearLayout
                 android:id="@+id/ll_tasks"
                 android:layout_width="match_parent"
                 android:gravity="center_vertical"
-                android:layout_height="wrap_content"
                 android:animateLayoutChanges="true"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"/>
-        </ScrollView>
     </LinearLayout>
 
 
@@ -100,18 +91,12 @@
             android:layout_marginLeft="10dp"
             android:src="@drawable/alarm54"
             android:background="@null"/>
-        <ScrollView
-            android:id="@+id/scrollview_reminders"
-            android:layout_width="match_parent"
-            android:layout_marginLeft="10dp"
-            android:layout_height="wrap_content">
             <LinearLayout
                 android:id="@+id/ll_reminders"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
             </LinearLayout>
-        </ScrollView>
     </LinearLayout>
     
 
