@@ -18,6 +18,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -335,7 +336,9 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                 editText.requestFocus();
                 editText.setGravity(Gravity.CENTER_VERTICAL);
                 editText.setCallback(this);
+                editText.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
                 llTasks.addView(view, 0);
+                editText.animate();
                 final InputMethodManager inputMethodManager = (InputMethodManager) this
                         .getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
