@@ -5,4 +5,6 @@
     </declare-styleable>
     <declare-styleable name="GoalTypeViewer">
     </declare-styleable>
+    <declare-styleable name="EditAddTask">
+    </declare-styleable>
 </resources>

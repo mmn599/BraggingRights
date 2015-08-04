@@ -38,7 +38,9 @@ import io.matthew.braggingrights.R;
 import io.normyle.data.Constants;
 import io.normyle.data.Goal;
 import io.normyle.data.MySQLiteHelper;
+import io.normyle.ui.AddTaskCallback;
 import io.normyle.ui.Animations;
+import io.normyle.ui.EditAddTask;
 import io.normyle.ui.GoalTypeView;
 import io.normyle.ui.NoteView;
 import io.normyle.ui.ReminderPickerLayout;
@@ -46,7 +48,8 @@ import io.normyle.ui.ReminderView;
 import io.normyle.ui.TaskView;
 
 public class GoalViewActivity extends ActionBarActivity implements View.OnClickListener,
-        TextView.OnEditorActionListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
+        TextView.OnEditorActionListener, TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener,
+        AddTaskCallback {
 
     TextView txtTitle;
     TextView txtStartTime;
@@ -324,13 +327,14 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
                     }
                 }
                 View view = inflater.inflate(R.layout.txt_edit_goal_item, llTasks, false);
-                EditText editText = (EditText) view.findViewById(R.id.txt_edit_item_id);
+                EditAddTask editText = (EditAddTask) view.findViewById(R.id.txt_edit_item_id);
                 editText.setTag("TASK");
                 editText.setOnEditorActionListener(this);
                 editText.setHint("New Task");
                 editText.setFocusableInTouchMode(true);
                 editText.requestFocus();
                 editText.setGravity(Gravity.CENTER_VERTICAL);
+                editText.setCallback(this);
                 llTasks.addView(view, 0);
                 final InputMethodManager inputMethodManager = (InputMethodManager) this
                         .getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -452,6 +456,15 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
         llReminders.addView(new ReminderView(this, reminder, this), 0);
     }
 
+    @Override
+    public void onCloseButton(EditAddTask view) {
+        addTask(view);
+    }
+
+    private void addTask(TextView view) {
+        addNewTask(view.getText().toString(), view);
+        adding_task = false;
+    }
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -463,8 +476,7 @@ public class GoalViewActivity extends ActionBarActivity implements View.OnClickL
             if(tag!=null) {
                 if(tag instanceof String) {
                     if(tag.equals("TASK")) {
-                        addNewTask(v.getText().toString(), v);
-                        adding_task = false;
+                        addTask(v);
                         return false;
                     }
                     else if(tag.equals("NOTE")) {
